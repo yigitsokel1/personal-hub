@@ -1,0 +1,42 @@
+---
+id: project-personal-hub
+type: project
+title: "Personal Hub Platform"
+slug: personal-hub-platform
+summary: "A content-first personal hub for systems, work, writing, and experiments—not a traditional portfolio."
+publishedAt: "2026-04-01"
+status: published
+featured: true
+tags:
+  - nextjs
+  - typescript
+  - content-model
+role: "Product engineer"
+stack:
+  - nextjs
+  - typescript
+problem: "Traditional portfolios emphasize visuals over explaining how real systems are owned, shipped, and improved over time."
+solution: "Model the site as a typed content hub with separate domains (projects, work, writing, labs) and a single parse layer that feeds list and detail views."
+---
+
+# Personal Hub Platform
+
+This sample **project** entry represents a productized system: something you ship, maintain, and iterate on—not a one-off demo.
+
+## What it demonstrates
+
+- Strong separation between **content** and **UI**
+- Typed, domain-specific content (projects, work, writing, labs)
+- Room to grow without rewriting the core model
+
+## Technical notes
+
+The stack is intentionally boring where it matters: stable runtime, clear boundaries, and schemas you can evolve.
+
+```text
+content/     → source of truth
+src/app/     → routing and composition
+src/lib/     → parsing, validation, helpers
+```
+
+When you replace this file with real content, keep frontmatter keys aligned with your TypeScript schemas.

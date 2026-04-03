@@ -1,0 +1,75 @@
+---
+alwaysApply: true
+---
+
+# ⚙️ Cursor Rules — Personal Hub Platform
+
+## 🧱 Architecture Rules
+
+- NEVER mix content logic with UI components
+- ALWAYS use typed data (TypeScript)
+- DO NOT hardcode content inside components
+- All content must come from content layer
+
+---
+
+## 📦 Component Rules
+
+- Components must be:
+  - small
+  - reusable
+  - purpose-driven
+
+- Avoid:
+  - large monolithic components
+  - deeply nested props
+  - unnecessary abstractions
+
+---
+
+## 🎨 UI Rules
+
+- NO unnecessary cards
+- NO visual clutter
+- NO excessive icons
+- NO random colors
+
+- Prefer:
+  - whitespace
+  - typography hierarchy
+  - clean layout
+
+---
+
+## 🧠 Content Rules
+
+- Content structure is defined BEFORE UI
+- Each content type must follow its schema
+- No flexible/loose data structures
+
+---
+
+## 🚫 Forbidden
+
+- Do NOT create a design system prematurely
+- Do NOT introduce global state unless necessary
+- Do NOT add animations unless explicitly requested
+- Do NOT install extra libraries without reason
+
+---
+
+## ⚡ Implementation Style
+
+- Use simple, clear solutions
+- Prefer readability over cleverness
+- Avoid premature optimization
+
+---
+
+## 🔍 When unsure
+
+Default to:
+
+- simpler solution
+- less code
+- clearer structure

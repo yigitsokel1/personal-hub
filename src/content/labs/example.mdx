@@ -1,0 +1,41 @@
+---
+id: lab-mdx-pipeline
+type: lab
+title: "MDX pipeline spike"
+slug: mdx-pipeline-spike
+summary: "Prototype: parse MDX + frontmatter at build time, validate entries, keep body as raw markdown until detail render lands."
+publishedAt: "2026-04-02"
+status: published
+tags:
+  - mdx
+  - validation
+  - nextjs
+experimentType: "Build-time content pipeline"
+tools:
+  - gray-matter
+  - Next.js
+hypothesis: "We can keep content in git, validate at build time, and avoid a CMS for v1."
+maturityLevel: poc
+---
+
+# MDX pipeline spike
+
+**Labs** are for experiments: cheap to try, easy to discard, honest about uncertainty.
+
+## Setup (conceptual)
+
+1. Store `.mdx` under `src/content/<domain>/`.
+2. At build time (or on demand), read files and parse **frontmatter** + **body**.
+3. Validate with **schemas** per domain; fail the build on invalid content.
+
+## What we are not proving yet
+
+- WYSIWYG editing
+- Real-time collaboration
+- Asset pipelines beyond static imports
+
+## Next steps
+
+- Replace this stub with your actual spike notes, links to branches, and **go/no-go** conclusion.
+
+When MDX is wired up, you can add short interactive snippets or shared components here; until then, keep the body as Markdown-only for the simplest ingest path.
