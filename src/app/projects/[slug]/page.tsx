@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ProjectDetailIntro } from "@/components/content/project-detail-intro";
 import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
+import {
+  buildContentDetailMetadata,
+  contentSectionLabel,
+} from "@/lib/seo/build-metadata";
 
 type ProjectDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -21,10 +25,15 @@ export async function generateMetadata({
   const project = getContentBySlug("project", slug);
   if (!project) return {};
 
-  return {
-    title: project.seo?.title ?? `${project.title} — Projects`,
-    description: project.seo?.description ?? project.summary,
-  };
+  return buildContentDetailMetadata({
+    pathname: `/projects/${slug}`,
+    sectionLabel: contentSectionLabel.project,
+    contentTitle: project.title,
+    summary: project.summary,
+    seo: project.seo,
+    cover: project.cover,
+    openGraphType: "website",
+  });
 }
 
 export default async function ProjectDetailPage({

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { HomeHero } from "@/components/home/home-hero";
@@ -8,6 +9,16 @@ import { formatContentDate } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
 
 const PREVIEW_LIMIT = 3;
+
+export const metadata: Metadata = {
+  title: { absolute: homepageCopy.siteTitle },
+  description: homepageCopy.siteDescription,
+  openGraph: {
+    title: homepageCopy.siteTitle,
+    description: homepageCopy.siteDescription,
+    url: "/",
+  },
+};
 
 export default function HomePage() {
   const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);

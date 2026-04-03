@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentPageIntro } from "@/components/content/content-page-intro";
 import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
+import {
+  buildContentDetailMetadata,
+  contentSectionLabel,
+} from "@/lib/seo/build-metadata";
 
 type WritingDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -21,10 +25,15 @@ export async function generateMetadata({
   const item = getContentBySlug("writing", slug);
   if (!item) return {};
 
-  return {
-    title: item.seo?.title ?? `${item.title} — Writing`,
-    description: item.seo?.description ?? item.summary,
-  };
+  return buildContentDetailMetadata({
+    pathname: `/writing/${slug}`,
+    sectionLabel: contentSectionLabel.writing,
+    contentTitle: item.title,
+    summary: item.summary,
+    seo: item.seo,
+    cover: item.cover,
+    openGraphType: "article",
+  });
 }
 
 export default async function WritingDetailPage({

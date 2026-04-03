@@ -1,12 +1,59 @@
 import matter from "gray-matter";
 import type {
+  BaseContent,
   ContentEntry,
+  ContentStatus,
   ContentType,
   LabContent,
   ProjectContent,
   WorkContent,
   WritingContent,
 } from "./types";
+
+const CONTENT_TYPES = ["project", "work", "writing", "lab"] as const satisfies readonly ContentType[];
+
+const CONTENT_STATUSES = ["draft", "published"] as const satisfies readonly ContentStatus[];
+
+const ENGAGEMENT_TYPES = ["freelance", "contract", "full-time"] as const satisfies readonly WorkContent["engagementType"][];
+
+const CONFIDENTIALITY_LEVELS = ["public", "limited"] as const satisfies readonly NonNullable<
+  WorkContent["confidentialityLevel"]
+>[];
+
+const MATURITY_LEVELS = ["idea", "poc", "exploration"] as const satisfies readonly NonNullable<
+  LabContent["maturityLevel"]
+>[];
+
+function parseRequiredEnum<T extends string>(
+  value: unknown,
+  field: string,
+  allowed: readonly T[]
+): T {
+  const s = assertString(value, field);
+  if (!(allowed as readonly string[]).includes(s)) {
+    throw new Error(
+      `Invalid ${field}: expected one of ${allowed.join(", ")}, got ${JSON.stringify(s)}`
+    );
+  }
+  return s as T;
+}
+
+function parseOptionalEnum<T extends string>(
+  value: unknown,
+  field: string,
+  allowed: readonly T[]
+): T | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") {
+    throw new Error(`Invalid ${field}: expected string or omitted, got ${typeof value}`);
+  }
+  if (!(allowed as readonly string[]).includes(value)) {
+    throw new Error(
+      `Invalid ${field}: expected one of ${allowed.join(", ")}, got ${JSON.stringify(value)}`
+    );
+  }
+  return value as T;
+}
 
 type ParsedMdxFile = {
   data: Record<string, unknown>;
@@ -53,25 +100,35 @@ function optionalNumber(value: unknown): number | undefined {
   return typeof value === "number" ? value : undefined;
 }
 
+function parseCover(data: Record<string, unknown>): BaseContent["cover"] {
+  const raw = data.cover;
+  if (raw === undefined || raw === null) return undefined;
+  if (typeof raw !== "object" || Array.isArray(raw)) {
+    throw new Error("cover must be an object with src (string) and optional alt");
+  }
+  const obj = raw as Record<string, unknown>;
+  const src = optionalString(obj.src);
+  if (!src) {
+    throw new Error(
+      "cover requires a non-empty src when cover is set; omit cover entirely if unused"
+    );
+  }
+  return { src, alt: optionalString(obj.alt) };
+}
+
 function parseBase(data: Record<string, unknown>) {
   return {
     id: assertString(data.id, "id"),
-    type: assertString(data.type, "type") as ContentType,
+    type: parseRequiredEnum(data.type, "type", CONTENT_TYPES),
     title: assertString(data.title, "title"),
     slug: assertString(data.slug, "slug"),
     summary: assertString(data.summary, "summary"),
     publishedAt: assertString(data.publishedAt, "publishedAt"),
     updatedAt: optionalString(data.updatedAt),
     featured: optionalBoolean(data.featured),
-    status: optionalString(data.status) as "draft" | "published" | undefined,
+    status: parseOptionalEnum(data.status, "status", CONTENT_STATUSES),
     tags: optionalStringArray(data.tags),
-    cover:
-      data.cover && typeof data.cover === "object"
-        ? {
-            src: optionalString((data.cover as Record<string, unknown>).src) ?? "",
-            alt: optionalString((data.cover as Record<string, unknown>).alt),
-          }
-        : undefined,
+    cover: parseCover(data),
     seo:
       data.seo && typeof data.seo === "object"
         ? {
@@ -110,10 +167,11 @@ export function toContentEntry(data: Record<string, unknown>): ContentEntry {
         ...base,
         type: "work",
         client: assertString(data.client, "client"),
-        engagementType: assertString(
+        engagementType: parseRequiredEnum(
           data.engagementType,
-          "engagementType"
-        ) as WorkContent["engagementType"],
+          "engagementType",
+          ENGAGEMENT_TYPES
+        ),
         role: assertString(data.role, "role"),
         scope: assertStringArray(data.scope, "scope"),
         responsibilities: assertStringArray(
@@ -123,9 +181,11 @@ export function toContentEntry(data: Record<string, unknown>): ContentEntry {
         constraints: optionalStringArray(data.constraints),
         impact: optionalStringArray(data.impact),
         timeline: optionalString(data.timeline),
-        confidentialityLevel: optionalString(
-          data.confidentialityLevel
-        ) as WorkContent["confidentialityLevel"],
+        confidentialityLevel: parseOptionalEnum(
+          data.confidentialityLevel,
+          "confidentialityLevel",
+          CONFIDENTIALITY_LEVELS
+        ),
       } satisfies WorkContent;
 
     case "writing":
@@ -147,9 +207,11 @@ export function toContentEntry(data: Record<string, unknown>): ContentEntry {
         hypothesis: optionalString(data.hypothesis),
         learnings: optionalStringArray(data.learnings),
         nextSteps: optionalStringArray(data.nextSteps),
-        maturityLevel: optionalString(
-          data.maturityLevel
-        ) as LabContent["maturityLevel"],
+        maturityLevel: parseOptionalEnum(
+          data.maturityLevel,
+          "maturityLevel",
+          MATURITY_LEVELS
+        ),
       } satisfies LabContent;
 
     default:

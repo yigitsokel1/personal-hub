@@ -1,12 +1,25 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
 import "./globals.css";
 
+const metadataBase = getSiteMetadataBase();
+
 export const metadata: Metadata = {
-  title: "Your Name — Personal Hub",
-  description:
-    "A personal hub for projects, real-world work, writing, and experimental labs.",
+  ...(metadataBase ? { metadataBase } : {}),
+  title: {
+    default: homepageCopy.siteTitle,
+    template: `%s | ${homepageCopy.siteName}`,
+  },
+  description: homepageCopy.siteDescription,
+  openGraph: {
+    type: "website",
+    siteName: homepageCopy.siteName,
+    title: homepageCopy.siteTitle,
+    description: homepageCopy.siteDescription,
+  },
 };
 
 export default function RootLayout({

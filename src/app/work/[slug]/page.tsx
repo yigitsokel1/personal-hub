@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { WorkDetailIntro } from "@/components/content/work-detail-intro";
 import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
+import {
+  buildContentDetailMetadata,
+  contentSectionLabel,
+} from "@/lib/seo/build-metadata";
 
 type WorkDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -21,10 +25,15 @@ export async function generateMetadata({
   const item = getContentBySlug("work", slug);
   if (!item) return {};
 
-  return {
-    title: item.seo?.title ?? `${item.title} — Work`,
-    description: item.seo?.description ?? item.summary,
-  };
+  return buildContentDetailMetadata({
+    pathname: `/work/${slug}`,
+    sectionLabel: contentSectionLabel.work,
+    contentTitle: item.title,
+    summary: item.summary,
+    seo: item.seo,
+    cover: item.cover,
+    openGraphType: "website",
+  });
 }
 
 export default async function WorkDetailPage({ params }: WorkDetailPageProps) {

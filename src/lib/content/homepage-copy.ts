@@ -4,6 +4,11 @@
  */
 export const homepageCopy = {
   siteName: "Your Name",
+  /** Default `<title>` and primary brand line for metadata (layout + homepage). */
+  siteTitle: "Your Name — Personal Hub",
+  /** Root layout / OG description; aligned with the hero subtitle. */
+  siteDescription:
+    "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
   hero: {
     kicker: "Product engineer",
     title:
