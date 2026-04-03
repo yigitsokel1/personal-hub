@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
-import { ContentPageIntro } from "@/components/content/content-page-intro";
+import { WorkDetailIntro } from "@/components/content/work-detail-intro";
 import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
 
 type WorkDetailPageProps = {
@@ -37,11 +37,15 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-      <ContentPageIntro
+      <WorkDetailIntro
         title={item.title}
         summary={item.summary}
         publishedAt={item.publishedAt}
+        timeline={item.timeline}
         tags={item.tags}
+        role={item.role}
+        client={item.client}
+        engagementType={item.engagementType}
       />
 
       <ContentBody body={item.body} />

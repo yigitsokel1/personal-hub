@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
-import { ContentPageIntro } from "@/components/content/content-page-intro";
+import { ProjectDetailIntro } from "@/components/content/project-detail-intro";
 import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
 
 type ProjectDetailPageProps = {
@@ -39,11 +39,16 @@ export default async function ProjectDetailPage({
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-      <ContentPageIntro
+      <ProjectDetailIntro
         title={project.title}
         summary={project.summary}
         publishedAt={project.publishedAt}
+        timeline={project.timeline}
         tags={project.tags}
+        role={project.role}
+        stack={project.stack}
+        liveUrl={project.liveUrl}
+        repoUrl={project.repoUrl}
       />
 
       <ContentBody body={project.body} />

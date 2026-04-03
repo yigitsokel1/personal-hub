@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { homepageCopy } from "@/lib/content/homepage-copy";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -12,12 +13,12 @@ const navItems = [
 export function SiteHeader() {
   return (
     <header className="border-b border-black/10 text-foreground">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-4">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-5">
         <Link
           href="/"
           className="shrink-0 text-sm font-medium tracking-tight text-foreground"
         >
-          Your Name
+          {homepageCopy.siteName}
         </Link>
 
         <nav className="flex min-w-0 flex-wrap items-center justify-end gap-x-6 gap-y-2">

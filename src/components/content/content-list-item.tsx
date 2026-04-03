@@ -5,6 +5,8 @@ type ContentListItemProps = {
   publishedAt: string;
   title: string;
   summary: string;
+  tags?: string[];
+  meta?: string[];
 };
 
 export function ContentListItem({
@@ -12,16 +14,24 @@ export function ContentListItem({
   publishedAt,
   title,
   summary,
+  tags,
+  meta,
 }: ContentListItemProps) {
   return (
-    <article className="border-b pb-6">
-      <p className="text-sm opacity-60">{publishedAt}</p>
-      <h2 className="mt-2 text-2xl font-medium">
-        <Link href={href} className="hover:opacity-80">
+    <article className="border-b border-black/10 pb-8">
+      <p className="text-sm text-black/50">{publishedAt}</p>
+      {meta?.length ? (
+        <p className="mt-1 text-sm text-black/45">{meta.join(" · ")}</p>
+      ) : null}
+      <h2 className="mt-2 text-2xl font-medium tracking-tight">
+        <Link href={href} className="hover:text-black/70">
           {title}
         </Link>
       </h2>
-      <p className="mt-2 text-base opacity-80">{summary}</p>
+      <p className="mt-2 text-base leading-relaxed text-black/75">{summary}</p>
+      {tags?.length ? (
+        <p className="mt-3 text-sm text-black/45">{tags.join(" · ")}</p>
+      ) : null}
     </article>
   );
 }

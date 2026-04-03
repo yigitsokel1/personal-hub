@@ -2,10 +2,24 @@ import fs from "node:fs";
 import path from "node:path";
 import { CONTENT_DIRS } from "./config";
 import { parseMdxFile, toContentEntry } from "./parse";
-import type { ContentEntry, ContentType } from "./types";
+import type {
+  ContentEntry,
+  ContentType,
+  LabContent,
+  ProjectContent,
+  WorkContent,
+  WritingContent,
+} from "./types";
 
 export type ContentWithBody<T extends ContentEntry = ContentEntry> = T & {
   body: string;
+};
+
+type ContentByType = {
+  project: ProjectContent;
+  work: WorkContent;
+  writing: WritingContent;
+  lab: LabContent;
 };
 
 function getMdxFiles(dir: string): string[] {
@@ -23,7 +37,9 @@ function sortByPublishedDateDesc<T extends { publishedAt: string }>(items: T[]):
   });
 }
 
-export function getAllContent(type: ContentType): ContentWithBody[] {
+export function getAllContent<T extends ContentType>(
+  type: T
+): ContentWithBody<ContentByType[T]>[] {
   const dir = CONTENT_DIRS[type];
   const files = getMdxFiles(dir);
 
@@ -41,20 +57,22 @@ export function getAllContent(type: ContentType): ContentWithBody[] {
     return {
       ...entry,
       body: parsed.content,
-    };
+    } as unknown as ContentWithBody<ContentByType[T]>;
   });
 
   return sortByPublishedDateDesc(items);
 }
 
-export function getContentBySlug(
-  type: ContentType,
+export function getContentBySlug<T extends ContentType>(
+  type: T,
   slug: string
-): ContentWithBody | null {
+): ContentWithBody<ContentByType[T]> | null {
   const all = getAllContent(type);
   return all.find((item) => item.slug === slug) ?? null;
 }
 
-export function getFeaturedContent(type: ContentType): ContentWithBody[] {
+export function getFeaturedContent<T extends ContentType>(
+  type: T
+): ContentWithBody<ContentByType[T]>[] {
   return getAllContent(type).filter((item) => item.featured);
 }

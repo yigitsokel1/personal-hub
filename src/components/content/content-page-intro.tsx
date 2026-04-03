@@ -1,3 +1,5 @@
+import { formatContentDate } from "@/lib/format-content-date";
+
 type ContentPageIntroProps = {
   title: string;
   summary: string;
@@ -11,11 +13,13 @@ export function ContentPageIntro({
   publishedAt,
   tags,
 }: ContentPageIntroProps) {
+  const dateLabel = publishedAt ? formatContentDate(publishedAt) : undefined;
+
   return (
     <header className="max-w-3xl">
-      {publishedAt ? (
+      {dateLabel ? (
         <p className="text-sm uppercase tracking-[0.14em] text-black/50">
-          {publishedAt}
+          {dateLabel}
         </p>
       ) : null}
 
