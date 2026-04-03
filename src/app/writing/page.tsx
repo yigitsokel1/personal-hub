@@ -1,3 +1,4 @@
+import { ContentListItem } from "@/components/content/content-list-item";
 import { getAllContent } from "@/lib/content/get-content";
 
 export default function WritingPage() {
@@ -9,11 +10,13 @@ export default function WritingPage() {
 
       <div className="mt-10 space-y-8">
         {writing.map((item) => (
-          <article key={item.id} className="border-b pb-6">
-            <p className="text-sm opacity-60">{item.publishedAt}</p>
-            <h2 className="mt-2 text-2xl font-medium">{item.title}</h2>
-            <p className="mt-2 text-base opacity-80">{item.summary}</p>
-          </article>
+          <ContentListItem
+            key={item.id}
+            href={`/writing/${item.slug}`}
+            publishedAt={item.publishedAt}
+            title={item.title}
+            summary={item.summary}
+          />
         ))}
       </div>
     </main>

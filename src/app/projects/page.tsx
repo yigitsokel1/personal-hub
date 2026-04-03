@@ -1,3 +1,4 @@
+import { ContentListItem } from "@/components/content/content-list-item";
 import { getAllContent } from "@/lib/content/get-content";
 
 export default function ProjectsPage() {
@@ -9,11 +10,13 @@ export default function ProjectsPage() {
 
       <div className="mt-10 space-y-8">
         {projects.map((project) => (
-          <article key={project.id} className="border-b pb-6">
-            <p className="text-sm opacity-60">{project.publishedAt}</p>
-            <h2 className="mt-2 text-2xl font-medium">{project.title}</h2>
-            <p className="mt-2 text-base opacity-80">{project.summary}</p>
-          </article>
+          <ContentListItem
+            key={project.id}
+            href={`/projects/${project.slug}`}
+            publishedAt={project.publishedAt}
+            title={project.title}
+            summary={project.summary}
+          />
         ))}
       </div>
     </main>

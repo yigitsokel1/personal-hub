@@ -1,3 +1,4 @@
+import { ContentListItem } from "@/components/content/content-list-item";
 import { getAllContent } from "@/lib/content/get-content";
 
 export default function LabsPage() {
@@ -9,11 +10,13 @@ export default function LabsPage() {
 
       <div className="mt-10 space-y-8">
         {labs.map((lab) => (
-          <article key={lab.id} className="border-b pb-6">
-            <p className="text-sm opacity-60">{lab.publishedAt}</p>
-            <h2 className="mt-2 text-2xl font-medium">{lab.title}</h2>
-            <p className="mt-2 text-base opacity-80">{lab.summary}</p>
-          </article>
+          <ContentListItem
+            key={lab.id}
+            href={`/labs/${lab.slug}`}
+            publishedAt={lab.publishedAt}
+            title={lab.title}
+            summary={lab.summary}
+          />
         ))}
       </div>
     </main>
