@@ -1,5 +1,5 @@
 /**
- * Detail-page metadata helpers (not a general SEO framework).
+ * Route metadata helpers (detail pages, simple indexes — not a general SEO framework).
  * Site-wide frontmatter and env rules: `metadata-conventions.md` in this folder.
  *
  * Title rules:
@@ -31,6 +31,40 @@ export function getSiteMetadataBase(): URL | undefined {
   } catch {
     return undefined;
   }
+}
+
+export type BuildSimplePageMetadataInput = {
+  pathname: string;
+  /** Becomes `<title>` segment; root layout `title.template` appends the site name. */
+  title: string;
+  description: string;
+};
+
+/**
+ * List/index routes and simple static pages (about, tags index).
+ */
+export function buildSimplePageMetadata(
+  input: BuildSimplePageMetadataInput
+): Metadata {
+  const base = getSiteMetadataBase();
+  const canonical =
+    base != null
+      ? new URL(input.pathname, `${base.origin}/`).toString()
+      : undefined;
+  const ogTitle = `${input.title} | ${homepageCopy.siteName}`;
+
+  return {
+    title: input.title,
+    description: input.description,
+    ...(canonical ? { alternates: { canonical } } : {}),
+    openGraph: {
+      title: ogTitle,
+      description: input.description,
+      url: canonical ?? input.pathname,
+      siteName: homepageCopy.siteName,
+      type: "website",
+    },
+  };
 }
 
 export type BuildContentDetailMetadataInput = {

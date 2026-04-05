@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllTags, getTagDomainsMap, tagPathSegment } from "@/lib/content/tags";
 import type { ContentType } from "@/lib/content/types";
-import { contentSectionLabel } from "@/lib/seo/build-metadata";
+import {
+  buildSimplePageMetadata,
+  contentSectionLabel,
+} from "@/lib/seo/build-metadata";
 
 const DOMAIN_ORDER: ContentType[] = ["writing", "project", "work", "lab"];
 
@@ -13,10 +16,11 @@ function formatDomains(set: Set<ContentType>): string {
     .join(" · ");
 }
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildSimplePageMetadata({
+  pathname: "/tags",
   title: "Tags",
-  description: "Browse content by tag.",
-};
+  description: "Browse content by tag across projects, work, writing, and labs.",
+});
 
 export default function TagsPage() {
   const tags = getAllTags();

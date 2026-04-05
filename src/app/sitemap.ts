@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import { reportContentHealthAtBuild } from "@/lib/content/content-health";
 import { getPublishedContentEntries } from "@/lib/content/get-content";
 import type { ContentType } from "@/lib/content/types";
 import { getAllTags, tagPathSegment } from "@/lib/content/tags";
@@ -22,8 +23,15 @@ function absoluteUrl(pathname: string, origin: string): string {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  reportContentHealthAtBuild();
+
   const base = getSiteMetadataBase();
   const origin = base?.origin ?? "";
+
+  // Path-only URLs are invalid for sitemaps; omit entries until NEXT_PUBLIC_SITE_URL is set.
+  if (!origin) {
+    return [];
+  }
 
   const entries: MetadataRoute.Sitemap = [];
 

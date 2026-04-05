@@ -15,10 +15,24 @@ function rfc822FromIso(isoDate: string): string {
   return new Date(isoDate).toUTCString();
 }
 
+let rssRelativeLinkWarned = false;
+
 export function GET() {
   const base = getSiteMetadataBase();
   const origin = base?.origin.replace(/\/$/, "") ?? "";
   const writing = getPublishedContent("writing");
+
+  if (
+    !origin &&
+    writing.length > 0 &&
+    !rssRelativeLinkWarned &&
+    process.env.NODE_ENV === "development"
+  ) {
+    rssRelativeLinkWarned = true;
+    console.warn(
+      "RSS: NEXT_PUBLIC_SITE_URL is unset; item <link> and <guid> use relative URLs. Set the env var for production feeds."
+    );
+  }
 
   const channelLink = origin ? `${origin}/` : "/";
 

@@ -9,16 +9,21 @@ import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentDate } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
 import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
+import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
 
 const PREVIEW_LIMIT = 3;
+
+const siteBase = getSiteMetadataBase();
+const homeOgUrl = siteBase ? new URL("/", siteBase).toString() : "/";
 
 export const metadata: Metadata = {
   title: { absolute: homepageCopy.siteTitle },
   description: homepageCopy.siteDescription,
+  ...(siteBase ? { alternates: { canonical: homeOgUrl } } : {}),
   openGraph: {
     title: homepageCopy.siteTitle,
     description: homepageCopy.siteDescription,
-    url: "/",
+    url: homeOgUrl,
   },
 };
 

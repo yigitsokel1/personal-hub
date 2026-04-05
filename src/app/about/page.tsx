@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { homepageCopy } from "@/lib/content/homepage-copy";
+import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 import { buildAboutPersonJsonLd } from "@/lib/seo/json-ld";
+
+export const metadata: Metadata = buildSimplePageMetadata({
+  pathname: "/about",
+  title: homepageCopy.aboutPage.title,
+  description: homepageCopy.compactAbout,
+});
 
 export default function AboutPage() {
   const { title, intro, sections } = homepageCopy.aboutPage;

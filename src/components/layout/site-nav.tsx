@@ -33,7 +33,7 @@ export function SiteNav() {
             href={item.href}
             className={`text-sm tracking-tight transition-colors ${
               active
-                ? "font-medium text-foreground"
+                ? "font-medium text-foreground underline decoration-foreground/40 underline-offset-4"
                 : "text-foreground/65 hover:text-foreground"
             }`}
             aria-current={active ? "page" : undefined}

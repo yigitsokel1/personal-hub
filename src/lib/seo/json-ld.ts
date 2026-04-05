@@ -24,6 +24,11 @@ export function buildArticleJsonLd(
       "@type": "Person",
       name: homepageCopy.siteName,
     },
+    publisher: {
+      "@type": "Organization",
+      name: homepageCopy.siteName,
+      url: `${base.origin}/`,
+    },
   };
 }
 

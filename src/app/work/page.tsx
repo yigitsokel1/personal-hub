@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
 import { ContentListItem } from "@/components/content/content-list-item";
+import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { getPublishedContent } from "@/lib/content/get-content";
 import { formatContentDate } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
+import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
+
+export const metadata: Metadata = buildSimplePageMetadata({
+  pathname: "/work",
+  title: "Work",
+  description:
+    "Real-world engagements—freelance, contract, and full-time—with scope, role, and impact.",
+});
 
 export default function WorkPage() {
   const work = getPublishedContent("work");
@@ -11,23 +21,27 @@ export default function WorkPage() {
       <div className="max-w-3xl">
         <h1 className="text-4xl font-semibold tracking-tight">Work</h1>
 
-        <div className="mt-10 space-y-9">
-          {work.map((item) => (
-            <ContentListItem
-              key={item.id}
-              href={`/work/${item.slug}`}
-              publishedAt={formatContentDate(item.publishedAt)}
-              title={item.title}
-              summary={item.summary}
-              tags={item.tags}
-              meta={[
-                item.client,
-                formatEngagementType(item.engagementType),
-                item.role,
-              ]}
-            />
-          ))}
-        </div>
+        {work.length === 0 ? (
+          <DomainIndexEmpty noun="work entries" />
+        ) : (
+          <div className="mt-10 space-y-9">
+            {work.map((item) => (
+              <ContentListItem
+                key={item.id}
+                href={`/work/${item.slug}`}
+                publishedAt={formatContentDate(item.publishedAt)}
+                title={item.title}
+                summary={item.summary}
+                tags={item.tags}
+                meta={[
+                  item.client,
+                  formatEngagementType(item.engagementType),
+                  item.role,
+                ]}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
