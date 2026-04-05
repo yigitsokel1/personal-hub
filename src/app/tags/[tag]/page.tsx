@@ -92,7 +92,7 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
               <p className="text-sm text-black/45">
                 {contentSectionLabel[item.type]}
               </p>
-              <h2 className="mt-1 text-2xl font-medium tracking-tight">
+              <h2 className="mt-1 text-2xl font-semibold leading-snug tracking-tight">
                 <Link
                   href={`${CONTENT_PATH_PREFIX[item.type]}/${item.slug}`}
                   className="hover:text-black/70"
@@ -100,7 +100,7 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
                   {item.title}
                 </Link>
               </h2>
-              <p className="mt-2 text-base leading-relaxed text-black/75">
+              <p className="mt-3 text-base leading-relaxed text-black/75">
                 {item.summary}
               </p>
             </li>

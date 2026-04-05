@@ -12,17 +12,17 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <h3 className="mt-8 text-xl font-semibold tracking-tight" {...props} />
     ),
     p: (props) => (
-      <p className="mt-5 text-base leading-8 text-black/80" {...props} />
+      <p className="mt-5 text-base leading-8 text-foreground/88" {...props} />
     ),
     ul: (props) => (
       <ul
-        className="mt-5 list-disc space-y-2 pl-6 text-black/80 [&_ul]:mt-2 [&_ol]:mt-2"
+        className="mt-5 list-disc space-y-2 pl-6 text-foreground/88 [&_ul]:mt-2 [&_ol]:mt-2"
         {...props}
       />
     ),
     ol: (props) => (
       <ol
-        className="mt-5 list-decimal space-y-2 pl-6 text-black/80 [&_ul]:mt-2 [&_ol]:mt-2"
+        className="mt-5 list-decimal space-y-2 pl-6 text-foreground/88 [&_ul]:mt-2 [&_ol]:mt-2"
         {...props}
       />
     ),

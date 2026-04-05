@@ -9,7 +9,7 @@ export function ContentTagLink({ tag }: ContentTagLinkProps) {
   return (
     <Link
       href={`/tags/${tagPathSegment(tag)}`}
-      className="text-sm text-black/55 underline decoration-transparent underline-offset-4 hover:text-black/75 hover:decoration-black/30"
+      className="text-sm text-black/45 underline decoration-transparent underline-offset-4 hover:text-black/70 hover:decoration-black/25"
     >
       #{tag}
     </Link>

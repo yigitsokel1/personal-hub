@@ -1,20 +1,11 @@
 import Link from "next/link";
 import { homepageCopy } from "@/lib/content/homepage-copy";
-
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
-  { href: "/work", label: "Work" },
-  { href: "/writing", label: "Writing" },
-  { href: "/labs", label: "Labs" },
-  { href: "/tags", label: "Tags" },
-  { href: "/about", label: "About" },
-] as const;
+import { SiteNav } from "@/components/layout/site-nav";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-black/10 text-foreground">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-5">
+    <header className="border-b border-black/[0.08] text-foreground">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-[1.125rem]">
         <Link
           href="/"
           className="shrink-0 text-sm font-medium tracking-tight text-foreground"
@@ -22,17 +13,7 @@ export function SiteHeader() {
           {homepageCopy.siteName}
         </Link>
 
-        <nav className="flex min-w-0 flex-wrap items-center justify-end gap-x-6 gap-y-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-foreground/65 transition-colors hover:text-foreground"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <SiteNav />
       </div>
     </header>
   );

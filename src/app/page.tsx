@@ -141,31 +141,28 @@ export default function HomePage() {
         </HomeSection>
       ) : null}
 
-      <section className="mt-20 max-w-2xl sm:mt-24">
-        <h2 className="text-xl font-semibold tracking-tight">
+      <section className="mt-16 max-w-2xl sm:mt-20">
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           {homepageCopy.sections.about.title}
         </h2>
         <p className="mt-4 text-base leading-relaxed text-black/75">
           {homepageCopy.compactAbout}
         </p>
-        <p className="mt-4">
+        <p className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-2">
           <Link
             href={homepageCopy.sections.about.href}
-            className="text-sm text-black/55 underline decoration-black/20 underline-offset-4 hover:text-black/75 hover:decoration-black/40"
+            className="text-sm text-black/45 underline decoration-black/15 underline-offset-4 hover:text-black/65 hover:decoration-black/30"
           >
             {homepageCopy.sections.about.linkLabel}
           </Link>
+          <Link
+            href={homepageCopy.cta.href}
+            className="text-sm text-black/45 underline decoration-black/15 underline-offset-4 hover:text-black/65 hover:decoration-black/30"
+          >
+            {homepageCopy.cta.label}
+          </Link>
         </p>
       </section>
-
-      <p className="mt-16 text-base">
-        <Link
-          href={homepageCopy.cta.href}
-          className="font-medium text-foreground underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
-        >
-          {homepageCopy.cta.label}
-        </Link>
-      </p>
       </main>
     </>
   );

@@ -19,17 +19,17 @@ export function ContentListItem({
   meta,
 }: ContentListItemProps) {
   return (
-    <article className="border-b border-black/10 pb-8">
+    <article className="border-b border-black/[0.08] pb-7">
       <p className="text-sm text-black/50">{publishedAt}</p>
       {meta?.length ? (
         <p className="mt-1 text-sm text-black/45">{meta.join(" · ")}</p>
       ) : null}
-      <h2 className="mt-2 text-2xl font-medium tracking-tight">
+      <h2 className="mt-2 text-2xl font-semibold leading-snug tracking-tight">
         <Link href={href} className="hover:text-black/70">
           {title}
         </Link>
       </h2>
-      <p className="mt-2 text-base leading-relaxed text-black/75">{summary}</p>
+      <p className="mt-3 text-base leading-relaxed text-black/75">{summary}</p>
       {tags?.length ? (
         <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
           {tags.map((tag) => (

@@ -19,19 +19,17 @@ export function ContentPageIntro({
   return (
     <header className="max-w-3xl">
       {dateLabel ? (
-        <p className="text-sm uppercase tracking-[0.14em] text-black/50">
-          {dateLabel}
-        </p>
+        <p className="text-sm text-black/50">{dateLabel}</p>
       ) : null}
 
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
         {title}
       </h1>
 
-      <p className="mt-5 text-lg leading-8 text-black/75">{summary}</p>
+      <p className="mt-4 text-lg leading-relaxed text-black/75">{summary}</p>
 
       {tags?.length ? (
-        <div className="mt-6 flex flex-wrap gap-x-3 gap-y-1">
+        <div className="mt-5 flex flex-wrap gap-x-3 gap-y-1">
           {tags.map((tag) => (
             <ContentTagLink key={tag} tag={tag} />
           ))}
