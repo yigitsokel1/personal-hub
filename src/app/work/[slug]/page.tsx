@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { WorkDetailIntro } from "@/components/content/work-detail-intro";
-import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
+import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -13,7 +13,7 @@ type WorkDetailPageProps = {
 };
 
 export function generateStaticParams() {
-  return getAllContent("work").map((item) => ({
+  return getPublishedContent("work").map((item) => ({
     slug: item.slug,
   }));
 }

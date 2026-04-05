@@ -4,9 +4,10 @@ import { ContentListItem } from "@/components/content/content-list-item";
 import { HomeHero } from "@/components/home/home-hero";
 import { HomeSection } from "@/components/home/home-section";
 import { homepageCopy } from "@/lib/content/homepage-copy";
-import { getAllContent, getFeaturedContent } from "@/lib/content/get-content";
+import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
 import { formatContentDate } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
+import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
 
 const PREVIEW_LIMIT = 3;
 
@@ -21,17 +22,25 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
+  const webSiteLd = buildWebSiteJsonLd();
   const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);
   const featuredProjects = getFeaturedContent("project").slice(0, PREVIEW_LIMIT);
-  const latestWriting = getAllContent("writing").slice(0, PREVIEW_LIMIT);
+  const latestWriting = getPublishedContent("writing").slice(0, PREVIEW_LIMIT);
   const featuredLabs = getFeaturedContent("lab");
   const labsPreview = (
-    featuredLabs.length > 0 ? featuredLabs : getAllContent("lab")
+    featuredLabs.length > 0 ? featuredLabs : getPublishedContent("lab")
   ).slice(0, PREVIEW_LIMIT);
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-      <HomeHero />
+    <>
+      {webSiteLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteLd) }}
+        />
+      ) : null}
+      <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+        <HomeHero />
 
       {featuredWork.length > 0 ? (
         <HomeSection
@@ -157,6 +166,7 @@ export default function HomePage() {
           {homepageCopy.cta.label}
         </Link>
       </p>
-    </main>
+      </main>
+    </>
   );
 }

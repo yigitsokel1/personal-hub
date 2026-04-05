@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentPageIntro } from "@/components/content/content-page-intro";
-import { getAllContent, getContentBySlug } from "@/lib/content/get-content";
+import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
 } from "@/lib/seo/build-metadata";
+import { buildArticleJsonLd } from "@/lib/seo/json-ld";
 
 type WritingDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return getAllContent("writing").map((item) => ({
+  return getPublishedContent("writing").map((item) => ({
     slug: item.slug,
   }));
 }
@@ -46,16 +47,26 @@ export default async function WritingDetailPage({
     notFound();
   }
 
-  return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-      <ContentPageIntro
-        title={item.title}
-        summary={item.summary}
-        publishedAt={item.publishedAt}
-        tags={item.tags}
-      />
+  const articleLd = buildArticleJsonLd(item);
 
-      <ContentBody body={item.body} />
-    </main>
+  return (
+    <>
+      {articleLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+        />
+      ) : null}
+      <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+        <ContentPageIntro
+          title={item.title}
+          summary={item.summary}
+          publishedAt={item.publishedAt}
+          tags={item.tags}
+        />
+
+        <ContentBody body={item.body} />
+      </main>
+    </>
   );
 }

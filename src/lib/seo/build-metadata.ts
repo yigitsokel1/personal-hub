@@ -1,5 +1,6 @@
 /**
  * Detail-page metadata helpers (not a general SEO framework).
+ * Site-wide frontmatter and env rules: `metadata-conventions.md` in this folder.
  *
  * Title rules:
  * - If `seo.title` is set: use `{ absolute: seo.title }` so the root `title.template` does not apply.

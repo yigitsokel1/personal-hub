@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { CONTENT_DIRS } from "./config";
+import { isPublishedContent } from "./published";
 import { parseMdxFile, toContentEntry } from "./parse";
 import type {
   ContentEntry,
@@ -37,13 +38,14 @@ function sortByPublishedDateDesc<T extends { publishedAt: string }>(items: T[]):
   });
 }
 
-export function getAllContent<T extends ContentType>(
-  type: T
-): ContentWithBody<ContentByType[T]>[] {
+function loadParsedItems<T extends ContentType>(type: T): {
+  entry: ContentByType[T];
+  body: string;
+}[] {
   const dir = CONTENT_DIRS[type];
   const files = getMdxFiles(dir);
 
-  const items = files.map((filePath) => {
+  return files.map((filePath) => {
     const source = fs.readFileSync(filePath, "utf-8");
     const parsed = parseMdxFile(source);
     const entry = toContentEntry(parsed.data);
@@ -54,25 +56,47 @@ export function getAllContent<T extends ContentType>(
       );
     }
 
-    return {
-      ...entry,
-      body: parsed.content,
-    } as unknown as ContentWithBody<ContentByType[T]>;
+    return { entry: entry as ContentByType[T], body: parsed.content };
   });
+}
 
+export function getAllContentEntries<T extends ContentType>(type: T): ContentByType[T][] {
+  const items = loadParsedItems(type).map(({ entry }) => entry);
   return sortByPublishedDateDesc(items);
+}
+
+export function getAllContent<T extends ContentType>(
+  type: T
+): ContentWithBody<ContentByType[T]>[] {
+  const items = loadParsedItems(type).map(({ entry, body }) => ({
+    ...entry,
+    body,
+  })) as ContentWithBody<ContentByType[T]>[];
+  return sortByPublishedDateDesc(items);
+}
+
+export function getPublishedContent<T extends ContentType>(
+  type: T
+): ContentWithBody<ContentByType[T]>[] {
+  return getAllContent(type).filter(isPublishedContent);
+}
+
+export function getPublishedContentEntries<T extends ContentType>(
+  type: T
+): ContentByType[T][] {
+  return getAllContentEntries(type).filter(isPublishedContent);
 }
 
 export function getContentBySlug<T extends ContentType>(
   type: T,
   slug: string
 ): ContentWithBody<ContentByType[T]> | null {
-  const all = getAllContent(type);
-  return all.find((item) => item.slug === slug) ?? null;
+  const published = getPublishedContent(type);
+  return published.find((item) => item.slug === slug) ?? null;
 }
 
 export function getFeaturedContent<T extends ContentType>(
   type: T
 ): ContentWithBody<ContentByType[T]>[] {
-  return getAllContent(type).filter((item) => item.featured);
+  return getPublishedContent(type).filter((item) => item.featured);
 }

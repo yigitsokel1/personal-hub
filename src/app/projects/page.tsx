@@ -1,9 +1,9 @@
 import { ContentListItem } from "@/components/content/content-list-item";
-import { getAllContent } from "@/lib/content/get-content";
+import { getPublishedContent } from "@/lib/content/get-content";
 import { formatContentDate } from "@/lib/format-content-date";
 
 export default function ProjectsPage() {
-  const projects = getAllContent("project");
+  const projects = getPublishedContent("project");
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16 sm:py-20">
