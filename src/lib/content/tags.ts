@@ -3,8 +3,74 @@ import type { ContentType } from "./types";
 
 const ALL_TYPES: ContentType[] = ["project", "work", "writing", "lab"];
 
-function normalizeTag(tag: string): string {
+export function normalizeTag(tag: string): string {
   return tag.trim();
+}
+
+export function tagPathSegment(tag: string): string {
+  return encodeURIComponent(normalizeTag(tag));
+}
+
+/** Decode a dynamic `[tag]` route param and normalize for lookup. */
+export function tagFromPathSegment(segment: string): string {
+  return normalizeTag(decodeURIComponent(segment));
+}
+
+export type TagListedEntry = {
+  id: string;
+  type: ContentType;
+  slug: string;
+  title: string;
+  summary: string;
+  publishedAt: string;
+};
+
+export function getPublishedEntriesByTag(
+  normalizedTag: string
+): TagListedEntry[] {
+  const needle = normalizeTag(normalizedTag);
+  if (!needle) return [];
+
+  const out: TagListedEntry[] = [];
+  for (const type of ALL_TYPES) {
+    for (const entry of getPublishedContentEntries(type)) {
+      const tags = entry.tags ?? [];
+      if (!tags.some((t) => normalizeTag(t) === needle)) continue;
+      out.push({
+        id: entry.id,
+        type,
+        slug: entry.slug,
+        title: entry.title,
+        summary: entry.summary,
+        publishedAt: entry.publishedAt,
+      });
+    }
+  }
+
+  return out.sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
+/** For each tag, which content types use it (for /tags index hints). */
+export function getTagDomainsMap(): Map<string, Set<ContentType>> {
+  const map = new Map<string, Set<ContentType>>();
+  for (const type of ALL_TYPES) {
+    for (const entry of getPublishedContentEntries(type)) {
+      for (const tag of entry.tags ?? []) {
+        const n = normalizeTag(tag);
+        if (!n) continue;
+        let set = map.get(n);
+        if (!set) {
+          set = new Set();
+          map.set(n, set);
+        }
+        set.add(type);
+      }
+    }
+  }
+  return map;
 }
 
 function collectTagsFromEntries(

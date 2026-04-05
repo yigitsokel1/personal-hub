@@ -1,3 +1,4 @@
+import { ContentTagLink } from "@/components/content/content-tag-link";
 import { formatContentDate } from "@/lib/format-content-date";
 
 type ContentPageIntroProps = {
@@ -30,11 +31,9 @@ export function ContentPageIntro({
       <p className="mt-5 text-lg leading-8 text-black/75">{summary}</p>
 
       {tags?.length ? (
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap gap-x-3 gap-y-1">
           {tags.map((tag) => (
-            <span key={tag} className="text-sm text-black/55">
-              #{tag}
-            </span>
+            <ContentTagLink key={tag} tag={tag} />
           ))}
         </div>
       ) : null}

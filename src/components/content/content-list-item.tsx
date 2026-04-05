@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContentTagLink } from "@/components/content/content-tag-link";
 
 type ContentListItemProps = {
   href: string;
@@ -30,7 +31,11 @@ export function ContentListItem({
       </h2>
       <p className="mt-2 text-base leading-relaxed text-black/75">{summary}</p>
       {tags?.length ? (
-        <p className="mt-3 text-sm text-black/45">{tags.join(" · ")}</p>
+        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+          {tags.map((tag) => (
+            <ContentTagLink key={tag} tag={tag} />
+          ))}
+        </div>
       ) : null}
     </article>
   );

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ContentTagLink } from "@/components/content/content-tag-link";
 import type { WorkContent } from "@/lib/content/types";
 import { formatContentDate } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
@@ -55,9 +56,7 @@ export function WorkDetailIntro({
       {tags?.length ? (
         <div className="mt-6 flex flex-wrap gap-x-3 gap-y-1">
           {tags.map((tag) => (
-            <span key={tag} className="text-sm text-black/55">
-              #{tag}
-            </span>
+            <ContentTagLink key={tag} tag={tag} />
           ))}
         </div>
       ) : null}

@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ProjectDetailIntro } from "@/components/content/project-detail-intro";
+import { RelatedContentLinks } from "@/components/content/related-content-links";
+import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
+import { getRelatedInDomain } from "@/lib/content/related";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -46,6 +49,12 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
+  const related = getRelatedInDomain("project", slug, project.tags);
+  const relatedLinks = related.map((r) => ({
+    href: `${CONTENT_PATH_PREFIX.project}/${r.slug}`,
+    title: r.title,
+  }));
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
       <ProjectDetailIntro
@@ -61,6 +70,14 @@ export default async function ProjectDetailPage({
       />
 
       <ContentBody body={project.body} />
+
+      <RelatedContentLinks
+        heading="Related projects"
+        items={relatedLinks}
+        emptyMessage="No other projects share these tags yet."
+        sectionHref="/projects"
+        sectionLinkLabel="Browse all projects"
+      />
     </main>
   );
 }

@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentPageIntro } from "@/components/content/content-page-intro";
+import { RelatedContentLinks } from "@/components/content/related-content-links";
+import { WritingPrevNext } from "@/components/content/writing-prev-next";
+import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
+import { getRelatedInDomain } from "@/lib/content/related";
+import { getWritingNeighbors } from "@/lib/content/writing-neighbors";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -48,6 +53,12 @@ export default async function WritingDetailPage({
   }
 
   const articleLd = buildArticleJsonLd(item);
+  const related = getRelatedInDomain("writing", slug, item.tags);
+  const relatedLinks = related.map((r) => ({
+    href: `${CONTENT_PATH_PREFIX.writing}/${r.slug}`,
+    title: r.title,
+  }));
+  const neighbors = getWritingNeighbors(slug);
 
   return (
     <>
@@ -66,6 +77,16 @@ export default async function WritingDetailPage({
         />
 
         <ContentBody body={item.body} />
+
+        <RelatedContentLinks
+          heading="Related writing"
+          items={relatedLinks}
+          emptyMessage="No other writing shares these tags yet."
+          sectionHref="/writing"
+          sectionLinkLabel="Browse all writing"
+        />
+
+        <WritingPrevNext prev={neighbors.prev} next={neighbors.next} />
       </main>
     </>
   );
