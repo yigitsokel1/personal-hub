@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
+import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { ContentPageIntro } from "@/components/content/content-page-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { WritingPrevNext } from "@/components/content/writing-prev-next";
@@ -68,12 +69,13 @@ export default async function WritingDetailPage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
         />
       ) : null}
-      <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+      <ContentDetailMain>
         <ContentPageIntro
           title={item.title}
           summary={item.summary}
           publishedAt={item.publishedAt}
           tags={item.tags}
+          cover={item.cover}
         />
 
         <ContentBody body={item.body} />
@@ -87,7 +89,7 @@ export default async function WritingDetailPage({
         />
 
         <WritingPrevNext prev={neighbors.prev} next={neighbors.next} />
-      </main>
+      </ContentDetailMain>
     </>
   );
 }

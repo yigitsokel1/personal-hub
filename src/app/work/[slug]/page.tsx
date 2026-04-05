@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
+import { ContentDetailMain } from "@/components/content/content-detail-main";
+import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { WorkDetailIntro } from "@/components/content/work-detail-intro";
+import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
+import { getRelatedInDomain } from "@/lib/content/related";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -44,8 +48,14 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
     notFound();
   }
 
+  const related = getRelatedInDomain("work", slug, item.tags);
+  const relatedLinks = related.map((r) => ({
+    href: `${CONTENT_PATH_PREFIX.work}/${r.slug}`,
+    title: r.title,
+  }));
+
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+    <ContentDetailMain>
       <WorkDetailIntro
         title={item.title}
         summary={item.summary}
@@ -55,9 +65,18 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
         role={item.role}
         client={item.client}
         engagementType={item.engagementType}
+        cover={item.cover}
       />
 
       <ContentBody body={item.body} />
-    </main>
+
+      <RelatedContentLinks
+        heading="Related work"
+        items={relatedLinks}
+        emptyMessage="No other work shares these tags yet."
+        sectionHref="/work"
+        sectionLinkLabel="Browse all work"
+      />
+    </ContentDetailMain>
   );
 }

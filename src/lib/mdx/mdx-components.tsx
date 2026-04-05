@@ -1,4 +1,25 @@
 import type { MDXComponents } from "mdx/types";
+import type { ComponentPropsWithoutRef } from "react";
+import { MdxImage } from "@/components/mdx/mdx-image";
+import { isExternalHttpHref, mdxLinkClassName } from "@/lib/mdx/link-styles";
+
+type AnchorProps = ComponentPropsWithoutRef<"a">;
+
+function MDXAnchor({ href, children, ...rest }: AnchorProps) {
+  const external = isExternalHttpHref(href);
+  return (
+    <a
+      href={href}
+      className={mdxLinkClassName}
+      {...rest}
+      {...(external
+        ? { rel: "noopener noreferrer", target: "_blank" }
+        : {})}
+    >
+      {children}
+    </a>
+  );
+}
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -27,8 +48,33 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       />
     ),
     li: (props) => <li className="leading-8" {...props} />,
-    a: (props) => (
-      <a className="underline underline-offset-4" {...props} />
+    a: (props) => <MDXAnchor {...props} />,
+    strong: (props) => (
+      <strong className="font-semibold text-foreground" {...props} />
+    ),
+    hr: (props) => (
+      <hr className="mt-10 border-0 border-t border-black/10" {...props} />
+    ),
+    img: (props) => <MdxImage {...props} />,
+    table: (props) => (
+      <div className="mt-6 overflow-x-auto">
+        <table
+          className="w-full min-w-[20rem] border-collapse text-left text-sm text-foreground/88"
+          {...props}
+        />
+      </div>
+    ),
+    thead: (props) => <thead {...props} />,
+    tbody: (props) => <tbody {...props} />,
+    tr: (props) => <tr {...props} />,
+    th: (props) => (
+      <th
+        className="border border-black/10 bg-black/3 px-3 py-2 font-semibold"
+        {...props}
+      />
+    ),
+    td: (props) => (
+      <td className="border border-black/10 px-3 py-2 align-top" {...props} />
     ),
     blockquote: (props) => (
       <blockquote

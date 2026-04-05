@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
+import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { ProjectDetailIntro } from "@/components/content/project-detail-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
@@ -56,7 +57,7 @@ export default async function ProjectDetailPage({
   }));
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+    <ContentDetailMain>
       <ProjectDetailIntro
         title={project.title}
         summary={project.summary}
@@ -67,6 +68,7 @@ export default async function ProjectDetailPage({
         stack={project.stack}
         liveUrl={project.liveUrl}
         repoUrl={project.repoUrl}
+        cover={project.cover}
       />
 
       <ContentBody body={project.body} />
@@ -78,6 +80,6 @@ export default async function ProjectDetailPage({
         sectionHref="/projects"
         sectionLinkLabel="Browse all projects"
       />
-    </main>
+    </ContentDetailMain>
   );
 }
