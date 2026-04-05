@@ -21,6 +21,12 @@ Site-level rules for frontmatter, env, and SEO helpers (`build-metadata.ts`, `js
 - **Title:** If `seo.title` is set, detail pages use an **absolute** title (the root layout template does not apply). Otherwise the default segment is `{contentTitle} — {sectionLabel}` plus the site name via the layout template (see `buildContentDetailMetadata`).
 - **Description:** `seo.description` if set, otherwise `summary`.
 
+## Default share image vs `cover`
+
+- **Site default:** At build time, [`src/app/opengraph-image.tsx`](../../app/opengraph-image.tsx) (and matching `twitter-image.tsx`) produce the fallback card for Open Graph and Twitter (`summary_large_image`). Programmatic helpers in [`build-metadata.ts`](./build-metadata.ts) point crawlers at `/opengraph-image` when `NEXT_PUBLIC_SITE_URL` is set, so URLs are absolute in production.
+- **Per entry:** If frontmatter includes `cover.src`, detail routes use that image for OG/Twitter instead of the default. Use a **root-relative** path under `public/` (e.g. `/photos/post.png`) or an absolute `https://` URL if remote patterns are configured in `next.config.ts`.
+- **Dynamic OG generators** (per-request image APIs) are optional and out of scope for v1; the static default plus optional `cover` is the supported strategy.
+
 ## `status`
 
 - Omit or `published`: included in public lists, sitemap, RSS, tag aggregation, and static params.

@@ -21,6 +21,62 @@ export const contentSectionLabel = {
 
 export type ContentSectionKey = keyof typeof contentSectionLabel;
 
+/** App Router file convention; must match `src/app/opengraph-image.tsx` dimensions. */
+const defaultOgImagePath = "/opengraph-image";
+const defaultOgWidth = 1200;
+const defaultOgHeight = 630;
+
+/**
+ * Absolute URL for the default share image when `NEXT_PUBLIC_SITE_URL` is set.
+ * Per-entry `cover` still overrides on detail routes when wired in `buildContentDetailMetadata`.
+ */
+export function getDefaultOgImageAbsolute(
+  base: URL
+): { url: string; width: number; height: number } {
+  return {
+    url: new URL(defaultOgImagePath, `${base.origin}/`).toString(),
+    width: defaultOgWidth,
+    height: defaultOgHeight,
+  };
+}
+
+function shareImagesWithFallback(
+  base: URL | undefined,
+  cover: { src: string; alt?: string } | undefined
+): {
+  openGraph: { url: string; alt?: string; width?: number; height?: number }[];
+  twitter: string[];
+} {
+  if (cover?.src) {
+    return {
+      openGraph: [{ url: cover.src, alt: cover.alt }],
+      twitter: [cover.src],
+    };
+  }
+  if (base) {
+    const d = getDefaultOgImageAbsolute(base);
+    return {
+      openGraph: [{ url: d.url, width: d.width, height: d.height }],
+      twitter: [d.url],
+    };
+  }
+  return { openGraph: [], twitter: [] };
+}
+
+function twitterCardMetadata(input: {
+  title: string;
+  description: string;
+  imageUrls: string[];
+}): Metadata["twitter"] {
+  const base = {
+    card: "summary_large_image" as const,
+    title: input.title,
+    description: input.description,
+  };
+  if (input.imageUrls.length === 0) return base;
+  return { ...base, images: input.imageUrls };
+}
+
 export function getSiteMetadataBase(): URL | undefined {
   // Set in production for correct canonical and Open Graph URLs (e.g. https://example.com).
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -52,6 +108,10 @@ export function buildSimplePageMetadata(
       ? new URL(input.pathname, `${base.origin}/`).toString()
       : undefined;
   const ogTitle = `${input.title} | ${homepageCopy.siteName}`;
+  const { openGraph: ogImages, twitter: twImages } = shareImagesWithFallback(
+    base,
+    undefined
+  );
 
   return {
     title: input.title,
@@ -63,7 +123,13 @@ export function buildSimplePageMetadata(
       url: canonical ?? input.pathname,
       siteName: homepageCopy.siteName,
       type: "website",
+      ...(ogImages.length ? { images: ogImages } : {}),
     },
+    twitter: twitterCardMetadata({
+      title: ogTitle,
+      description: input.description,
+      imageUrls: twImages,
+    }),
   };
 }
 
@@ -99,10 +165,10 @@ export function buildContentDetailMetadata(
   const canonical =
     base != null ? new URL(input.pathname, `${base.origin}/`).toString() : undefined;
 
-  const images: NonNullable<Metadata["openGraph"]>["images"] | undefined =
-    input.cover?.src
-      ? [{ url: input.cover.src, alt: input.cover.alt }]
-      : undefined;
+  const { openGraph: ogImages, twitter: twImages } = shareImagesWithFallback(
+    base,
+    input.cover
+  );
 
   return {
     description,
@@ -113,8 +179,13 @@ export function buildContentDetailMetadata(
       url: canonical,
       siteName: homepageCopy.siteName,
       type: input.openGraphType,
-      ...(images ? { images } : {}),
+      ...(ogImages.length ? { images: ogImages } : {}),
     },
+    twitter: twitterCardMetadata({
+      title: ogTitle,
+      description,
+      imageUrls: twImages,
+    }),
     title,
   };
 }

@@ -74,6 +74,8 @@ export default async function WritingDetailPage({
           title={item.title}
           summary={item.summary}
           publishedAt={item.publishedAt}
+          category={item.category}
+          readingTime={item.readingTime}
           tags={item.tags}
           cover={item.cover}
         />

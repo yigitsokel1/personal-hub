@@ -1,0 +1,17 @@
+{
+  "name": "OYS — Personal Hub",
+  "short_name": "OYS",
+  "description": "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#ffffff",
+  "theme_color": "#171717",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

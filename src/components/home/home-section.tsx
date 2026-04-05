@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
 
 type HomeSectionProps = {
   title: string;
@@ -20,10 +21,7 @@ export function HomeSection({
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           {title}
         </h2>
-        <Link
-          href={viewAllHref}
-          className="shrink-0 text-sm text-black/45 underline decoration-black/15 underline-offset-4 hover:text-black/65 hover:decoration-black/30"
-        >
+        <Link href={viewAllHref} className={`shrink-0 ${shellSecondaryLinkClassName}`}>
           {viewAllLabel}
         </Link>
       </div>

@@ -30,11 +30,17 @@ Smoke locally on `http://localhost:3000` after `npm run start`.
 - **RSS**: Open `/writing/feed.xml`. Item `<link>` and `<guid>` must be absolute `https://` URLs in production. Relative links appear only when the site URL env is missing (feed readers will not resolve them correctly).
 - **Content health**: Run `npm run build` with `CI=true` or `CONTENT_HEALTH_STRICT=1` in CI so duplicate slugs, duplicate ids, bad dates, and tag issues fail the pipeline. Advisory messages (missing site URL, optional `cover` alt reminders) log as warnings and do not fail strict mode.
 
+## Web app surface
+
+- **Favicon / app icon**: [`src/app/icon.svg`](../src/app/icon.svg) is the primary mark; [`src/app/apple-icon.tsx`](../src/app/apple-icon.tsx) serves the touch icon. Confirm `/icon.svg` and `/apple-icon` load after deploy.
+- **Manifest**: [public/manifest.webmanifest](../public/manifest.webmanifest) is linked from the root layout. Keep `name` / `short_name` aligned with [`src/lib/content/homepage-copy.ts`](../src/lib/content/homepage-copy.ts) when you rebrand.
+
 ## Image strategy
 
 - **Local assets**: Place files under `public/` and reference them with a root-relative path (e.g. `/og.png`) in frontmatter `cover` or MDX.
 - **Remote images**: Configure `images.remotePatterns` in [next.config.ts](../next.config.ts) before using `https://` image URLs with `next/image`.
 - **RSS / OG**: Cover images use the `src` string as-is; prefer absolute URLs if feeds or social crawlers must fetch them without a base URL.
+- **Default share image**: The fallback social card is generated at `/opengraph-image` (not a committed PNG). With `NEXT_PUBLIC_SITE_URL` set, metadata and [`build-metadata.ts`](../src/lib/seo/build-metadata.ts) reference it as an absolute URL; entries with `cover` override it on detail pages.
 
 ## Post-deploy verification
 
@@ -48,7 +54,10 @@ Hit these routes on the **production** origin:
 - `/sitemap.xml` — non-empty, absolute URLs
 - `/writing/feed.xml` — channel and items use absolute links
 
-Optional: use your host’s or a social debugger’s “Open Graph” / “link preview” tool on the homepage and a writing article.
+Use your host’s or a social debugger’s “Open Graph” / “link preview” / “Twitter card” tool on:
+
+- `/` — should show the **default** image (`/opengraph-image`).
+- One **writing** URL — default image unless that entry has `cover`, in which case confirm the **cover** image appears.
 
 ## Authoring and accessibility (light)
 

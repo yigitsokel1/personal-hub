@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
+import { domainIndexCopy } from "@/lib/content/domain-index-copy";
 import { getPublishedContent } from "@/lib/content/get-content";
+import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
 import { formatContentDate } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 
@@ -20,13 +22,13 @@ export default function WritingPage() {
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
       <div className="max-w-3xl">
         <h1 className="text-4xl font-semibold tracking-tight">Writing</h1>
-        <p className="mt-3 text-sm text-black/45">
-          Browse by topic across the site —{" "}
-          <Link
-            href="/tags"
-            className="text-foreground/70 underline decoration-black/20 underline-offset-4 transition-colors hover:text-foreground hover:decoration-black/40"
-          >
-            all tags
+        <p className="mt-3 text-base leading-relaxed text-black/70">
+          {domainIndexCopy.writing.lead}
+        </p>
+        <p className="mt-2 text-sm text-black/45">
+          {domainIndexCopy.writing.tagsLinePrefix}{" "}
+          <Link href="/tags" className={shellSecondaryLinkClassName}>
+            {domainIndexCopy.writing.tagsLinkLabel}
           </Link>
           .
         </p>

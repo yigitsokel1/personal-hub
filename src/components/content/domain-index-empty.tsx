@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
 
 type DomainIndexEmptyProps = {
   /** Plural, lowercase, e.g. "projects", "writing pieces". */
@@ -13,10 +14,7 @@ export function DomainIndexEmpty({ noun }: DomainIndexEmptyProps) {
         <code className="text-sm">src/content/</code>.
       </p>
       <p>
-        <Link
-          href="/"
-          className="text-sm underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
-        >
+        <Link href="/" className={shellSecondaryLinkClassName}>
           Back to home
         </Link>
       </p>

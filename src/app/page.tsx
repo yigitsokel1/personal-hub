@@ -8,13 +8,18 @@ import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-conte
 import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentDate } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
+import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
 import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
-import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
+import {
+  getDefaultOgImageAbsolute,
+  getSiteMetadataBase,
+} from "@/lib/seo/build-metadata";
 
 const PREVIEW_LIMIT = 3;
 
 const siteBase = getSiteMetadataBase();
 const homeOgUrl = siteBase ? new URL("/", siteBase).toString() : "/";
+const defaultShare = siteBase ? getDefaultOgImageAbsolute(siteBase) : null;
 
 export const metadata: Metadata = {
   title: { absolute: homepageCopy.siteTitle },
@@ -24,6 +29,23 @@ export const metadata: Metadata = {
     title: homepageCopy.siteTitle,
     description: homepageCopy.siteDescription,
     url: homeOgUrl,
+    ...(defaultShare
+      ? {
+          images: [
+            {
+              url: defaultShare.url,
+              width: defaultShare.width,
+              height: defaultShare.height,
+            },
+          ],
+        }
+      : {}),
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: homepageCopy.siteTitle,
+    description: homepageCopy.siteDescription,
+    ...(defaultShare ? { images: [defaultShare.url] } : {}),
   },
 };
 
@@ -158,14 +180,11 @@ export default function HomePage() {
             <p className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-2">
               <Link
                 href={homepageCopy.sections.about.href}
-                className="text-sm text-black/45 underline decoration-black/15 underline-offset-4 hover:text-black/65 hover:decoration-black/30"
+                className={shellSecondaryLinkClassName}
               >
                 {homepageCopy.sections.about.linkLabel}
               </Link>
-              <Link
-                href={homepageCopy.cta.href}
-                className="text-sm text-black/45 underline decoration-black/15 underline-offset-4 hover:text-black/65 hover:decoration-black/30"
-              >
+              <Link href={homepageCopy.cta.href} className={shellSecondaryLinkClassName}>
                 {homepageCopy.cta.label}
               </Link>
             </p>

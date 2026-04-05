@@ -58,6 +58,8 @@ Optional (all types):
 | `cover` | object | `{ src: string, alt?: string }` for OG / cover when wired. |
 | `seo` | object | `{ title?: string, description?: string }` overrides HTML title and meta description. |
 
+**Share previews:** Without `cover`, list and detail pages use the site default image (`/opengraph-image`, defined in `src/app/opengraph-image.tsx`). With `cover`, that entry’s social cards use `cover.src`. See [`src/lib/seo/metadata-conventions.md`](../src/lib/seo/metadata-conventions.md).
+
 ### `featured`
 
 Set `featured: true` only for entries you want in homepage “selected” blocks. **Recommendation:** at most **1–3** per domain so the homepage stays credible. Omit or `false` for everything else.

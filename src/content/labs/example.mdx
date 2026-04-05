@@ -1,9 +1,9 @@
 ---
 id: lab-mdx-pipeline
 type: lab
-title: "MDX pipeline spike"
+title: "Build-time MDX content pipeline"
 slug: mdx-pipeline-spike
-summary: "Prototype: parse MDX + frontmatter at build time, validate entries, keep body as raw markdown until detail render lands."
+summary: "Parse MDX and frontmatter at build time, validate entries, and ship the body to detail routes—git as source of truth, no CMS in the loop."
 publishedAt: "2026-04-02"
 status: published
 featured: true
@@ -19,7 +19,7 @@ hypothesis: "We can keep content in git, validate at build time, and avoid a CMS
 maturityLevel: poc
 ---
 
-# MDX pipeline spike
+# Build-time MDX content pipeline
 
 **Labs** are for experiments: cheap to try, easy to discard, honest about uncertainty.
 
@@ -37,6 +37,5 @@ maturityLevel: poc
 
 ## Next steps
 
-- Replace this stub with your actual spike notes, links to branches, and **go/no-go** conclusion.
-
-When MDX is wired up, you can add short interactive snippets or shared components here; until then, keep the body as Markdown-only for the simplest ingest path.
+- Capture spike notes, branch or PR links, and a short **go / no-go** conclusion while context is fresh.
+- If the pipeline grows, short interactive snippets or shared MDX components can live here; Markdown-only stays the lowest-friction default.

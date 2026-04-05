@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
+import { domainIndexCopy } from "@/lib/content/domain-index-copy";
 import { getPublishedContent } from "@/lib/content/get-content";
 import { formatContentDate } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
@@ -19,6 +20,9 @@ export default function LabsPage() {
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
       <div className="max-w-3xl">
         <h1 className="text-4xl font-semibold tracking-tight">Labs</h1>
+        <p className="mt-3 text-base leading-relaxed text-black/70">
+          {domainIndexCopy.labs.lead}
+        </p>
 
         {labs.length === 0 ? (
           <DomainIndexEmpty noun="labs" />

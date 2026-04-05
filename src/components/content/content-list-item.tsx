@@ -25,7 +25,10 @@ export function ContentListItem({
         <p className="mt-1 text-sm text-black/45">{meta.join(" · ")}</p>
       ) : null}
       <h2 className="mt-2 text-2xl font-semibold leading-snug tracking-tight">
-        <Link href={href} className="hover:text-black/70">
+        <Link
+          href={href}
+          className="text-foreground underline decoration-black/20 underline-offset-4 transition-colors hover:decoration-black/45"
+        >
           {title}
         </Link>
       </h2>

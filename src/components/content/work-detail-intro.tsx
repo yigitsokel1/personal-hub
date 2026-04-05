@@ -29,15 +29,13 @@ export function WorkDetailIntro({
   cover,
 }: WorkDetailIntroProps) {
   const publishedLabel = formatContentDate(publishedAt);
+  const metaLine = timeline
+    ? `${publishedLabel} · ${timeline}`
+    : publishedLabel;
 
   return (
     <header className="max-w-3xl">
-      {timeline ? (
-        <p className="text-sm text-black/50">{timeline}</p>
-      ) : null}
-      <p className={`text-sm text-black/50 ${timeline ? "mt-1.5" : ""}`}>
-        Published {publishedLabel}
-      </p>
+      <p className="text-sm text-black/50">{metaLine}</p>
 
       {cover?.src ? (
         <ContentCover src={cover.src} alt={cover.alt} className="mt-8" />

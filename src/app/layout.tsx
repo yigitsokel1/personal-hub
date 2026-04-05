@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { homepageCopy } from "@/lib/content/homepage-copy";
@@ -7,8 +7,13 @@ import "./globals.css";
 
 const metadataBase = getSiteMetadataBase();
 
+export const viewport: Viewport = {
+  themeColor: "#171717",
+};
+
 export const metadata: Metadata = {
   ...(metadataBase ? { metadataBase } : {}),
+  manifest: "/manifest.webmanifest",
   title: {
     default: homepageCopy.siteTitle,
     template: `%s | ${homepageCopy.siteName}`,

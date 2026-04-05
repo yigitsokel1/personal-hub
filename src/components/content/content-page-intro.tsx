@@ -7,6 +7,9 @@ type ContentPageIntroProps = {
   title: string;
   summary: string;
   publishedAt?: string;
+  /** Shown with date when set (e.g. writing). */
+  category?: string;
+  readingTime?: number;
   tags?: string[];
   cover?: BaseContent["cover"];
 };
@@ -15,15 +18,22 @@ export function ContentPageIntro({
   title,
   summary,
   publishedAt,
+  category,
+  readingTime,
   tags,
   cover,
 }: ContentPageIntroProps) {
   const dateLabel = publishedAt ? formatContentDate(publishedAt) : undefined;
+  const metaParts: string[] = [];
+  if (dateLabel) metaParts.push(dateLabel);
+  if (category) metaParts.push(category);
+  if (readingTime != null) metaParts.push(`${readingTime} min read`);
+  const metaLine = metaParts.length ? metaParts.join(" · ") : null;
 
   return (
     <header className="max-w-3xl">
-      {dateLabel ? (
-        <p className="text-sm text-black/50">{dateLabel}</p>
+      {metaLine ? (
+        <p className="text-sm text-black/50">{metaLine}</p>
       ) : null}
 
       {cover?.src ? (

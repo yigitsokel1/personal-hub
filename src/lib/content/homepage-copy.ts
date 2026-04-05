@@ -1,11 +1,13 @@
 /**
  * Curated homepage and shell copy. Featured project/work/lab lists are driven by
  * `featured: true` in MDX frontmatter (`getFeaturedContent`).
+ *
+ * Edit `siteName` / `siteTitle` to match your public name or byline (also used in JSON-LD).
  */
 export const homepageCopy = {
-  siteName: "Your Name",
+  siteName: "Osman Yiğit Sökel",
   /** Default `<title>` and primary brand line for metadata (layout + homepage). */
-  siteTitle: "Your Name — Personal Hub",
+  siteTitle: "OYS — Personal Hub",
   /** Root layout / OG description; aligned with the hero subtitle. */
   siteDescription:
     "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
