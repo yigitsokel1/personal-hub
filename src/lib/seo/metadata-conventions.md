@@ -25,3 +25,7 @@ Site-level rules for frontmatter, env, and SEO helpers (`build-metadata.ts`, `js
 
 - Omit or `published`: included in public lists, sitemap, RSS, tag aggregation, and static params.
 - `draft`: excluded from those surfaces; direct URLs should 404 in production builds that only pre-render published slugs.
+
+## Related documentation
+
+- **[Content authoring guide](../../../docs/content-authoring.md)** — domain definitions, required and optional frontmatter per type, slugs, tags, MDX body conventions, and how structured fields relate to the narrative. Tag rules live there; this file stays focused on env, dates, SEO overrides, and publish state.

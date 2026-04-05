@@ -15,10 +15,16 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <p className="mt-5 text-base leading-8 text-black/80" {...props} />
     ),
     ul: (props) => (
-      <ul className="mt-5 list-disc space-y-2 pl-6 text-black/80" {...props} />
+      <ul
+        className="mt-5 list-disc space-y-2 pl-6 text-black/80 [&_ul]:mt-2 [&_ol]:mt-2"
+        {...props}
+      />
     ),
     ol: (props) => (
-      <ol className="mt-5 list-decimal space-y-2 pl-6 text-black/80" {...props} />
+      <ol
+        className="mt-5 list-decimal space-y-2 pl-6 text-black/80 [&_ul]:mt-2 [&_ol]:mt-2"
+        {...props}
+      />
     ),
     li: (props) => <li className="leading-8" {...props} />,
     a: (props) => (
@@ -38,7 +44,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     pre: (props) => (
       <pre
-        className="mt-6 overflow-x-auto rounded-2xl bg-black px-4 py-4 text-white"
+        className="mt-6 overflow-x-auto rounded-2xl bg-black px-4 py-4 text-white [&_code]:rounded-none [&_code]:bg-transparent [&_code]:px-0 [&_code]:py-0 [&_code]:text-[0.875em] [&_code]:text-inherit"
         {...props}
       />
     ),
