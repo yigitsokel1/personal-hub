@@ -16,7 +16,7 @@ export function HomeSection({
   children,
 }: HomeSectionProps) {
   return (
-    <section className="mt-16 sm:mt-20">
+    <section className="mt-14 sm:mt-16 md:mt-20">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           {title}
@@ -25,7 +25,7 @@ export function HomeSection({
           {viewAllLabel}
         </Link>
       </div>
-      <div className="mt-10 space-y-9">{children}</div>
+      <div className="mt-8 space-y-8 sm:mt-10 sm:space-y-9">{children}</div>
     </section>
   );
 }

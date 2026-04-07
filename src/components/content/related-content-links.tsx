@@ -25,7 +25,7 @@ export function RelatedContentLinks({
   sectionLinkLabel,
 }: RelatedContentLinksProps) {
   return (
-    <section className="mt-16 max-w-3xl border-t border-black/10 pt-10">
+    <section className="mt-14 max-w-3xl border-t border-black/10 pt-8 sm:mt-16 sm:pt-10">
       <h2 className="text-sm font-medium uppercase tracking-[0.14em] text-black/50">
         {heading}
       </h2>
@@ -42,12 +42,12 @@ export function RelatedContentLinks({
           </p>
         </div>
       ) : (
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-5 space-y-2 sm:mt-6">
           {items.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`group/rel -mx-1 block rounded-sm px-1 py-1.5 text-lg font-medium tracking-tight transition-[background-color] duration-200 ease-out hover:bg-black/[0.025] focus-visible:bg-black/[0.03] motion-reduce:transition-none ${contentTitleLinkClassName}`}
+                className={`group/rel -mx-1 block rounded-sm px-1 py-1 text-lg font-medium tracking-tight transition-[background-color] duration-200 ease-out hover:bg-black/2.5 focus-visible:bg-black/3 motion-reduce:transition-none sm:py-1.5 ${contentTitleLinkClassName}`}
               >
                 {item.title}
               </Link>

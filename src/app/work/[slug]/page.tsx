@@ -65,6 +65,9 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
         role={item.role}
         client={item.client}
         engagementType={item.engagementType}
+        confidentialityLevel={item.confidentialityLevel}
+        scope={item.scope}
+        impact={item.impact}
         cover={item.cover}
       />
 

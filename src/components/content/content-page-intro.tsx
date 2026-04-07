@@ -28,12 +28,18 @@ export function ContentPageIntro({
   if (dateLabel) metaParts.push(dateLabel);
   if (category) metaParts.push(category);
   if (readingTime != null) metaParts.push(`${readingTime} min read`);
-  const metaLine = metaParts.length ? metaParts.join(" · ") : null;
 
   return (
     <header className="max-w-3xl">
-      {metaLine ? (
-        <p className="text-sm text-black/50">{metaLine}</p>
+      {metaParts.length ? (
+        <p className="flex flex-wrap items-center gap-x-2 text-sm leading-relaxed text-black/50">
+          {metaParts.map((part, index) => (
+            <span key={`${part}-${index}`}>
+              {index > 0 ? <span aria-hidden="true"> · </span> : null}
+              {part}
+            </span>
+          ))}
+        </p>
       ) : null}
 
       {cover?.src ? (
@@ -47,7 +53,7 @@ export function ContentPageIntro({
       <p className="mt-4 text-lg leading-relaxed text-black/75">{summary}</p>
 
       {tags?.length ? (
-        <div className="mt-5 flex flex-wrap gap-x-3 gap-y-1">
+        <div className="mt-5 flex flex-wrap gap-x-3 gap-y-1.5 sm:gap-y-1">
           {tags.map((tag) => (
             <ContentTagLink key={tag} tag={tag} />
           ))}

@@ -21,11 +21,11 @@ export function ContentListItem({
 }: ContentListItemProps) {
   return (
     <article
-      className="group/item border-b border-black/[0.08] pb-7 transition-[border-color,transform] duration-200 ease-out hover:border-black/14 hover:-translate-y-px focus-within:border-black/14 focus-within:-translate-y-px motion-reduce:transform-none motion-reduce:transition-[border-color]"
+      className="group/item border-b border-black/8 pb-7 transition-[border-color,transform] duration-200 ease-out hover:border-black/14 hover:-translate-y-px focus-within:border-black/14 focus-within:-translate-y-px motion-reduce:transform-none motion-reduce:transition-[border-color]"
     >
       <p className="text-sm text-black/50">{publishedAt}</p>
       {meta?.length ? (
-        <p className="mt-1 text-sm text-black/45">{meta.join(" · ")}</p>
+        <p className="mt-1 text-sm leading-relaxed text-black/45">{meta.join(" · ")}</p>
       ) : null}
       <h2 className="mt-2 text-2xl font-semibold leading-snug tracking-tight">
         <Link
@@ -37,7 +37,7 @@ export function ContentListItem({
       </h2>
       <p className="mt-3 text-base leading-relaxed text-black/75">{summary}</p>
       {tags?.length ? (
-        <div className="relative z-[1] mt-3 flex flex-wrap gap-x-3 gap-y-1">
+        <div className="relative z-1 mt-3 flex flex-wrap gap-x-3 gap-y-1.5 sm:gap-y-1">
           {tags.map((tag) => (
             <ContentTagLink key={tag} tag={tag} />
           ))}

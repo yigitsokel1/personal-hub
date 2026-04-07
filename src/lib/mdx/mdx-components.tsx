@@ -84,13 +84,13 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     code: (props) => (
       <code
-        className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-[0.9em]"
+        className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-sm"
         {...props}
       />
     ),
     pre: (props) => (
       <pre
-        className="mt-6 overflow-x-auto rounded-2xl bg-black px-4 py-4 text-white [&_code]:rounded-none [&_code]:bg-transparent [&_code]:px-0 [&_code]:py-0 [&_code]:text-[0.875em] [&_code]:text-inherit"
+        className="mt-6 overflow-x-auto rounded-2xl bg-black px-4 py-4 text-white [&_code]:rounded-none [&_code]:bg-transparent [&_code]:px-0 [&_code]:py-0 [&_code]:text-sm [&_code]:text-inherit"
         {...props}
       />
     ),

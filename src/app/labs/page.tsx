@@ -31,10 +31,11 @@ export default function LabsPage() {
           <div className="mt-10 space-y-9">
             {labs.map((lab) => {
               const meta = [
-                lab.experimentType,
                 lab.maturityLevel
                   ? lab.maturityLevel.toUpperCase()
                   : undefined,
+                lab.experimentType,
+                lab.tools.slice(0, 2).join(", "),
               ].filter((item): item is string => Boolean(item));
               return (
                 <ContentListItem

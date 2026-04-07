@@ -82,6 +82,8 @@ export default async function WritingDetailPage({
 
         <ContentBody body={item.body} />
 
+        <WritingPrevNext prev={neighbors.prev} next={neighbors.next} />
+
         <RelatedContentLinks
           heading="Related writing"
           items={relatedLinks}
@@ -89,8 +91,6 @@ export default async function WritingDetailPage({
           sectionHref="/writing"
           sectionLinkLabel="Browse all writing"
         />
-
-        <WritingPrevNext prev={neighbors.prev} next={neighbors.next} />
       </ContentDetailMain>
     </>
   );

@@ -55,6 +55,9 @@ export default async function ProjectDetailPage({
     href: `${CONTENT_PATH_PREFIX.project}/${r.slug}`,
     title: r.title,
   }));
+  const architectureHighlights = project.architectureHighlights?.filter(Boolean) ?? [];
+  const outcomes = project.outcomes?.filter(Boolean) ?? [];
+  const showHighlights = architectureHighlights.length >= 2 || outcomes.length >= 2;
 
   return (
     <ContentDetailMain>
@@ -70,6 +73,22 @@ export default async function ProjectDetailPage({
         repoUrl={project.repoUrl}
         cover={project.cover}
       />
+
+      {showHighlights ? (
+        <section className="mt-10 max-w-3xl border-l border-black/10 pl-4 sm:mt-12 sm:pl-5">
+          <h2 className="text-sm font-medium uppercase tracking-[0.14em] text-black/50">
+            Architecture highlights
+          </h2>
+          <div className="mt-4 space-y-4 text-base leading-relaxed text-black/75">
+            {architectureHighlights.length ? (
+              <p>{architectureHighlights.slice(0, 3).join(" ")}</p>
+            ) : null}
+            {outcomes.length ? (
+              <p>{outcomes.slice(0, 3).join(" ")}</p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       <ContentBody body={project.body} />
 

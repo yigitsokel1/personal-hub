@@ -31,12 +31,19 @@ export function ProjectDetailIntro({
   cover,
 }: ProjectDetailIntroProps) {
   const publishedLabel = formatContentDate(publishedAt);
+  const metaParts = [publishedLabel, timeline].filter(
+    (part): part is string => Boolean(part),
+  );
 
   return (
     <header className="max-w-3xl">
-      <p className="text-sm text-black/50">
-        {publishedLabel}
-        {timeline ? ` · ${timeline}` : ""}
+      <p className="flex flex-wrap items-center gap-x-2 text-sm leading-relaxed text-black/50">
+        {metaParts.map((part, index) => (
+          <span key={`${part}-${index}`}>
+            {index > 0 ? <span aria-hidden="true"> · </span> : null}
+            {part}
+          </span>
+        ))}
       </p>
 
       {cover?.src ? (
@@ -50,16 +57,18 @@ export function ProjectDetailIntro({
       <p className="mt-4 text-lg leading-relaxed text-black/75">{summary}</p>
 
       {tags?.length ? (
-        <div className="mt-5 flex flex-wrap gap-x-3 gap-y-1">
+        <div className="mt-5 flex flex-wrap gap-x-3 gap-y-1.5 sm:gap-y-1">
           {tags.map((tag) => (
             <ContentTagLink key={tag} tag={tag} />
           ))}
         </div>
       ) : null}
 
-      <dl className="mt-12 space-y-4">
+      <dl className="mt-10 space-y-4 sm:mt-12">
         <IntroDefinitionRow label="Role">{role}</IntroDefinitionRow>
-        <IntroDefinitionRow label="Stack">{stack.join(" · ")}</IntroDefinitionRow>
+        <IntroDefinitionRow label="Stack">
+          <span className="leading-relaxed">{stack.join(" · ")}</span>
+        </IntroDefinitionRow>
         {liveUrl || repoUrl ? (
           <IntroDefinitionRow label="Links">
             <span className="flex flex-wrap gap-x-4 gap-y-2">

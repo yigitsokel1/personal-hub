@@ -23,7 +23,7 @@ export function SiteNav() {
 
   return (
     <nav
-      className="flex min-w-0 flex-wrap items-center justify-end gap-x-6 gap-y-2"
+      className="flex min-w-0 flex-wrap items-center justify-end gap-x-4 gap-y-1.5 sm:gap-x-6 sm:gap-y-2"
       aria-label="Primary"
     >
       {navItems.map((item) => {

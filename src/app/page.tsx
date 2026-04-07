@@ -68,8 +68,8 @@ export default function HomePage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteLd) }}
         />
       ) : null}
-      <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-        <div className="border-b border-black/[0.06] pb-14 sm:pb-20">
+      <main className="mx-auto max-w-5xl px-6 py-16 sm:py-20 lg:py-24">
+        <div className="border-b border-black/6 pb-12 sm:pb-16 lg:pb-20">
           <HomeHero />
         </div>
 
@@ -169,10 +169,11 @@ export default function HomePage() {
                   summary={lab.summary}
                   tags={lab.tags}
                   meta={[
-                    lab.experimentType,
                     lab.maturityLevel
                       ? lab.maturityLevel.toUpperCase()
                       : undefined,
+                    lab.experimentType,
+                    lab.tools?.slice(0, 2).join(", "),
                   ].filter(Boolean) as string[]}
                 />
               ))}
@@ -182,7 +183,7 @@ export default function HomePage() {
 
         {homepageSections.about ? (
           <SectionReveal>
-            <section className="mt-16 max-w-2xl sm:mt-20">
+            <section className="mt-16 max-w-3xl sm:mt-20">
               <h2 className="text-2xl font-semibold tracking-tight text-foreground">
                 {homepageCopy.sections.about.title}
               </h2>

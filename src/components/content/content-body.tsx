@@ -13,7 +13,7 @@ type ContentBodyProps = {
  */
 export function ContentBody({ body }: ContentBodyProps) {
   return (
-    <div className="mt-16 max-w-3xl [&>*:first-child]:mt-0">
+    <div className="mt-14 max-w-3xl [&>*:first-child]:mt-0 sm:mt-16">
       <MDXRemote
         source={body}
         components={useMDXComponents(mdxContentBlocks)}
