@@ -73,6 +73,21 @@ export function getTagDomainsMap(): Map<string, Set<ContentType>> {
   return map;
 }
 
+/** For each tag, count all published entries using it across domains. */
+export function getTagCountsMap(): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const type of ALL_TYPES) {
+    for (const entry of getPublishedContentEntries(type)) {
+      for (const tag of entry.tags ?? []) {
+        const n = normalizeTag(tag);
+        if (!n) continue;
+        map.set(n, (map.get(n) ?? 0) + 1);
+      }
+    }
+  }
+  return map;
+}
+
 function collectTagsFromEntries(
   entries: { tags?: string[] }[]
 ): Set<string> {

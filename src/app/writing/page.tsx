@@ -21,7 +21,7 @@ export const metadata: Metadata = buildSimplePageMetadata({
 export default function WritingPage() {
   const allWriting = getPublishedContent("writing");
   const featuredWriting = getFeaturedContent("writing");
-  const featured = featuredWriting.length > 0 ? featuredWriting.slice(0, 2) : allWriting.slice(0, 2);
+  const featured = featuredWriting.length > 0 ? featuredWriting.slice(0, 1) : allWriting.slice(0, 1);
   const featuredIds = new Set(featured.map((f) => f.id));
   const rest = allWriting.filter((item) => !featuredIds.has(item.id));
 

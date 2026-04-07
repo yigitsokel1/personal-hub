@@ -182,6 +182,17 @@ Many structured fields (`problem`, `solution`, `architectureHighlights`, `scope`
 - **Do not use `#` (h1) in the body.** The page already uses `title` as the document h1. Start at **`##`** for the first section heading to avoid duplicate h1s and a broken outline.
 - Follow the section flow in the templates for each domain (`src/content/templates/`).
 
+### Writing heading tone
+
+For `type: writing`, prefer engineering-oriented section labels:
+
+- `## Context`
+- `## Problem`
+- `## Approach`
+- `## Takeaway`
+
+Avoid editorial heading styles such as `Opening`, `The trap`, or `The alternative`.
+
 ---
 
 ## Tags

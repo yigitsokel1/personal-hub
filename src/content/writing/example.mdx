@@ -13,11 +13,11 @@ tags:
   - product-engineering
 ---
 
-## Opening
+## Context
 
 Most sites start as a **page list**: home, about, blog. That works until you have more than one kind of thing to say.
 
-## The trap
+## Problem
 
 When every idea becomes a new route or a new React component, you get:
 
@@ -25,14 +25,12 @@ When every idea becomes a new route or a new React component, you get:
 - Inconsistent URLs and previews
 - Painful refactors when navigation changes
 
-## The alternative
+## Approach
 
 Model **domains** first—projects, work, writing, labs—each with its own schema and rules. Pages become *views* over that data, not the source of truth.
 
-## What changes in practice
+## Takeaway
 
 You stop asking “which template?” and start asking “which **type** of content, and what fields are required?”
-
-### Takeaway
 
 If your hub should scale for years, invest early in **structure**. Typography and layout can follow; confused data models are expensive to unwind.

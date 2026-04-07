@@ -27,19 +27,19 @@ const PREVIEW_LIMIT = 3;
 const productSignals = [
   {
     label: "content_first_system",
-    detail: "Typed content layer with domain-driven publishing surfaces.",
+    detail: "Typed content layer enforced at build-time via content parsing and schema validation.",
   },
   {
     label: "code_first_delivery",
-    detail: "CMS-free workflow focused on clarity, iteration, and ownership.",
+    detail: "CMS-free workflow with MDX templates and type-safe route generation.",
   },
   {
     label: "engineering_judgment",
-    detail: "Work artifacts include scope, trade-offs, and implementation notes.",
+    detail: "Case studies capture scope, trade-offs, and delivery constraints as first-class metadata.",
   },
   {
     label: "continuous_builder",
-    detail: "Projects, writing, and labs evolve as one coherent product.",
+    detail: "Projects, writing, and labs ship through one shared content pipeline.",
   },
 ] as const;
 
@@ -186,6 +186,7 @@ export default function HomePage() {
               title={homepageCopy.sections.writing.title}
               viewAllHref={homepageCopy.sections.writing.viewAllHref}
               viewAllLabel={homepageCopy.sections.writing.viewAllLabel}
+              density="compact"
             >
               <div className="space-y-0">
                 {latestWriting.map((item) => {
@@ -195,9 +196,9 @@ export default function HomePage() {
                     <Link
                       key={item.id}
                       href={`/writing/${item.slug}`}
-                      className="flex items-center justify-between border-l-2 border-black/10 py-4 pl-4 transition-colors duration-200 hover:border-foreground"
+                      className="flex items-center justify-between border-l-2 border-black/10 py-3 pl-4 transition-colors duration-200 hover:border-foreground"
                     >
-                      <span className="text-lg font-semibold tracking-tight">
+                      <span className="text-base font-semibold tracking-tight sm:text-lg">
                         {item.title}
                       </span>
                       <span className="ml-4 shrink-0 font-mono text-sm text-black/40">
@@ -211,33 +212,8 @@ export default function HomePage() {
           </SectionReveal>
         ) : null}
 
-        {homepageSections.labs ? (
-          <SectionReveal>
-            <section className="mt-14 sm:mt-16 md:mt-20">
-              <p className={sectionLabelClassName}>
-                {TREE_PREFIX} {homepageCopy.sections.labs.title.toUpperCase()}
-              </p>
-              <div className="mt-4 border-l-2 border-foreground pl-6">
-                <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                  Labs &amp; Explorations
-                </h2>
-                <p className="mt-3 max-w-lg text-base leading-relaxed text-black/60">
-                  Testing new ideas, exploring edge cases, and documenting
-                  findings. From proof-of-concepts to production validation.
-                </p>
-                <Link
-                  href={homepageCopy.sections.labs.viewAllHref}
-                  className={`${terminalButtonClassName} mt-6`}
-                >
-                  {ARROW} explore labs
-                </Link>
-              </div>
-            </section>
-          </SectionReveal>
-        ) : null}
-
         <SectionReveal>
-          <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-16 w-screen bg-terminal-bg py-12 text-white sm:mt-20 sm:py-16">
+          <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-14 w-screen bg-terminal-bg py-12 text-white sm:mt-16 sm:py-16">
             <div className="mx-auto max-w-5xl px-6">
               <p className="font-mono text-xs uppercase tracking-[0.15em] text-white/50">
                 {TREE_PREFIX} PRODUCT SIGNALS
@@ -256,9 +232,34 @@ export default function HomePage() {
           </section>
         </SectionReveal>
 
+        {homepageSections.labs ? (
+          <SectionReveal>
+            <section className="mt-12 sm:mt-14 md:mt-16">
+              <p className={sectionLabelClassName}>
+                {TREE_PREFIX} {homepageCopy.sections.labs.title.toUpperCase()}
+              </p>
+              <div className="mt-4 border-l-2 border-foreground pl-6">
+                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Labs &amp; Explorations
+                </h2>
+                <p className="mt-3 max-w-lg text-base leading-relaxed text-black/62">
+                  Fast spikes, sharp notes, and iteration logs. Not polished,
+                  but useful.
+                </p>
+                <Link
+                  href={homepageCopy.sections.labs.viewAllHref}
+                  className={`${terminalButtonClassName} mt-6`}
+                >
+                  {ARROW} explore labs
+                </Link>
+              </div>
+            </section>
+          </SectionReveal>
+        ) : null}
+
         {homepageSections.about ? (
           <SectionReveal>
-            <section className="mt-16 max-w-3xl sm:mt-20">
+            <section className="mt-14 max-w-3xl sm:mt-16">
               <h2 className={sectionLabelClassName}>
                 {TREE_PREFIX}{" "}
                 {homepageCopy.sections.about.title.toUpperCase()}
@@ -277,6 +278,22 @@ export default function HomePage() {
             </section>
           </SectionReveal>
         ) : null}
+
+        <SectionReveal>
+          <section className="mt-12 border-t border-black/8 pt-6 sm:mt-14 sm:pt-8">
+            <p className="font-mono text-sm text-black/50">
+              {TREE_PREFIX} closure
+            </p>
+            <p className="mt-2">
+              <Link
+                href={homepageCopy.cta.href}
+                className={`font-mono text-sm text-black/45 transition-colors duration-200 hover:text-foreground ${linkFocusVisibleClassName}`}
+              >
+                {homepageCopy.cta.label.toLowerCase()} {ARROW}
+              </Link>
+            </p>
+          </section>
+        </SectionReveal>
       </main>
     </>
   );

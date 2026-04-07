@@ -9,6 +9,12 @@ import { formatContentDate } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
+function shortenLabSummary(summary: string): string {
+  const firstSentence = summary.split(".")[0]?.trim() ?? summary.trim();
+  if (firstSentence.length <= 96) return firstSentence;
+  return `${firstSentence.slice(0, 93).trimEnd()}...`;
+}
+
 export const metadata: Metadata = buildSimplePageMetadata({
   pathname: "/labs",
   title: "Labs",
@@ -59,12 +65,12 @@ export default function LabsPage() {
                       featured
                       href={`/labs/${lab.slug}`}
                       title={lab.title}
-                      summary={lab.summary}
+                      summary={shortenLabSummary(lab.summary)}
                       tags={lab.tags}
                       meta={
                         <ContentMeta
                           items={[
-                            { label: statusLabel, type: "text" },
+                            { label: `STATUS ${statusLabel.toUpperCase()}`, type: "text" },
                             { label: dateLabel, type: "text" },
                             { label: lab.experimentType.toUpperCase(), type: "text" },
                           ]}
@@ -96,12 +102,12 @@ export default function LabsPage() {
                       variant="list"
                       href={`/labs/${lab.slug}`}
                       title={lab.title}
-                      summary={lab.summary}
+                      summary={shortenLabSummary(lab.summary)}
                       tags={lab.tags}
                       meta={
                         <ContentMeta
                           items={[
-                            { label: statusLabel, type: "text" },
+                            { label: `STATUS ${statusLabel.toUpperCase()}`, type: "text" },
                             { label: dateLabel, type: "text" },
                             { label: lab.experimentType.toUpperCase(), type: "text" },
                           ]}

@@ -28,13 +28,13 @@ export const domainIndexCopy = {
     tagsLinkLabel: "all tags",
   },
   labs: {
-    sectionLabel: "ACTIVE EXPERIMENTS",
+    sectionLabel: "ITERATION LOG",
     title: "Labs",
     statusLabelActive: "Active",
     statusLabelIdea: "Idea",
     statusLabelPoc: "POC",
     findingsLabel: "Key Findings",
     lead:
-      "Experiments and spikes—tools, hypotheses, maturity, and honest outcomes.",
+      "Short, real iteration logs: what we tried, what failed, what might ship.",
   },
 } as const;

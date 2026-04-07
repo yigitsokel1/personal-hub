@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
-import { getAllTags, getTagDomainsMap, tagPathSegment } from "@/lib/content/tags";
+import {
+  getAllTags,
+  getTagCountsMap,
+  getTagDomainsMap,
+  tagPathSegment,
+} from "@/lib/content/tags";
 import type { ContentType } from "@/lib/content/types";
 import {
   buildSimplePageMetadata,
@@ -28,6 +33,7 @@ export const metadata: Metadata = buildSimplePageMetadata({
 export default function TagsPage() {
   const tags = getAllTags();
   const domains = getTagDomainsMap();
+  const counts = getTagCountsMap();
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
@@ -48,6 +54,7 @@ export default function TagsPage() {
           {tags.map((tag) => {
             const domainSet = domains.get(tag);
             const hint = domainSet ? formatDomains(domainSet) : "";
+            const count = counts.get(tag) ?? 0;
             return (
               <ContentListItem
                 key={tag}
@@ -55,7 +62,11 @@ export default function TagsPage() {
                 href={`/tags/${tagPathSegment(tag)}`}
                 title={`#${tag}`}
                 summary={hint || undefined}
-                meta={<ContentMeta items={[{ label: "Tag", type: "text" }]} />}
+                meta={
+                  <ContentMeta
+                    items={[{ label: `${count} ${count === 1 ? "item" : "items"}`, type: "text" }]}
+                  />
+                }
               />
             );
           })}

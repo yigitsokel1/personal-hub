@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ContentListItem } from "@/components/content/content-list-item";
-import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { domainIndexCopy } from "@/lib/content/domain-index-copy";
@@ -9,6 +8,29 @@ import { formatEngagementType } from "@/lib/format-engagement-type";
 import { formatContentYear } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
+
+function WorkMeta({
+  engagementType,
+  publishedAt,
+  client,
+  role,
+}: {
+  engagementType: "freelance" | "contract" | "full-time";
+  publishedAt: string;
+  client: string;
+  role: string;
+}) {
+  return (
+    <div className="font-mono text-sm leading-relaxed text-black/50">
+      <p>
+        {formatEngagementType(engagementType)} · {formatContentYear(publishedAt)}
+      </p>
+      <p>
+        {client} · {role}
+      </p>
+    </div>
+  );
+}
 
 export const metadata: Metadata = buildSimplePageMetadata({
   pathname: "/work",
@@ -52,12 +74,11 @@ export default function WorkPage() {
                     summary={item.summary}
                     tags={item.tags}
                     meta={
-                      <ContentMeta
-                        items={[
-                          { label: formatEngagementType(item.engagementType), type: "text" },
-                          { label: formatContentYear(item.publishedAt), type: "text" },
-                          { label: [item.client, item.role].filter(Boolean).join(" · "), type: "text" },
-                        ]}
+                      <WorkMeta
+                        engagementType={item.engagementType}
+                        publishedAt={item.publishedAt}
+                        client={item.client}
+                        role={item.role}
                       />
                     }
                   />
@@ -77,12 +98,11 @@ export default function WorkPage() {
                     summary={item.summary}
                     tags={item.tags}
                     meta={
-                      <ContentMeta
-                        items={[
-                          { label: formatEngagementType(item.engagementType), type: "text" },
-                          { label: formatContentYear(item.publishedAt), type: "text" },
-                          { label: [item.client, item.role].filter(Boolean).join(" · "), type: "text" },
-                        ]}
+                      <WorkMeta
+                        engagementType={item.engagementType}
+                        publishedAt={item.publishedAt}
+                        client={item.client}
+                        role={item.role}
                       />
                     }
                   />
