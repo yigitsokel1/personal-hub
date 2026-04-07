@@ -1,6 +1,7 @@
+import { proseLinkClassName } from "@/lib/ui/link-tokens";
+
 /** Shared classes for prose links (MDX + inline content). */
-export const mdxLinkClassName =
-  "underline decoration-black/25 underline-offset-4 hover:decoration-black/50";
+export const mdxLinkClassName = proseLinkClassName;
 
 export function isExternalHttpHref(href: string | undefined): boolean {
   if (!href) return false;

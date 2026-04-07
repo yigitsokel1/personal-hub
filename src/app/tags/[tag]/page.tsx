@@ -13,6 +13,10 @@ import {
   contentSectionLabel,
   getSiteMetadataBase,
 } from "@/lib/seo/build-metadata";
+import {
+  contentInlineLinkClassName,
+  contentTitleLinkClassName,
+} from "@/lib/ui/link-tokens";
 
 type TagDetailPageProps = {
   params: Promise<{ tag: string }>;
@@ -73,10 +77,7 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
       <header className="max-w-3xl">
         <p className="text-sm text-black/50">
-          <Link
-            href="/tags"
-            className="underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
-          >
+          <Link href="/tags" className={contentInlineLinkClassName}>
             Tags
           </Link>
         </p>
@@ -98,10 +99,7 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
             Nothing published uses this tag right now.
           </p>
           <p>
-            <Link
-              href="/tags"
-              className="text-sm underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
-            >
+            <Link href="/tags" className={contentInlineLinkClassName}>
               Back to all tags
             </Link>
           </p>
@@ -116,7 +114,7 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
               <h2 className="mt-1 text-2xl font-semibold leading-snug tracking-tight">
                 <Link
                   href={`${CONTENT_PATH_PREFIX[item.type]}/${item.slug}`}
-                  className="hover:text-black/70"
+                  className={`font-semibold tracking-tight ${contentTitleLinkClassName}`}
                 >
                   {item.title}
                 </Link>

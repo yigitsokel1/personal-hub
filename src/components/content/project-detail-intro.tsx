@@ -3,6 +3,7 @@ import { ContentTagLink } from "@/components/content/content-tag-link";
 import { IntroDefinitionRow } from "@/components/content/intro-definition-row";
 import type { BaseContent } from "@/lib/content/types";
 import { formatContentDate } from "@/lib/format-content-date";
+import { proseLinkClassName } from "@/lib/ui/link-tokens";
 
 type ProjectDetailIntroProps = {
   title: string;
@@ -65,7 +66,7 @@ export function ProjectDetailIntro({
               {liveUrl ? (
                 <a
                   href={liveUrl}
-                  className="underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
+                  className={proseLinkClassName}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -75,7 +76,7 @@ export function ProjectDetailIntro({
               {repoUrl ? (
                 <a
                   href={repoUrl}
-                  className="underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
+                  className={proseLinkClassName}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

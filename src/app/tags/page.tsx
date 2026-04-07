@@ -6,6 +6,7 @@ import {
   buildSimplePageMetadata,
   contentSectionLabel,
 } from "@/lib/seo/build-metadata";
+import { contentTitleLinkClassName } from "@/lib/ui/link-tokens";
 
 const DOMAIN_ORDER: ContentType[] = ["writing", "project", "work", "lab"];
 
@@ -49,7 +50,7 @@ export default function TagsPage() {
               <li key={tag}>
                 <Link
                   href={`/tags/${tagPathSegment(tag)}`}
-                  className="text-xl font-medium tracking-tight text-foreground underline decoration-black/20 underline-offset-4 hover:decoration-black/45"
+                  className={`text-xl font-semibold tracking-tight ${contentTitleLinkClassName}`}
                 >
                   #{tag}
                 </Link>

@@ -1,4 +1,8 @@
 import Link from "next/link";
+import {
+  contentInlineLinkClassName,
+  contentTitleLinkClassName,
+} from "@/lib/ui/link-tokens";
 
 export type RelatedLinkItem = {
   href: string;
@@ -32,21 +36,18 @@ export function RelatedContentLinks({
             {emptyMessage}
           </p>
           <p>
-            <Link
-              href={sectionHref}
-              className="text-sm underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
-            >
+            <Link href={sectionHref} className={contentInlineLinkClassName}>
               {sectionLinkLabel}
             </Link>
           </p>
         </div>
       ) : (
-        <ul className="mt-6 space-y-6">
+        <ul className="mt-6 space-y-2">
           {items.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="text-lg font-medium tracking-tight text-foreground underline decoration-black/20 underline-offset-4 hover:decoration-black/45"
+                className={`group/rel -mx-1 block rounded-sm px-1 py-1.5 text-lg font-medium tracking-tight transition-[background-color] duration-200 ease-out hover:bg-black/[0.025] focus-visible:bg-black/[0.03] motion-reduce:transition-none ${contentTitleLinkClassName}`}
               >
                 {item.title}
               </Link>

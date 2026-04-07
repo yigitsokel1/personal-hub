@@ -13,8 +13,11 @@ export const homepageCopy = {
     "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
   hero: {
     kicker: "Product engineer",
-    title:
-      "I build production-grade systems by combining AI, backend engineering, and product thinking.",
+    /** Intentional line breaks for the hero heading (single column, editorial rhythm). */
+    titleLines: [
+      "I build production-grade systems by combining",
+      "AI, backend engineering, and product thinking.",
+    ],
     subtitle:
       "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
   },

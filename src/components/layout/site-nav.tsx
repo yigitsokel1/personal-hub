@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { siteNavLinkClassName } from "@/lib/ui/link-tokens";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -31,11 +32,7 @@ export function SiteNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`text-sm tracking-tight transition-colors ${
-              active
-                ? "font-medium text-foreground underline decoration-foreground/40 underline-offset-4"
-                : "text-foreground/65 hover:text-foreground"
-            }`}
+            className={siteNavLinkClassName(active)}
             aria-current={active ? "page" : undefined}
           >
             {item.label}

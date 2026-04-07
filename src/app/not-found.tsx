@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
 
 export default function NotFoundPage() {
   return (
@@ -13,7 +14,7 @@ export default function NotFoundPage() {
         </p>
         <Link
           href="/"
-          className="mt-8 inline-block text-sm text-black/45 underline decoration-black/15 underline-offset-4 transition-colors hover:text-black/65 hover:decoration-black/30"
+          className={`mt-8 inline-block ${shellSecondaryLinkClassName}`}
         >
           Return home
         </Link>

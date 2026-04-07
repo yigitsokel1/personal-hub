@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { primaryEmphasisLinkClassName } from "@/lib/ui/link-tokens";
+import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
 
 export default function ErrorPage({
   error,
@@ -29,14 +31,11 @@ export default function ErrorPage({
           <button
             type="button"
             onClick={() => reset()}
-            className="text-sm font-medium text-foreground underline decoration-black/25 underline-offset-4 hover:decoration-black/50"
+            className={`cursor-pointer border-0 bg-transparent p-0 ${primaryEmphasisLinkClassName}`}
           >
             Try again
           </button>
-          <Link
-            href="/"
-            className="text-sm text-black/45 underline decoration-black/15 underline-offset-4 transition-colors hover:text-black/65 hover:decoration-black/30"
-          >
+          <Link href="/" className={shellSecondaryLinkClassName}>
             Return home
           </Link>
         </div>

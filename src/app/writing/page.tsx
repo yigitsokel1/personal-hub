@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
+import { SectionReveal } from "@/components/ui/section-reveal";
 import { domainIndexCopy } from "@/lib/content/domain-index-copy";
 import { getPublishedContent } from "@/lib/content/get-content";
 import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
@@ -20,7 +21,7 @@ export default function WritingPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
-      <div className="max-w-3xl">
+      <SectionReveal className="max-w-3xl">
         <h1 className="text-4xl font-semibold tracking-tight">Writing</h1>
         <p className="mt-3 text-base leading-relaxed text-black/70">
           {domainIndexCopy.writing.lead}
@@ -57,7 +58,7 @@ export default function WritingPage() {
             })}
           </div>
         )}
-      </div>
+      </SectionReveal>
     </main>
   );
 }

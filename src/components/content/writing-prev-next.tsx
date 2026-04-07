@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { contentTitleLinkClassName } from "@/lib/ui/link-tokens";
 import type { WritingNeighbor } from "@/lib/content/writing-neighbors";
 
 type WritingPrevNextProps = {
@@ -17,28 +18,32 @@ export function WritingPrevNext({ prev, next }: WritingPrevNextProps) {
       <div className="grid gap-10 sm:grid-cols-2 sm:gap-8">
         <div>
           {prev ? (
-            <>
-              <p className="text-sm text-black/45">Previous</p>
+            <div className="group/prev -mx-1 rounded-sm px-1 py-1 transition-[background-color] duration-200 ease-out hover:bg-black/[0.025] motion-reduce:transition-none">
+              <p className="text-sm text-black/45 transition-colors duration-200 group-hover/prev:text-black/55">
+                Previous
+              </p>
               <Link
                 href={`/writing/${prev.slug}`}
-                className="mt-1 block text-lg font-medium tracking-tight text-foreground underline decoration-black/20 underline-offset-4 hover:decoration-black/45"
+                className={`mt-1 block text-lg font-medium tracking-tight ${contentTitleLinkClassName}`}
               >
                 {prev.title}
               </Link>
-            </>
+            </div>
           ) : null}
         </div>
-        <div className="sm:text-right">
+        <div className="sm:flex sm:justify-end">
           {next ? (
-            <>
-              <p className="text-sm text-black/45">Next</p>
+            <div className="group/next -mx-1 rounded-sm px-1 py-1 text-left transition-[background-color] duration-200 ease-out hover:bg-black/[0.025] motion-reduce:transition-none sm:text-right">
+              <p className="text-sm text-black/45 transition-colors duration-200 group-hover/next:text-black/55">
+                Next
+              </p>
               <Link
                 href={`/writing/${next.slug}`}
-                className="mt-1 block text-lg font-medium tracking-tight text-foreground underline decoration-black/20 underline-offset-4 hover:decoration-black/45"
+                className={`mt-1 block text-lg font-medium tracking-tight ${contentTitleLinkClassName}`}
               >
                 {next.title}
               </Link>
-            </>
+            </div>
           ) : null}
         </div>
       </div>
