@@ -1,0 +1,42 @@
+---
+id: work-warehouse-sync-cutover
+type: work
+title: "Warehouse sync cutover playbook"
+slug: warehouse-sync-cutover-playbook
+summary: "Planned and executed a staged data-sync cutover from nightly batch to near-real-time updates without report downtime."
+publishedAt: "2026-01-14"
+client: "Anonymized commerce company"
+engagementType: contract
+role: "Data platform engineer"
+timeline: "2025 Q4 - 2026 Q1"
+tags:
+  - migration
+  - data-platform
+  - reliability
+scope:
+  - "Define migration phases for ingestion, transform, and consumption layers"
+  - "Instrument freshness and divergence checks between old and new pipelines"
+  - "Coordinate go/no-go process with analytics and operations"
+responsibilities:
+  - "Built dual-write verification jobs and discrepancy dashboards"
+  - "Created rollback-safe toggles for high-risk sync paths"
+  - "Ran cutover drills with stakeholders before production switch"
+constraints:
+  - "Executive dashboards could not lose historical continuity"
+  - "Legacy jobs had inconsistent completion guarantees"
+impact:
+  - "Data freshness improved from daily to sub-hour for priority domains"
+  - "Cutover completed without business reporting interruption"
+---
+
+## Problem
+
+Batch windows were too slow for operating decisions, but changing the sync model introduced risk across analytics and planning teams.
+
+## Method
+
+We treated cutover as a product rollout: parallel runs, divergence thresholds, and explicit rollback criteria.
+
+## Result
+
+The organization adopted faster metrics without sacrificing trust in data correctness.

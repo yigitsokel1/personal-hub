@@ -1,0 +1,37 @@
+---
+id: lab-edge-cache-invalidation-experiment
+type: lab
+title: "Edge cache invalidation experiment"
+slug: edge-cache-invalidation-experiment
+summary: "Tested tag-based invalidation strategies for content updates to balance freshness and origin load under burst publish scenarios."
+publishedAt: "2026-02-02"
+status: published
+tags:
+  - caching
+  - performance
+  - nextjs
+experimentType: "Caching strategy"
+tools:
+  - Next.js
+  - Vercel
+  - k6
+hypothesis: "Tag-scoped invalidation can keep content fresh with lower cache churn than path-wide revalidation."
+maturityLevel: poc
+learnings:
+  - "Tag granularity matters more than invalidation frequency."
+  - "Publish bursts need backoff to avoid origin spikes."
+nextSteps:
+  - "Prototype adaptive invalidation batching."
+---
+
+## Objective
+
+The goal was to reduce stale content windows without over-invalidation.
+
+## Approach
+
+I compared broad revalidation with targeted tag invalidation across controlled publish bursts.
+
+## Interim conclusion
+
+Targeted invalidation is promising, but batching strategy is required for predictable origin cost.

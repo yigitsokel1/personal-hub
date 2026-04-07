@@ -1,0 +1,44 @@
+---
+id: project-event-pipeline-observability
+type: project
+title: "Event Pipeline Observability Kit"
+slug: event-pipeline-observability
+summary: "Unified traces, lag indicators, and replay tooling for an event-driven backend so incidents are diagnosed in minutes instead of hours."
+publishedAt: "2026-02-11"
+status: published
+featured: true
+tags:
+  - observability
+  - event-driven
+  - reliability
+role: "Product engineer"
+stack:
+  - Node.js
+  - OpenTelemetry
+  - PostgreSQL
+problem: "The team could publish and consume events, but could not quickly answer where messages were dropped, delayed, or duplicated during production incidents."
+solution: "Ship a thin observability layer with standardized event metadata, trace correlation, and replay support so operators can locate and remediate failures without full reprocessing."
+architectureHighlights:
+  - "Trace ids are stamped at producer edge and propagated across consumers."
+  - "Dead-letter queues include normalized failure reasons and retry lineage."
+  - "Replay command supports bounded windows and dry-run mode."
+decisions:
+  - "Avoided a custom dashboard stack; started from shared telemetry primitives."
+  - "Kept replay tooling CLI-first to reduce operational coupling."
+outcomes:
+  - "Median incident triage time dropped from hours to under 20 minutes."
+  - "Support gained auditable replay logs for high-risk workflows."
+timeline: "2025 Q4 - 2026 Q1"
+---
+
+## Context
+
+The platform had grown into asynchronous processing quickly. Delivery speed improved, but observability lagged behind and incident resolution depended on intuition.
+
+## Approach
+
+We standardized event envelope metadata and enforced propagation rules in shared libraries. Each service emitted lag and retry metrics with the same labels so alerts became comparable across domains.
+
+## Outcome
+
+With replay and correlation in place, on-call engineers could answer "what happened?" with evidence, not guesswork.

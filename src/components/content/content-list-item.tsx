@@ -1,37 +1,50 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ContentTagLink } from "@/components/content/content-tag-link";
 import { contentTitleLinkClassName } from "@/lib/ui/link-tokens";
 
 type ContentListItemProps = {
-  href: string;
-  publishedAt: string;
+  variant: "list" | "card";
   title: string;
-  summary: string;
+  href: string;
+  summary?: string;
+  meta: ReactNode;
   tags?: string[];
-  meta?: string[];
+  featured?: boolean;
 };
 
-/**
- * Sprint 16 decision: keep as the shared secondary-list primitive
- * for projects/work/writing index surfaces.
- */
 export function ContentListItem({
-  href,
-  publishedAt,
+  variant,
   title,
+  href,
   summary,
-  tags,
   meta,
+  tags,
+  featured = false,
 }: ContentListItemProps) {
+  const isCard = variant === "card";
+
   return (
     <article
-      className="group/item border-b border-black/8 pb-7 transition-[border-color,transform] duration-200 ease-out hover:border-black/14 hover:-translate-y-px focus-within:border-black/14 focus-within:-translate-y-px motion-reduce:transform-none motion-reduce:transition-[border-color]"
+      className={
+        isCard
+          ? "group/item rounded-lg border border-black/10 p-6 transition-[border-color] duration-200 ease-out hover:border-black/16 focus-within:border-black/16"
+          : "group/item border-b border-black/8 py-6 transition-[border-color] duration-200 ease-out hover:border-black/14 focus-within:border-black/14"
+      }
     >
-      <p className="font-mono text-sm text-black/50">{publishedAt}</p>
-      {meta?.length ? (
-        <p className="mt-1 font-mono text-sm leading-relaxed text-black/45">{meta.join(" · ")}</p>
+      {featured && isCard ? (
+        <p className="font-mono text-xs uppercase tracking-[0.14em] text-black/45">
+          Featured
+        </p>
       ) : null}
-      <h2 className="mt-2 text-2xl font-semibold leading-snug tracking-tight">
+      <div className={featured && isCard ? "mt-2" : undefined}>{meta}</div>
+      <h2
+        className={
+          isCard
+            ? "mt-3 text-2xl font-semibold leading-snug tracking-tight"
+            : "mt-2 text-2xl font-semibold leading-snug tracking-tight"
+        }
+      >
         <Link
           href={href}
           className={`${contentTitleLinkClassName} group-hover/item:decoration-black/50`}
@@ -39,7 +52,7 @@ export function ContentListItem({
           {title}
         </Link>
       </h2>
-      <p className="mt-3 text-base leading-relaxed text-black/75">{summary}</p>
+      {summary ? <p className="mt-3 text-base leading-relaxed text-black/75">{summary}</p> : null}
       {tags?.length ? (
         <div className="relative z-1 mt-3 flex flex-wrap gap-x-3 gap-y-1.5 sm:gap-y-1">
           {tags.map((tag) => (

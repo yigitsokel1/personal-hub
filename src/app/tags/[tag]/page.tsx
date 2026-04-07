@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ContentListItem } from "@/components/content/content-list-item";
+import { ContentMeta } from "@/components/content/content-meta";
+import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import {
@@ -15,7 +18,6 @@ import {
 } from "@/lib/seo/build-metadata";
 import {
   contentInlineLinkClassName,
-  contentTitleLinkClassName,
 } from "@/lib/ui/link-tokens";
 
 type TagDetailPageProps = {
@@ -94,37 +96,24 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
       </header>
 
       {entries.length === 0 ? (
-        <div className="mt-12 max-w-3xl space-y-4 border-t border-black/10 pt-10">
-          <p className="text-base leading-relaxed text-black/65">
-            Nothing published uses this tag right now.
-          </p>
-          <p>
-            <Link href="/tags" className={contentInlineLinkClassName}>
-              Back to all tags
-            </Link>
-          </p>
-        </div>
+        <DomainIndexEmpty noun="tags" href="/tags" />
       ) : (
-        <ul className="mt-12 max-w-3xl space-y-10 border-t border-black/10 pt-10">
+        <div className="mt-12 max-w-3xl border-t border-black/8">
           {entries.map((item) => (
-            <li key={item.id}>
-              <p className="text-sm text-black/45">
-                {contentSectionLabel[item.type]}
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold leading-snug tracking-tight">
-                <Link
-                  href={`${CONTENT_PATH_PREFIX[item.type]}/${item.slug}`}
-                  className={`font-semibold tracking-tight ${contentTitleLinkClassName}`}
-                >
-                  {item.title}
-                </Link>
-              </h2>
-              <p className="mt-3 text-base leading-relaxed text-black/75">
-                {item.summary}
-              </p>
-            </li>
+            <ContentListItem
+              key={item.id}
+              variant="list"
+              href={`${CONTENT_PATH_PREFIX[item.type]}/${item.slug}`}
+              title={item.title}
+              summary={item.summary}
+              meta={
+                <ContentMeta
+                  items={[{ label: contentSectionLabel[item.type], type: "text" }]}
+                />
+              }
+            />
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );

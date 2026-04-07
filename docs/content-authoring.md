@@ -221,3 +221,44 @@ When details cannot be public: anonymize the client string, use **`confidentiali
 ## Related documentation
 
 - [`src/lib/seo/metadata-conventions.md`](../src/lib/seo/metadata-conventions.md) — `NEXT_PUBLIC_SITE_URL`, `updatedAt`, `seo`, `status`
+
+---
+
+## Sprint 17 authoring contract
+
+This section defines the minimum authoring behavior required for the unified content surfaces.
+
+### Required fields (all entries)
+
+- `id`, `type`, `title`, `slug`, `summary`, `publishedAt`
+
+### Optional fields (all entries)
+
+- `featured`, `tags`, `updatedAt`, `cover`, `seo`, `status`
+
+### Domain-specific requirements
+
+- `project`: `role`, `stack`, `problem`, `solution`
+- `work`: `client`, `engagementType`, `role`, `scope`, `responsibilities`
+- `writing`: `excerpt` (optional: `readingTime`, `category`, `series`)
+- `lab`: `experimentType`, `tools` (optional: `maturityLevel`, `hypothesis`, `learnings`, `nextSteps`)
+
+### Summary writing standard
+
+- Keep `summary` to one tight sentence (about 14-26 words).
+- Write for list readability first: concrete outcome, system context, and scope.
+- Avoid hype adjectives and generic claims.
+- `summary` should stand alone in archive cards/lists and remain valid as default meta description.
+
+### Tag limit and format
+
+- Preferred: 3-5 tags.
+- Hard upper bound: 6 tags.
+- Always lowercase; use kebab-case for multi-word tags.
+- Use topical/system tags, not content type labels (`project`, `work`, etc.).
+
+### Featured selection rules
+
+- Featured is used by archive pages and homepage selected blocks.
+- Mark only 1-2 entries as featured per domain for active editorial cycles.
+- Featured entries should represent current best signal for the domain; rotate intentionally, not frequently.

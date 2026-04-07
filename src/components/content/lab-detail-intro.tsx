@@ -1,4 +1,5 @@
 import { ContentCover } from "@/components/content/content-cover";
+import { ContentMeta } from "@/components/content/content-meta";
 import { ContentTagLink } from "@/components/content/content-tag-link";
 import { IntroDefinitionRow } from "@/components/content/intro-definition-row";
 import type { BaseContent } from "@/lib/content/types";
@@ -27,17 +28,18 @@ export function LabDetailIntro({
   tools,
   hypothesis,
 }: LabDetailIntroProps) {
+  const metaParts = [formatContentDate(publishedAt), experimentType.toUpperCase()];
+  if (maturityLevel) metaParts.push(maturityLevel.toUpperCase());
+
   return (
     <header className="max-w-3xl">
-      <p className="font-mono text-sm leading-relaxed text-black/50">
-        {formatContentDate(publishedAt)}
-      </p>
+      <ContentMeta items={metaParts.map((part) => ({ label: part, type: "text" as const }))} />
 
       {cover?.src ? (
         <ContentCover src={cover.src} alt={cover.alt} className="mt-8" />
       ) : null}
 
-      <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+      <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
         {title}
       </h1>
 

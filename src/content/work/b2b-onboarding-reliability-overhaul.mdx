@@ -1,0 +1,44 @@
+---
+id: work-b2b-onboarding-reliability
+type: work
+title: "B2B onboarding reliability overhaul"
+slug: b2b-onboarding-reliability-overhaul
+summary: "Stabilized a multi-step onboarding flow with idempotent APIs, retry-safe workers, and measurable failure budgets."
+publishedAt: "2026-02-26"
+featured: true
+client: "Anonymized SaaS platform"
+engagementType: freelance
+role: "Backend reliability consultant"
+timeline: "2026 Q1"
+confidentialityLevel: limited
+tags:
+  - reliability
+  - onboarding
+  - api-design
+scope:
+  - "Audit onboarding workflow across synchronous and async boundaries"
+  - "Redesign error handling and retry behavior for partner callbacks"
+  - "Define operational metrics and rollback playbooks"
+responsibilities:
+  - "Introduced idempotency key strategy for all write endpoints"
+  - "Built retry classifier to separate transient and terminal failures"
+  - "Partnered with product on user-visible fallback messaging"
+constraints:
+  - "No freeze window; flow had to improve while traffic remained live"
+  - "Partner webhooks were noisy and occasionally duplicated"
+impact:
+  - "Onboarding completion rate increased after reducing false failure states"
+  - "Support ticket volume for stuck onboarding dropped materially"
+---
+
+## Context
+
+The onboarding funnel was business-critical but brittle. A single transient failure could strand users in ambiguous states.
+
+## Execution
+
+We reworked API write paths for idempotency and introduced retry semantics that reflected real-world dependency behavior.
+
+## Outcome
+
+The flow became resilient enough for growth experiments without repeated operational fire drills.

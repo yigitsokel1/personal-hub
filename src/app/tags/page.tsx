@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ContentListItem } from "@/components/content/content-list-item";
+import { ContentMeta } from "@/components/content/content-meta";
+import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { getAllTags, getTagDomainsMap, tagPathSegment } from "@/lib/content/tags";
 import type { ContentType } from "@/lib/content/types";
 import {
   buildSimplePageMetadata,
   contentSectionLabel,
 } from "@/lib/seo/build-metadata";
-import { contentTitleLinkClassName } from "@/lib/ui/link-tokens";
+import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
 const DOMAIN_ORDER: ContentType[] = ["writing", "project", "work", "lab"];
 
@@ -30,37 +32,34 @@ export default function TagsPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
       <header className="max-w-3xl">
-        <h1 className="text-4xl font-semibold tracking-tight">Tags</h1>
-        <p className="mt-4 text-lg leading-relaxed text-black/75">
+        <p className={sectionLabelClassName}>CONTENT TAXONOMY</p>
+        <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          Tags
+        </h1>
+        <p className="mt-4 max-w-3xl text-base leading-relaxed text-black/60">
           Browse by topic across projects, work, writing, and labs.
         </p>
       </header>
 
       {tags.length === 0 ? (
-        <p className="mt-12 max-w-3xl text-base text-black/60">
-          No tags yet. Add a <code className="text-sm">tags</code> list to your
-          content frontmatter.
-        </p>
+        <DomainIndexEmpty noun="tags" href="/tags" />
       ) : (
-        <ul className="mt-12 max-w-3xl space-y-8 border-t border-black/10 pt-10">
+        <div className="mt-12 max-w-3xl border-t border-black/8">
           {tags.map((tag) => {
             const domainSet = domains.get(tag);
             const hint = domainSet ? formatDomains(domainSet) : "";
             return (
-              <li key={tag}>
-                <Link
-                  href={`/tags/${tagPathSegment(tag)}`}
-                  className={`text-xl font-semibold tracking-tight ${contentTitleLinkClassName}`}
-                >
-                  #{tag}
-                </Link>
-                {hint ? (
-                  <p className="mt-1 text-sm text-black/45">{hint}</p>
-                ) : null}
-              </li>
+              <ContentListItem
+                key={tag}
+                variant="list"
+                href={`/tags/${tagPathSegment(tag)}`}
+                title={`#${tag}`}
+                summary={hint || undefined}
+                meta={<ContentMeta items={[{ label: "Tag", type: "text" }]} />}
+              />
             );
           })}
-        </ul>
+        </div>
       )}
     </main>
   );
