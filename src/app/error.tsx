@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { primaryEmphasisLinkClassName } from "@/lib/ui/link-tokens";
-import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
+import {
+  primaryEmphasisLinkClassName,
+  shellSecondaryLinkClassName,
+} from "@/lib/ui/link-tokens";
 
 export default function ErrorPage({
   error,

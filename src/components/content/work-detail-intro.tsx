@@ -41,7 +41,7 @@ export function WorkDetailIntro({
 
   return (
     <header className="max-w-3xl">
-      <p className="flex flex-wrap items-center gap-x-2 text-sm leading-relaxed text-black/50">
+      <p className="flex flex-wrap items-center gap-x-2 font-mono text-sm leading-relaxed text-black/50">
         {metaParts.map((part, index) => (
           <span key={`${part}-${index}`}>
             {index > 0 ? <span aria-hidden="true"> · </span> : null}

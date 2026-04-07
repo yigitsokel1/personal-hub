@@ -11,6 +11,10 @@ type ContentListItemProps = {
   meta?: string[];
 };
 
+/**
+ * Sprint 16 decision: keep as the shared secondary-list primitive
+ * for projects/work/writing index surfaces.
+ */
 export function ContentListItem({
   href,
   publishedAt,
@@ -23,9 +27,9 @@ export function ContentListItem({
     <article
       className="group/item border-b border-black/8 pb-7 transition-[border-color,transform] duration-200 ease-out hover:border-black/14 hover:-translate-y-px focus-within:border-black/14 focus-within:-translate-y-px motion-reduce:transform-none motion-reduce:transition-[border-color]"
     >
-      <p className="text-sm text-black/50">{publishedAt}</p>
+      <p className="font-mono text-sm text-black/50">{publishedAt}</p>
       {meta?.length ? (
-        <p className="mt-1 text-sm leading-relaxed text-black/45">{meta.join(" · ")}</p>
+        <p className="mt-1 font-mono text-sm leading-relaxed text-black/45">{meta.join(" · ")}</p>
       ) : null}
       <h2 className="mt-2 text-2xl font-semibold leading-snug tracking-tight">
         <Link

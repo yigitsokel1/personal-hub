@@ -26,7 +26,7 @@ export function RelatedContentLinks({
 }: RelatedContentLinksProps) {
   return (
     <section className="mt-14 max-w-3xl border-t border-black/10 pt-8 sm:mt-16 sm:pt-10">
-      <h2 className="text-sm font-medium uppercase tracking-[0.14em] text-black/50">
+      <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/50">
         {heading}
       </h2>
 

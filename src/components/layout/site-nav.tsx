@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteNavLinkClassName } from "@/lib/ui/link-tokens";
+import { bracketWrap } from "@/lib/ui/terminal-tokens";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -35,7 +36,7 @@ export function SiteNav() {
             className={siteNavLinkClassName(active)}
             aria-current={active ? "page" : undefined}
           >
-            {item.label}
+            {bracketWrap(item.label)}
           </Link>
         );
       })}

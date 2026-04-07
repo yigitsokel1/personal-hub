@@ -29,7 +29,7 @@ export function LabDetailIntro({
 }: LabDetailIntroProps) {
   return (
     <header className="max-w-3xl">
-      <p className="text-sm leading-relaxed text-black/50">
+      <p className="font-mono text-sm leading-relaxed text-black/50">
         {formatContentDate(publishedAt)}
       </p>
 

@@ -9,9 +9,10 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3 sm:gap-x-6 sm:gap-y-3 sm:py-4">
         <Link
           href="/"
-          className={`shrink-0 rounded-sm text-sm font-medium tracking-tight text-foreground ${linkFocusVisibleClassName}`}
+          aria-label={homepageCopy.siteName}
+          className={`shrink-0 rounded-sm font-mono text-sm tracking-tight text-foreground ${linkFocusVisibleClassName}`}
         >
-          {homepageCopy.siteName}
+          ~/personal-hub
         </Link>
 
         <SiteNav />

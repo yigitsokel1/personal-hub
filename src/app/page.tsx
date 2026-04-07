@@ -1,22 +1,47 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ContentListItem } from "@/components/content/content-list-item";
 import { HomeHero } from "@/components/home/home-hero";
 import { HomeSection } from "@/components/home/home-section";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
 import { homepageSections } from "@/lib/content/homepage-sections";
-import { formatContentDate } from "@/lib/format-content-date";
+import { formatContentYearMonth } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
-import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
+import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
 import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
 import {
   getDefaultOgImageAbsolute,
   getSiteMetadataBase,
 } from "@/lib/seo/build-metadata";
+import {
+  TREE_PREFIX,
+  ARROW,
+  sectionLabelClassName,
+  terminalButtonClassName,
+  cardIndex,
+} from "@/lib/ui/terminal-tokens";
 
 const PREVIEW_LIMIT = 3;
+
+const productSignals = [
+  {
+    label: "content_first_system",
+    detail: "Typed content layer with domain-driven publishing surfaces.",
+  },
+  {
+    label: "code_first_delivery",
+    detail: "CMS-free workflow focused on clarity, iteration, and ownership.",
+  },
+  {
+    label: "engineering_judgment",
+    detail: "Work artifacts include scope, trade-offs, and implementation notes.",
+  },
+  {
+    label: "continuous_builder",
+    detail: "Projects, writing, and labs evolve as one coherent product.",
+  },
+] as const;
 
 const siteBase = getSiteMetadataBase();
 const homeOgUrl = siteBase ? new URL("/", siteBase).toString() : "/";
@@ -55,10 +80,6 @@ export default function HomePage() {
   const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);
   const featuredProjects = getFeaturedContent("project").slice(0, PREVIEW_LIMIT);
   const latestWriting = getPublishedContent("writing").slice(0, PREVIEW_LIMIT);
-  const featuredLabs = getFeaturedContent("lab");
-  const labsPreview = (
-    featuredLabs.length > 0 ? featuredLabs : getPublishedContent("lab")
-  ).slice(0, PREVIEW_LIMIT);
 
   return (
     <>
@@ -80,21 +101,38 @@ export default function HomePage() {
               viewAllHref={homepageCopy.sections.featuredWork.viewAllHref}
               viewAllLabel={homepageCopy.sections.featuredWork.viewAllLabel}
             >
-              {featuredWork.map((item) => (
-                <ContentListItem
-                  key={item.id}
-                  href={`/work/${item.slug}`}
-                  publishedAt={formatContentDate(item.publishedAt)}
-                  title={item.title}
-                  summary={item.summary}
-                  tags={item.tags}
-                  meta={[
-                    item.client,
-                    formatEngagementType(item.engagementType),
-                    item.role,
-                  ]}
-                />
-              ))}
+              <div className="grid gap-4 sm:grid-cols-3">
+                {featuredWork.map((item, i) => (
+                  <Link
+                    key={item.id}
+                    href={`/work/${item.slug}`}
+                    className="group rounded-lg border border-black/10 p-5 transition-colors duration-200 hover:border-black/20"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-sm text-black/35">
+                        {cardIndex(i + 1)}
+                      </span>
+                      <span className="font-mono text-sm text-black/35 transition-transform duration-200 group-hover:translate-x-0.5">
+                        {ARROW}
+                      </span>
+                    </div>
+                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                      {item.title}
+                    </h3>
+                    <p className="mt-1.5 font-mono text-sm text-black/50">
+                      {[
+                        item.client,
+                        formatEngagementType(item.engagementType),
+                      ]
+                        .filter(Boolean)
+                        .join(" \u00b7 ")}
+                    </p>
+                    <p className="mt-1 font-mono text-sm text-black/40">
+                      {item.role}
+                    </p>
+                  </Link>
+                ))}
+              </div>
             </HomeSection>
           </SectionReveal>
         ) : null}
@@ -106,20 +144,38 @@ export default function HomePage() {
               viewAllHref={homepageCopy.sections.featuredProjects.viewAllHref}
               viewAllLabel={homepageCopy.sections.featuredProjects.viewAllLabel}
             >
-              {featuredProjects.map((project) => (
-                <ContentListItem
-                  key={project.id}
-                  href={`/projects/${project.slug}`}
-                  publishedAt={formatContentDate(project.publishedAt)}
-                  title={project.title}
-                  summary={project.summary}
-                  tags={project.tags}
-                  meta={[
-                    project.role,
-                    project.stack.slice(0, 3).join(", "),
-                  ].filter(Boolean)}
-                />
-              ))}
+              <div className="grid gap-4 sm:grid-cols-3">
+                {featuredProjects.map((project, i) => (
+                  <Link
+                    key={project.id}
+                    href={`/projects/${project.slug}`}
+                    className="group rounded-lg border border-black/10 p-5 transition-colors duration-200 hover:border-black/20"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-sm text-black/35">
+                        {cardIndex(i + 1)}
+                      </span>
+                      <span className="font-mono text-sm text-black/35 transition-transform duration-200 group-hover:translate-x-0.5">
+                        {ARROW}
+                      </span>
+                    </div>
+                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                      {project.title}
+                    </h3>
+                    <p className="mt-1.5 font-mono text-sm text-black/50">
+                      {(project.tags ?? []).slice(0, 2).join(" \u00b7 ")}
+                    </p>
+                    <p className="mt-1 font-mono text-sm text-black/40">
+                      {[
+                        project.role,
+                        project.stack.slice(0, 2).join(", "),
+                      ]
+                        .filter(Boolean)
+                        .join(" \u00b7 ")}
+                    </p>
+                  </Link>
+                ))}
+              </div>
             </HomeSection>
           </SectionReveal>
         ) : null}
@@ -131,61 +187,81 @@ export default function HomePage() {
               viewAllHref={homepageCopy.sections.writing.viewAllHref}
               viewAllLabel={homepageCopy.sections.writing.viewAllLabel}
             >
-              {latestWriting.map((item) => {
-                const meta: string[] = [];
-                if (item.category) meta.push(item.category);
-                if (item.readingTime != null)
-                  meta.push(`${item.readingTime} min read`);
+              <div className="space-y-0">
+                {latestWriting.map((item) => {
+                  const monoDate = formatContentYearMonth(item.publishedAt);
 
-                return (
-                  <ContentListItem
-                    key={item.id}
-                    href={`/writing/${item.slug}`}
-                    publishedAt={formatContentDate(item.publishedAt)}
-                    title={item.title}
-                    summary={item.summary}
-                    tags={item.tags}
-                    meta={meta.length ? meta : undefined}
-                  />
-                );
-              })}
+                  return (
+                    <Link
+                      key={item.id}
+                      href={`/writing/${item.slug}`}
+                      className="flex items-center justify-between border-l-2 border-black/10 py-4 pl-4 transition-colors duration-200 hover:border-foreground"
+                    >
+                      <span className="text-lg font-semibold tracking-tight">
+                        {item.title}
+                      </span>
+                      <span className="ml-4 shrink-0 font-mono text-sm text-black/40">
+                        {monoDate}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
             </HomeSection>
           </SectionReveal>
         ) : null}
 
-        {homepageSections.labs && labsPreview.length > 0 ? (
+        {homepageSections.labs ? (
           <SectionReveal>
-            <HomeSection
-              title={homepageCopy.sections.labs.title}
-              viewAllHref={homepageCopy.sections.labs.viewAllHref}
-              viewAllLabel={homepageCopy.sections.labs.viewAllLabel}
-            >
-              {labsPreview.map((lab) => (
-                <ContentListItem
-                  key={lab.id}
-                  href={`/labs/${lab.slug}`}
-                  publishedAt={formatContentDate(lab.publishedAt)}
-                  title={lab.title}
-                  summary={lab.summary}
-                  tags={lab.tags}
-                  meta={[
-                    lab.maturityLevel
-                      ? lab.maturityLevel.toUpperCase()
-                      : undefined,
-                    lab.experimentType,
-                    lab.tools?.slice(0, 2).join(", "),
-                  ].filter(Boolean) as string[]}
-                />
-              ))}
-            </HomeSection>
+            <section className="mt-14 sm:mt-16 md:mt-20">
+              <p className={sectionLabelClassName}>
+                {TREE_PREFIX} {homepageCopy.sections.labs.title.toUpperCase()}
+              </p>
+              <div className="mt-4 border-l-2 border-foreground pl-6">
+                <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Labs &amp; Explorations
+                </h2>
+                <p className="mt-3 max-w-lg text-base leading-relaxed text-black/60">
+                  Testing new ideas, exploring edge cases, and documenting
+                  findings. From proof-of-concepts to production validation.
+                </p>
+                <Link
+                  href={homepageCopy.sections.labs.viewAllHref}
+                  className={`${terminalButtonClassName} mt-6`}
+                >
+                  {ARROW} explore labs
+                </Link>
+              </div>
+            </section>
           </SectionReveal>
         ) : null}
+
+        <SectionReveal>
+          <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-16 w-screen bg-terminal-bg py-12 text-white sm:mt-20 sm:py-16">
+            <div className="mx-auto max-w-5xl px-6">
+              <p className="font-mono text-xs uppercase tracking-[0.15em] text-white/50">
+                {TREE_PREFIX} PRODUCT SIGNALS
+              </p>
+              <div className="mt-8 grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-6">
+                {productSignals.map((signal) => (
+                  <div key={signal.label}>
+                    <p className="font-mono text-sm text-white/65">{signal.label}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-white/70">
+                      {signal.detail}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </SectionReveal>
 
         {homepageSections.about ? (
           <SectionReveal>
             <section className="mt-16 max-w-3xl sm:mt-20">
-              <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                {homepageCopy.sections.about.title}
+              <h2 className={sectionLabelClassName}>
+                {TREE_PREFIX}{" "}
+                {homepageCopy.sections.about.title.toUpperCase()}
               </h2>
               <p className="mt-4 text-base leading-relaxed text-black/75">
                 {homepageCopy.compactAbout}
@@ -193,9 +269,9 @@ export default function HomePage() {
               <p className="mt-5">
                 <Link
                   href={homepageCopy.sections.about.href}
-                  className={shellSecondaryLinkClassName}
+                  className={`font-mono text-sm text-black/45 transition-colors duration-200 hover:text-foreground ${linkFocusVisibleClassName}`}
                 >
-                  {homepageCopy.sections.about.linkLabel}
+                  {homepageCopy.sections.about.linkLabel.toLowerCase()} {ARROW}
                 </Link>
               </p>
             </section>

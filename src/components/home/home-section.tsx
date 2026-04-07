@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
+import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
+import {
+  TREE_PREFIX,
+  ARROW,
+  sectionLabelClassName,
+} from "@/lib/ui/terminal-tokens";
 
 type HomeSectionProps = {
   title: string;
@@ -18,11 +23,14 @@ export function HomeSection({
   return (
     <section className="mt-14 sm:mt-16 md:mt-20">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-          {title}
+        <h2 className={sectionLabelClassName}>
+          {TREE_PREFIX} {title.toUpperCase()}
         </h2>
-        <Link href={viewAllHref} className={`shrink-0 ${shellSecondaryLinkClassName}`}>
-          {viewAllLabel}
+        <Link
+          href={viewAllHref}
+          className={`shrink-0 font-mono text-sm text-black/45 transition-colors duration-200 hover:text-foreground ${linkFocusVisibleClassName}`}
+        >
+          {viewAllLabel.toLowerCase()} {ARROW}
         </Link>
       </div>
       <div className="mt-8 space-y-8 sm:mt-10 sm:space-y-9">{children}</div>

@@ -65,23 +65,18 @@ export const tagLinkClassName = [
 ].join(" ");
 
 const navBase = [
-  "text-sm tracking-tight underline underline-offset-4",
-  linkTransitionClassName,
+  "font-mono text-sm tracking-tight",
+  "transition-colors duration-200 ease-out",
   linkFocusVisibleClassName,
 ].join(" ");
 
 export function siteNavLinkClassName(active: boolean): string {
   if (active) {
-    return [
-      navBase,
-      "font-medium text-foreground decoration-foreground/40",
-      "focus-visible:decoration-foreground/70",
-    ].join(" ");
+    return [navBase, "text-foreground"].join(" ");
   }
   return [
     navBase,
-    "text-foreground/65 decoration-transparent",
-    "hover:text-foreground hover:decoration-black/35",
-    "focus-visible:text-foreground focus-visible:decoration-black/40",
+    "text-foreground/50",
+    "hover:text-foreground",
   ].join(" ");
 }

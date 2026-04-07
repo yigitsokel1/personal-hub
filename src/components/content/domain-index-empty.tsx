@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { shellSecondaryLinkClassName } from "@/lib/ui/shell-link";
+import { shellSecondaryLinkClassName } from "@/lib/ui/link-tokens";
 
 type DomainIndexEmptyProps = {
   /** Plural, lowercase, e.g. "projects", "writing pieces". */

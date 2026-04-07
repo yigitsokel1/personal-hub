@@ -19,7 +19,7 @@ export function WritingPrevNext({ prev, next }: WritingPrevNextProps) {
         <div>
           {prev ? (
             <div className="group/prev -mx-1 rounded-sm px-1 py-1 transition-[background-color] duration-200 ease-out hover:bg-black/2.5 motion-reduce:transition-none sm:py-1.5">
-              <p className="text-sm text-black/45 transition-colors duration-200 group-hover/prev:text-black/55">
+              <p className="font-mono text-sm text-black/45 transition-colors duration-200 group-hover/prev:text-black/55">
                 Previous
               </p>
               <Link
@@ -34,7 +34,7 @@ export function WritingPrevNext({ prev, next }: WritingPrevNextProps) {
         <div className="sm:flex sm:justify-end">
           {next ? (
             <div className="group/next -mx-1 rounded-sm px-1 py-1 text-left transition-[background-color] duration-200 ease-out hover:bg-black/2.5 motion-reduce:transition-none sm:py-1.5 sm:text-right">
-              <p className="text-sm text-black/45 transition-colors duration-200 group-hover/next:text-black/55">
+              <p className="font-mono text-sm text-black/45 transition-colors duration-200 group-hover/next:text-black/55">
                 Next
               </p>
               <Link

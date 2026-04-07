@@ -7,7 +7,7 @@ Use this before and after shipping the Personal Hub to production (Vercel or any
 | Variable | Required in production | Purpose |
 |----------|------------------------|---------|
 | `NEXT_PUBLIC_SITE_URL` | **Yes** | Public site origin with **no** trailing slash (e.g. `https://example.com`). Drives `metadataBase`, canonical and Open Graph URLs, JSON-LD `url` fields, absolute RSS item links, and valid sitemap URLs. |
-| `CONTENT_HEALTH_STRICT` | No | Set to `1` to **fail the build** on blocking content issues (duplicate slug/id, invalid or future `publishedAt`, tag collisions). Also enforced when `CI=true`. Does not fail on missing `NEXT_PUBLIC_SITE_URL` (that remains an advisory warning). |
+| `CONTENT_HEALTH_STRICT` | No | Set to `1` to **fail the build** on blocking content issues (duplicate slug/id, invalid or materially future `publishedAt`, tag collisions). Also enforced when `CI=true`. Does not fail on missing `NEXT_PUBLIC_SITE_URL` (that remains an advisory warning). |
 
 See [.env.example](../.env.example) for a template.
 
