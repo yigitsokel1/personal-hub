@@ -43,6 +43,7 @@ npm run dev
 3. You will be redirected to `/admin/settings`.
 4. Writing CMS operations live under `/admin/writing` (create/edit/delete).
 5. Projects CMS operations live under `/admin/projects` (create/edit/delete).
+6. Work CMS operations live under `/admin/work` (create/edit/delete).
 
 ## Local dev workflow
 
@@ -56,8 +57,11 @@ npm run dev
    - `/admin/writing/new`
    - `/admin/projects`
    - `/admin/projects/new`
+   - `/admin/work`
+   - `/admin/work/new`
    - `/writing`
    - `/projects`
+   - `/work`
 
 ## Migration notes
 
@@ -73,3 +77,13 @@ npm run migrate:projects-db
 ```
 
 This script reads from `src/content/projects/` and `src/content/_legacy/projects/`, validates required fields, and upserts by `slug`.
+
+## Work migration helper
+
+After applying migrations, import work MDX into DB with:
+
+```bash
+npm run migrate:work-db
+```
+
+This script reads from `src/content/work/`, validates required fields, and upserts by `slug`.

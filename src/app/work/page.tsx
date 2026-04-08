@@ -3,7 +3,7 @@ import { ContentListItem } from "@/components/content/content-list-item";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { domainIndexCopy } from "@/lib/content/domain-index-copy";
-import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
+import { getPublishedWork } from "@/lib/content-source/get-work";
 import { formatEngagementType } from "@/lib/format-engagement-type";
 import { formatContentYear } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
@@ -39,9 +39,9 @@ export const metadata: Metadata = buildSimplePageMetadata({
     "Real-world engagements—freelance, contract, and full-time—with scope, role, and impact.",
 });
 
-export default function WorkPage() {
-  const work = getPublishedContent("work");
-  const featuredWork = getFeaturedContent("work");
+export default async function WorkPage() {
+  const { value: work } = await getPublishedWork();
+  const featuredWork = work.filter((item) => item.featured);
   const featured = featuredWork.length > 0 ? featuredWork.slice(0, 2) : work.slice(0, 2);
   const featuredIds = new Set(featured.map((item) => item.id));
   const rest = work.filter((item) => !featuredIds.has(item.id));

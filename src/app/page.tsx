@@ -6,8 +6,8 @@ import { SectionReveal } from "@/components/ui/section-reveal";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import { getPublishedProjects } from "@/lib/content-source/get-projects";
 import { getSiteSettings } from "@/lib/content-source/get-site-settings";
+import { getPublishedWork } from "@/lib/content-source/get-work";
 import { getPublishedWriting } from "@/lib/content-source/get-writing";
-import { getFeaturedContent } from "@/lib/content/get-content";
 import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentYearMonth } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
@@ -62,7 +62,8 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const webSiteLd = buildWebSiteJsonLd();
   const { value: settings } = await getSiteSettings();
-  const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);
+  const { value: allWork } = await getPublishedWork();
+  const featuredWork = allWork.filter((item) => item.featured).slice(0, PREVIEW_LIMIT);
   const { value: allProjects } = await getPublishedProjects();
   const featuredProjects = allProjects.filter((item) => item.featured).slice(0, PREVIEW_LIMIT);
   const { value: writing } = await getPublishedWriting();

@@ -1,10 +1,12 @@
 # Tech Debt / Follow-up Notes
 
-## Sprint 23 migration status
+## Sprint 24 migration status
 
 - Projects runtime source is now DB/admin-managed.
 - Legacy project MDX files are archived under `src/content/_legacy/projects/`.
-- Work and labs remain MDX-managed.
+- Work runtime source is now DB/admin-managed.
+- Legacy work MDX files are archived under `src/content/_legacy/work/`.
+- Labs remain MDX-managed.
 - Remaining operational cleanup: resolve Prisma migration drift in local/dev databases before running `npm run migrate:projects-db`.
 
 ---

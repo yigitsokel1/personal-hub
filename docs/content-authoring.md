@@ -37,13 +37,32 @@ Legacy note:
 - `src/content/_legacy/projects/` is archival only and not a runtime source.
 - `src/content/templates/project-template.mdx` is historical reference only.
 
+### Work (source of truth: database/admin)
+
+- Creation/edit path: `/admin/work`.
+- Public runtime source is DB-only (`getPublishedWork`, `getWorkBySlug`).
+- Required fields: `title`, `slug`, `summary`, `body`, `client`, `engagementType`, `role`.
+- Structured fields:
+  - `scope` (required, non-empty)
+  - `responsibilities` (required, non-empty)
+  - `constraints`, `impact` (line-based arrays in admin UI)
+- Optional fields: `tags`, `featured`, `published`, `publishedAt`, `timeline`, `confidentialityLevel`.
+- Rules:
+  - `tags` max **3**
+  - `featured` max **2** active work items
+  - if `published = true`, `publishedAt` is required
+  - `engagementType` must be one of: `freelance | contract | full-time`
+  - `confidentialityLevel` must be one of: `public | limited` when provided
+
+Legacy note:
+- `src/content/_legacy/work/` is archival only and not a runtime source.
+- `src/content/templates/work-template.mdx` is historical reference only.
+
 ## MDX-Managed Domains
 
-### Work / Labs (source of truth: MDX)
+### Labs (source of truth: MDX)
 
-- Files live in:
-  - `src/content/work/`
-  - `src/content/labs/`
+- Files live in `src/content/labs/`.
 - Authoring templates live in `src/content/templates/`.
 - Required base fields per MDX entry:
   - `id`, `type`, `title`, `slug`, `summary`, `publishedAt`
@@ -51,7 +70,6 @@ Legacy note:
   - `updatedAt`, `featured`, `tags`, `cover`, `seo`, `status`
 
 Domain-specific MDX requirements:
-- `work`: `client`, `engagementType`, `role`, `scope`, `responsibilities`
 - `lab`: `experimentType`, `tools`
 
 ## Shared Content Rules

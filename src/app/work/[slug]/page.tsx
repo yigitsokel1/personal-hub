@@ -5,8 +5,7 @@ import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { WorkDetailIntro } from "@/components/content/work-detail-intro";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
-import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
-import { getRelatedInDomain } from "@/lib/content/related";
+import { getPublishedWork, getRelatedWork, getWorkBySlug } from "@/lib/content-source/get-work";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -16,8 +15,9 @@ type WorkDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getPublishedContent("work").map((item) => ({
+export async function generateStaticParams() {
+  const { value } = await getPublishedWork();
+  return value.map((item) => ({
     slug: item.slug,
   }));
 }
@@ -26,7 +26,7 @@ export async function generateMetadata({
   params,
 }: WorkDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = getContentBySlug("work", slug);
+  const item = await getWorkBySlug(slug);
   if (!item) return {};
 
   return buildContentDetailMetadata({
@@ -42,13 +42,13 @@ export async function generateMetadata({
 
 export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
   const { slug } = await params;
-  const item = getContentBySlug("work", slug);
+  const item = await getWorkBySlug(slug);
 
   if (!item) {
     notFound();
   }
 
-  const related = getRelatedInDomain("work", slug, item.tags);
+  const related = await getRelatedWork(slug, item.tags);
   const relatedLinks = related.map((r) => ({
     href: `${CONTENT_PATH_PREFIX.work}/${r.slug}`,
     title: r.title,
