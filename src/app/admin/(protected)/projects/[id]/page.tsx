@@ -26,6 +26,8 @@ async function validateMdxBody(body: string): Promise<string | null> {
 
 async function updateProjectAction(id: string, formData: FormData): Promise<void> {
   "use server";
+  const isPreviewIntent = String(formData.get("intent") ?? "") === "preview";
+  const publishRequested = !isPreviewIntent && formData.get("published") === "on";
 
   const validated = validateProjectInput(
     toProjectInput({
@@ -35,7 +37,7 @@ async function updateProjectAction(id: string, formData: FormData): Promise<void
       body: String(formData.get("body") ?? ""),
       tagsRaw: String(formData.get("tags") ?? ""),
       featured: formData.get("featured") === "on",
-      published: formData.get("published") === "on",
+      published: publishRequested,
       publishedAt: String(formData.get("publishedAt") ?? ""),
       role: String(formData.get("role") ?? ""),
       stackRaw: String(formData.get("stack") ?? ""),
@@ -54,6 +56,20 @@ async function updateProjectAction(id: string, formData: FormData): Promise<void
   if (!validated.success) {
     const payload = encodeURIComponent(JSON.stringify(validated.errors));
     redirect(`/admin/projects/${id}?status=error&errors=${payload}`);
+  }
+
+  if (publishRequested) {
+    const publishErrors: Record<string, string> = {};
+    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
+    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
+    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
+    if (!validated.value.publishedAt) {
+      publishErrors.publishedAt = "Publish date is required before publishing.";
+    }
+    if (Object.keys(publishErrors).length > 0) {
+      const payload = encodeURIComponent(JSON.stringify(publishErrors));
+      redirect(`/admin/projects/${id}?status=error&errors=${payload}`);
+    }
   }
 
   const mdxError = await validateMdxBody(validated.value.body);
@@ -82,6 +98,9 @@ async function updateProjectAction(id: string, formData: FormData): Promise<void
   const saved = await updateProject(id, validated.value);
   revalidatePath("/projects");
   revalidatePath(`/projects/${saved.slug}`);
+  if (isPreviewIntent) {
+    redirect(`/preview/projects/${saved.slug}`);
+  }
   redirect("/admin/projects?status=saved");
 }
 
@@ -236,8 +255,17 @@ export default async function EditAdminProjectPage({
         </section>
         <section className="space-y-5">
           <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Domain-specific</h2>
-          <div className="flex justify-end">
-            <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
+          <div className="flex justify-end gap-3">
+            <button
+              type="submit"
+              name="intent"
+              value="preview"
+              formTarget="_blank"
+              className="rounded-md border border-black/20 px-4 py-2 font-mono text-sm text-black transition-colors hover:bg-black/[0.03]"
+            >
+              Preview
+            </button>
+            <button type="submit" name="intent" value="save" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
               Save
             </button>
           </div>

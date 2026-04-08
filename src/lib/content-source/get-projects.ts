@@ -166,12 +166,15 @@ export async function getPublishedProjects(): Promise<{
   }
 }
 
-export async function getProjectBySlug(slug: string): Promise<ContentWithBody<ProjectContent> | null> {
+export async function getProjectBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<ContentWithBody<ProjectContent> | null> {
   try {
     const row = await prisma.project.findFirst({
       where: {
         slug,
-        published: true,
+        ...(options?.includeUnpublished ? {} : { published: true }),
       },
     });
     return row ? adaptDbProject(row) : null;

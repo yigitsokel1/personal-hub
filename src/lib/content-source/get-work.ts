@@ -136,11 +136,14 @@ export async function getPublishedWork(): Promise<{
   };
 }
 
-export async function getWorkBySlug(slug: string): Promise<ContentWithBody<WorkContent> | null> {
+export async function getWorkBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<ContentWithBody<WorkContent> | null> {
   const row = await prisma.work.findFirst({
     where: {
       slug,
-      published: true,
+      ...(options?.includeUnpublished ? {} : { published: true }),
     },
   });
   return row ? adaptDbWork(row) : null;

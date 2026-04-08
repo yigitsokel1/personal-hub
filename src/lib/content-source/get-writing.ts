@@ -129,11 +129,14 @@ export async function getPublishedWriting(): Promise<{
   };
 }
 
-export async function getWritingBySlug(slug: string): Promise<ContentWithBody<WritingContent> | null> {
+export async function getWritingBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<ContentWithBody<WritingContent> | null> {
   const dbRow = await prisma.writing.findFirst({
     where: {
       slug,
-      published: true,
+      ...(options?.includeUnpublished ? {} : { published: true }),
     },
   });
   if (dbRow) {

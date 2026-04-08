@@ -155,12 +155,15 @@ export async function getPublishedLabs(): Promise<{
   }
 }
 
-export async function getLabBySlug(slug: string): Promise<ContentWithBody<LabContent> | null> {
+export async function getLabBySlug(
+  slug: string,
+  options?: { includeUnpublished?: boolean }
+): Promise<ContentWithBody<LabContent> | null> {
   try {
     const row = await prisma.lab.findFirst({
       where: {
         slug,
-        published: true,
+        ...(options?.includeUnpublished ? {} : { published: true }),
       },
     });
     return row ? adaptDbLab(row) : null;

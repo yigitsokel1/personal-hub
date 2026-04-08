@@ -26,6 +26,8 @@ async function validateMdxBody(body: string): Promise<string | null> {
 
 async function updateLabAction(id: string, formData: FormData): Promise<void> {
   "use server";
+  const isPreviewIntent = String(formData.get("intent") ?? "") === "preview";
+  const publishRequested = !isPreviewIntent && formData.get("published") === "on";
 
   const validated = validateLabInput(
     toLabInput({
@@ -36,7 +38,7 @@ async function updateLabAction(id: string, formData: FormData): Promise<void> {
       tagsRaw: String(formData.get("tags") ?? ""),
       status: String(formData.get("status") ?? "idea") as (typeof LAB_STATUSES)[number],
       featured: formData.get("featured") === "on",
-      published: formData.get("published") === "on",
+      published: publishRequested,
       publishedAt: String(formData.get("publishedAt") ?? ""),
     })
   );
@@ -44,6 +46,20 @@ async function updateLabAction(id: string, formData: FormData): Promise<void> {
   if (!validated.success) {
     const payload = encodeURIComponent(JSON.stringify(validated.errors));
     redirect(`/admin/labs/${id}?status=error&errors=${payload}`);
+  }
+
+  if (publishRequested) {
+    const publishErrors: Record<string, string> = {};
+    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
+    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
+    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
+    if (!validated.value.publishedAt) {
+      publishErrors.publishedAt = "Publish date is required before publishing.";
+    }
+    if (Object.keys(publishErrors).length > 0) {
+      const payload = encodeURIComponent(JSON.stringify(publishErrors));
+      redirect(`/admin/labs/${id}?status=error&errors=${payload}`);
+    }
   }
 
   const mdxError = await validateMdxBody(validated.value.body);
@@ -69,6 +85,9 @@ async function updateLabAction(id: string, formData: FormData): Promise<void> {
   const saved = await updateLab(id, validated.value);
   revalidatePath("/labs");
   revalidatePath(`/labs/${saved.slug}`);
+  if (isPreviewIntent) {
+    redirect(`/preview/labs/${saved.slug}`);
+  }
   redirect("/admin/labs?status=saved");
 }
 
@@ -180,8 +199,17 @@ export default async function EditAdminLabsPage({
             </select>
             {parsedErrors.status ? <p className="mt-1 text-xs text-red-700">{parsedErrors.status}</p> : null}
           </label>
-          <div className="flex justify-end">
-            <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
+          <div className="flex justify-end gap-3">
+            <button
+              type="submit"
+              name="intent"
+              value="preview"
+              formTarget="_blank"
+              className="rounded-md border border-black/20 px-4 py-2 font-mono text-sm text-black transition-colors hover:bg-black/[0.03]"
+            >
+              Preview
+            </button>
+            <button type="submit" name="intent" value="save" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
               Save
             </button>
           </div>
