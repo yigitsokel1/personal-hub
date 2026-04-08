@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { contentTitleLinkClassName } from "@/lib/ui/link-tokens";
-import type { WritingNeighbor } from "@/lib/content/writing-neighbors";
+
+type WritingNeighbor = {
+  slug: string;
+  title: string;
+};
 
 type WritingPrevNextProps = {
   prev: WritingNeighbor | null;

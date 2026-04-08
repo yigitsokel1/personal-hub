@@ -5,7 +5,8 @@ import { HomeSection } from "@/components/home/home-section";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import { getSiteSettings } from "@/lib/content-source/get-site-settings";
-import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
+import { getPublishedWriting } from "@/lib/content-source/get-writing";
+import { getFeaturedContent } from "@/lib/content/get-content";
 import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentYearMonth } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
@@ -62,7 +63,8 @@ export default async function HomePage() {
   const { value: settings } = await getSiteSettings();
   const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);
   const featuredProjects = getFeaturedContent("project").slice(0, PREVIEW_LIMIT);
-  const latestWriting = getPublishedContent("writing").slice(0, PREVIEW_LIMIT);
+  const { value: writing } = await getPublishedWriting();
+  const latestWriting = writing.slice(0, PREVIEW_LIMIT);
 
   return (
     <>

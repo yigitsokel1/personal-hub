@@ -1,0 +1,61 @@
+# Admin Setup
+
+This guide boots the admin panel on a fresh local database.
+
+## 1) Environment setup
+
+1. Copy `.env.example` to `.env`.
+2. Fill required values:
+   - `DATABASE_URL`
+   - `ADMIN_PASSWORD`
+   - `ADMIN_SESSION_SECRET`
+
+## 2) Install dependencies
+
+```bash
+npm install
+```
+
+## 3) Apply Prisma migrations
+
+```bash
+npx prisma migrate dev
+```
+
+## 4) Seed site settings
+
+```bash
+npm run seed:settings
+```
+
+This creates `site_settings` row with `id=1` only when missing.
+
+## 5) Run local dev server
+
+```bash
+npm run dev
+```
+
+## 6) Admin login flow
+
+1. Open `http://localhost:3000/admin/login`.
+2. Sign in with `ADMIN_PASSWORD`.
+3. You will be redirected to `/admin/settings`.
+4. Writing CMS operations live under `/admin/writing` (create/edit/delete).
+
+## Local dev workflow
+
+1. Make schema changes in `prisma/schema.prisma`.
+2. Run `npx prisma migrate dev`.
+3. Update admin/public code.
+4. Re-test:
+   - `/admin/login`
+   - `/admin/settings`
+   - `/admin/writing`
+   - `/admin/writing/new`
+   - `/writing`
+
+## Migration notes
+
+If you see Prisma drift warnings in local development, follow:
+- `docs/db-migrations.md`

@@ -1,16 +1,19 @@
 # Personal Hub
 
-A **personal hub platform** (not a portfolio template): structured MDX content for projects, work, writing, and labs, rendered with Next.js.
+A **personal hub platform** (not a portfolio template): structured content for projects, work, writing, and labs, rendered with Next.js.
 
 ## Stack
 
 - Next.js (App Router), React, TypeScript
 - Tailwind CSS
-- MDX via `gray-matter` + `next-mdx-remote`
+- MDX via `gray-matter` + `next-mdx-remote` (projects/work/labs)
+- Prisma + Postgres (admin-managed writing + settings)
 
 ## Content
 
-Content lives under `src/content/{projects,work,writing,labs}` as `.mdx` files with typed frontmatter. The UI reads only through the content layer in `src/lib/content/`—see `CLAUDE.md` for product and architecture notes.
+- Writing is admin-managed and database-backed (`/admin/writing`).
+- Projects, work, and labs are MDX-managed under `src/content/{projects,work,labs}`.
+- The UI reads through content-source/domain layers; see `CLAUDE.md` for architecture notes.
 
 ## Scripts
 
@@ -34,3 +37,8 @@ Set `NEXT_PUBLIC_SITE_URL` in production (e.g. `https://your-domain.com`, no tra
 ## Deploy
 
 Designed for static-friendly deployment (e.g. Vercel). Run `npm run build` before shipping.
+
+## Operational docs
+
+- Admin setup: `docs/admin-setup.md`
+- Migration runbook: `docs/db-migrations.md`

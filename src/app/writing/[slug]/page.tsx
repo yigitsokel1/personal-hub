@@ -6,9 +6,12 @@ import { ContentPageIntro } from "@/components/content/content-page-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { WritingPrevNext } from "@/components/content/writing-prev-next";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
-import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
-import { getRelatedInDomain } from "@/lib/content/related";
-import { getWritingNeighbors } from "@/lib/content/writing-neighbors";
+import {
+  getPublishedWriting,
+  getRelatedWriting,
+  getWritingBySlug,
+  getWritingNeighbors,
+} from "@/lib/content-source/get-writing";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -19,8 +22,9 @@ type WritingDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getPublishedContent("writing").map((item) => ({
+export async function generateStaticParams() {
+  const { value } = await getPublishedWriting();
+  return value.map((item) => ({
     slug: item.slug,
   }));
 }
@@ -29,7 +33,7 @@ export async function generateMetadata({
   params,
 }: WritingDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = getContentBySlug("writing", slug);
+  const item = await getWritingBySlug(slug);
   if (!item) return {};
 
   return buildContentDetailMetadata({
@@ -47,19 +51,19 @@ export default async function WritingDetailPage({
   params,
 }: WritingDetailPageProps) {
   const { slug } = await params;
-  const item = getContentBySlug("writing", slug);
+  const item = await getWritingBySlug(slug);
 
   if (!item) {
     notFound();
   }
 
   const articleLd = buildArticleJsonLd(item);
-  const related = getRelatedInDomain("writing", slug, item.tags);
+  const related = await getRelatedWriting(slug, item.tags);
   const relatedLinks = related.map((r) => ({
     href: `${CONTENT_PATH_PREFIX.writing}/${r.slug}`,
     title: r.title,
   }));
-  const neighbors = getWritingNeighbors(slug);
+  const neighbors = await getWritingNeighbors(slug);
 
   return (
     <>

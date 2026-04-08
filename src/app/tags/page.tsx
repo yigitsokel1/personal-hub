@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
+import { getAllContent } from "@/lib/content-source/get-all-content";
 import {
-  getAllTags,
-  getTagCountsMap,
-  getTagDomainsMap,
+  normalizeTag,
   tagPathSegment,
 } from "@/lib/content/tags";
 import type { ContentType } from "@/lib/content/types";
@@ -30,10 +29,42 @@ export const metadata: Metadata = buildSimplePageMetadata({
   description: "Browse content by tag across projects, work, writing, and labs.",
 });
 
-export default function TagsPage() {
-  const tags = getAllTags();
-  const domains = getTagDomainsMap();
-  const counts = getTagCountsMap();
+export default async function TagsPage() {
+  const content = await getAllContent();
+  const domains = new Map<string, Set<ContentType>>();
+  const counts = new Map<string, number>();
+
+  const register = (tag: string, type: ContentType) => {
+    const normalized = normalizeTag(tag);
+    if (!normalized) return;
+    counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
+    const set = domains.get(normalized) ?? new Set<ContentType>();
+    set.add(type);
+    domains.set(normalized, set);
+  };
+
+  for (const entry of content.writing) {
+    for (const tag of entry.tags ?? []) {
+      register(tag, "writing");
+    }
+  }
+  for (const entry of content.projects) {
+    for (const tag of entry.tags ?? []) {
+      register(tag, "project");
+    }
+  }
+  for (const entry of content.work) {
+    for (const tag of entry.tags ?? []) {
+      register(tag, "work");
+    }
+  }
+  for (const entry of content.labs) {
+    for (const tag of entry.tags ?? []) {
+      register(tag, "lab");
+    }
+  }
+
+  const tags = [...domains.keys()].sort((a, b) => a.localeCompare(b));
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">

@@ -1,4 +1,4 @@
-import { getPublishedContent } from "@/lib/content/get-content";
+import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
 
@@ -17,10 +17,10 @@ function rfc822FromIso(isoDate: string): string {
 
 let rssRelativeLinkWarned = false;
 
-export function GET() {
+export async function GET() {
   const base = getSiteMetadataBase();
   const origin = base?.origin.replace(/\/$/, "") ?? "";
-  const writing = getPublishedContent("writing");
+  const { value: writing } = await getPublishedWriting();
 
   if (
     !origin &&

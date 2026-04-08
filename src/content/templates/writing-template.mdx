@@ -1,37 +1,12 @@
 {/*
-  Authoring template — not loaded by the app.
-  Copy into src/content/writing/ and replace placeholders.
-  Body starts at ## so the page title stays the single h1 from the layout.
+  Deprecated: Writing is admin-managed via DB.
+  This file is kept only as a historical reference for structure/tone.
 */}
 
----
-id: writing-your-slug-here
-type: writing
-title: "Essay or article title"
-slug: your-slug-here
-summary: "Line that works as a list blurb and default meta description."
-publishedAt: "2026-04-01"
-excerpt: "Often same as summary or a tighter hook for cards."
-# readingTime: 8
-# category: essay
-# series: "optional-series-name"
-# tags:
-#   - architecture
-# status: draft
----
+## Legacy reference
 
-## Intro
+Writing used to be authored as MDX frontmatter + body.
 
-Frame the question and why it matters now.
-
-## Core argument
-
-The main thesis, broken into what you believe and why others should care.
-
-## Key insights
-
-Subsections or bullets—patterns, mistakes, or heuristics readers can reuse.
-
-## Closing
-
-What you are not claiming, what you would watch next, or how this connects to practice.
+Current workflow:
+- Create/edit in `/admin/writing`
+- Database is the only source of truth for writing runtime

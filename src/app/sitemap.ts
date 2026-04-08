@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { reportContentHealthAtBuild } from "@/lib/content/content-health";
-import { getPublishedContentEntries } from "@/lib/content/get-content";
-import type { ContentType } from "@/lib/content/types";
-import { getAllTags, tagPathSegment } from "@/lib/content/tags";
+import { getAllContent } from "@/lib/content-source/get-all-content";
+import { tagPathSegment } from "@/lib/content/tags";
 import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
 
 const STATIC_PATHS = [
@@ -22,7 +21,7 @@ function absoluteUrl(pathname: string, origin: string): string {
   return `${base}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   reportContentHealthAtBuild();
 
   const base = getSiteMetadataBase();
@@ -41,20 +40,60 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
-  const types: ContentType[] = ["project", "work", "writing", "lab"];
-  for (const type of types) {
-    const items = getPublishedContentEntries(type);
-    const prefix = CONTENT_PATH_PREFIX[type];
-    for (const item of items) {
-      const path = `${prefix}/${item.slug}`;
-      entries.push({
-        url: absoluteUrl(path, origin),
-        lastModified: new Date(item.updatedAt ?? item.publishedAt),
-      });
+  const content = await getAllContent();
+
+  for (const item of content.writing) {
+    entries.push({
+      url: absoluteUrl(`${CONTENT_PATH_PREFIX.writing}/${item.slug}`, origin),
+      lastModified: new Date(item.updatedAt ?? item.publishedAt),
+    });
+  }
+  for (const item of content.projects) {
+    entries.push({
+      url: absoluteUrl(`${CONTENT_PATH_PREFIX.project}/${item.slug}`, origin),
+      lastModified: new Date(item.updatedAt ?? item.publishedAt),
+    });
+  }
+  for (const item of content.work) {
+    entries.push({
+      url: absoluteUrl(`${CONTENT_PATH_PREFIX.work}/${item.slug}`, origin),
+      lastModified: new Date(item.updatedAt ?? item.publishedAt),
+    });
+  }
+  for (const item of content.labs) {
+    entries.push({
+      url: absoluteUrl(`${CONTENT_PATH_PREFIX.lab}/${item.slug}`, origin),
+      lastModified: new Date(item.updatedAt ?? item.publishedAt),
+    });
+  }
+
+  const writingTags = new Set<string>();
+  for (const item of content.writing) {
+    for (const tag of item.tags ?? []) {
+      const normalized = tag.trim();
+      if (normalized) writingTags.add(normalized);
+    }
+  }
+  for (const item of content.projects) {
+    for (const tag of item.tags ?? []) {
+      const normalized = tag.trim();
+      if (normalized) writingTags.add(normalized);
+    }
+  }
+  for (const item of content.work) {
+    for (const tag of item.tags ?? []) {
+      const normalized = tag.trim();
+      if (normalized) writingTags.add(normalized);
+    }
+  }
+  for (const item of content.labs) {
+    for (const tag of item.tags ?? []) {
+      const normalized = tag.trim();
+      if (normalized) writingTags.add(normalized);
     }
   }
 
-  for (const tag of getAllTags()) {
+  for (const tag of writingTags) {
     entries.push({
       url: absoluteUrl(`/tags/${tagPathSegment(tag)}`, origin),
     });

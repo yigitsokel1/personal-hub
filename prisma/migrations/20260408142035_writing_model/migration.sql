@@ -1,0 +1,2 @@
+-- Legacy compatibility migration placeholder.
+-- Intentionally empty to keep local migration history intact.

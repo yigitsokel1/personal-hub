@@ -5,7 +5,7 @@ import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { domainIndexCopy } from "@/lib/content/domain-index-copy";
-import { getPublishedContent, getFeaturedContent } from "@/lib/content/get-content";
+import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
 import { formatContentDate } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
@@ -18,9 +18,9 @@ export const metadata: Metadata = buildSimplePageMetadata({
     "Longer-form technical and product writing—architecture, delivery, and judgment.",
 });
 
-export default function WritingPage() {
-  const allWriting = getPublishedContent("writing");
-  const featuredWriting = getFeaturedContent("writing");
+export default async function WritingPage() {
+  const { value: allWriting } = await getPublishedWriting();
+  const featuredWriting = allWriting.filter((item) => item.featured);
   const featured = featuredWriting.length > 0 ? featuredWriting.slice(0, 1) : allWriting.slice(0, 1);
   const featuredIds = new Set(featured.map((f) => f.id));
   const rest = allWriting.filter((item) => !featuredIds.has(item.id));

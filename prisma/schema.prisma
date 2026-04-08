@@ -21,3 +21,22 @@ model SiteSettings {
 
   @@map("site_settings")
 }
+
+model Writing {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  summary     String
+  body        String
+  tags        String[]
+  category    String?
+  series      String?
+  featured    Boolean   @default(false)
+  published   Boolean   @default(false)
+  readingTime Int?      @map("reading_time")
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("writing")
+}
