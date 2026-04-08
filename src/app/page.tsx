@@ -6,6 +6,7 @@ import { SectionReveal } from "@/components/ui/section-reveal";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import { getPublishedProjects } from "@/lib/content-source/get-projects";
 import { getSiteSettings } from "@/lib/content-source/get-site-settings";
+import { getPublishedLabs } from "@/lib/content-source/get-labs";
 import { getPublishedWork } from "@/lib/content-source/get-work";
 import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { homepageSections } from "@/lib/content/homepage-sections";
@@ -68,6 +69,8 @@ export default async function HomePage() {
   const featuredProjects = allProjects.filter((item) => item.featured).slice(0, PREVIEW_LIMIT);
   const { value: writing } = await getPublishedWriting();
   const latestWriting = writing.slice(0, PREVIEW_LIMIT);
+  const { value: labs } = await getPublishedLabs();
+  const latestLabs = labs.slice(0, PREVIEW_LIMIT);
 
   return (
     <>
@@ -234,6 +237,19 @@ export default async function HomePage() {
                   Fast spikes, sharp notes, and iteration logs. Not polished,
                   but useful.
                 </p>
+                {latestLabs.length > 0 ? (
+                  <div className="mt-5 space-y-2">
+                    {latestLabs.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`/labs/${item.slug}`}
+                        className="block font-mono text-sm text-black/60 transition-colors hover:text-black"
+                      >
+                        {ARROW} {item.title}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
                 <Link
                   href={homepageCopy.sections.labs.viewAllHref}
                   className={`${terminalButtonClassName} mt-6`}

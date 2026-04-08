@@ -11,10 +11,7 @@ type LabDetailIntroProps = {
   publishedAt: string;
   tags?: string[];
   cover?: BaseContent["cover"];
-  experimentType: string;
-  maturityLevel?: "idea" | "poc" | "exploration";
-  tools: string[];
-  hypothesis?: string;
+  status: "idea" | "exploring" | "building" | "paused" | "completed";
 };
 
 export function LabDetailIntro({
@@ -23,13 +20,9 @@ export function LabDetailIntro({
   publishedAt,
   tags,
   cover,
-  experimentType,
-  maturityLevel,
-  tools,
-  hypothesis,
+  status,
 }: LabDetailIntroProps) {
-  const metaParts = [formatContentDate(publishedAt), experimentType.toUpperCase()];
-  if (maturityLevel) metaParts.push(maturityLevel.toUpperCase());
+  const metaParts = [formatContentDate(publishedAt), `STATUS ${status.toUpperCase()}`];
 
   return (
     <header className="max-w-3xl">
@@ -54,20 +47,7 @@ export function LabDetailIntro({
       ) : null}
 
       <dl className="mt-10 space-y-4 sm:mt-12">
-        <IntroDefinitionRow label="Maturity">
-          {(maturityLevel ?? "exploration").toUpperCase()}
-        </IntroDefinitionRow>
-        <IntroDefinitionRow label="Experiment">{experimentType}</IntroDefinitionRow>
-        {tools.length ? (
-          <IntroDefinitionRow label="Tools">
-            <span className="leading-relaxed">{tools.join(" · ")}</span>
-          </IntroDefinitionRow>
-        ) : null}
-        {hypothesis ? (
-          <IntroDefinitionRow label="Hypothesis">
-            <span className="leading-relaxed">{hypothesis}</span>
-          </IntroDefinitionRow>
-        ) : null}
+        <IntroDefinitionRow label="Status">{status.toUpperCase()}</IntroDefinitionRow>
       </dl>
     </header>
   );

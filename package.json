@@ -9,7 +9,8 @@
     "lint": "eslint",
     "seed:settings": "node prisma/seed.mjs",
     "migrate:projects-db": "node scripts/migrate-projects-to-db.mjs",
-    "migrate:work-db": "node scripts/migrate-work-to-db.mjs"
+    "migrate:work-db": "node scripts/migrate-work-to-db.mjs",
+    "migrate:labs-db": "node scripts/migrate-labs-to-db.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

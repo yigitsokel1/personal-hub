@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { LabDetailIntro } from "@/components/content/lab-detail-intro";
-import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
+import { RelatedContentLinks } from "@/components/content/related-content-links";
+import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import { getLabBySlug, getPublishedLabs, getRelatedLabs } from "@/lib/content-source/get-labs";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -13,8 +15,9 @@ type LabDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getPublishedContent("lab").map((item) => ({
+export async function generateStaticParams() {
+  const { value } = await getPublishedLabs();
+  return value.map((item) => ({
     slug: item.slug,
   }));
 }
@@ -23,7 +26,7 @@ export async function generateMetadata({
   params,
 }: LabDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = getContentBySlug("lab", slug);
+  const item = await getLabBySlug(slug);
   if (!item) return {};
 
   return buildContentDetailMetadata({
@@ -39,11 +42,16 @@ export async function generateMetadata({
 
 export default async function LabDetailPage({ params }: LabDetailPageProps) {
   const { slug } = await params;
-  const item = getContentBySlug("lab", slug);
+  const item = await getLabBySlug(slug);
 
   if (!item) {
     notFound();
   }
+  const related = await getRelatedLabs(slug, item.tags);
+  const relatedLinks = related.map((r) => ({
+    href: `${CONTENT_PATH_PREFIX.lab}/${r.slug}`,
+    title: r.title,
+  }));
 
   return (
     <ContentDetailMain>
@@ -53,10 +61,7 @@ export default async function LabDetailPage({ params }: LabDetailPageProps) {
         publishedAt={item.publishedAt}
         tags={item.tags}
         cover={item.cover}
-        experimentType={item.experimentType}
-        maturityLevel={item.maturityLevel}
-        tools={item.tools}
-        hypothesis={item.hypothesis}
+        status={item.status}
       />
 
       <p className="mt-8 max-w-3xl text-sm leading-relaxed text-black/55 sm:mt-10">
@@ -65,6 +70,14 @@ export default async function LabDetailPage({ params }: LabDetailPageProps) {
       </p>
 
       <ContentBody body={item.body} />
+
+      <RelatedContentLinks
+        heading="Related labs"
+        items={relatedLinks}
+        emptyMessage="No other labs share these tags yet."
+        sectionHref="/labs"
+        sectionLinkLabel="Browse all labs"
+      />
     </ContentDetailMain>
   );
 }

@@ -6,17 +6,19 @@ A **personal hub platform** (not a portfolio template): structured content for p
 
 - Next.js (App Router), React, TypeScript
 - Tailwind CSS
-- MDX via `gray-matter` + `next-mdx-remote` (labs)
-- Prisma + Postgres (admin-managed writing + projects + work + settings)
+- MDX via `gray-matter` + `next-mdx-remote` (body rendering + legacy migration inputs)
+- Prisma + Postgres (admin-managed writing + projects + work + labs + settings)
 
 ## Content
 
 - Writing is admin-managed and database-backed (`/admin/writing`).
 - Projects are admin-managed and database-backed (`/admin/projects`).
 - Work is admin-managed and database-backed (`/admin/work`).
-- Labs remain MDX-managed under `src/content/labs`.
-- Legacy work MDX entries are archived under `src/content/_legacy/work/` and are not runtime sources.
+- Labs are admin-managed and database-backed (`/admin/labs`).
+- Legacy writing MDX entries are archived under `src/content/_legacy/writing/` and are not runtime sources.
 - Legacy project MDX entries are archived under `src/content/_legacy/projects/` and are not runtime sources.
+- Legacy work MDX entries are archived under `src/content/_legacy/work/` and are not runtime sources.
+- Legacy labs MDX entries are archived under `src/content/_legacy/labs/` and are not runtime sources.
 - The UI reads through content-source/domain layers; see `CLAUDE.md` for architecture notes.
 
 ## Scripts
@@ -28,6 +30,7 @@ npm run start  # run production server
 npm run lint   # ESLint
 npm run migrate:projects-db # import legacy project MDX into DB
 npm run migrate:work-db # import legacy work MDX into DB
+npm run migrate:labs-db # import legacy labs MDX into DB
 ```
 
 ## Environment

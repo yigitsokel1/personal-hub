@@ -4,7 +4,7 @@ import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { domainIndexCopy } from "@/lib/content/domain-index-copy";
-import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
+import { getPublishedLabs } from "@/lib/content-source/get-labs";
 import { formatContentDate } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
@@ -22,9 +22,9 @@ export const metadata: Metadata = buildSimplePageMetadata({
     "Experiments and explorations—tools, hypotheses, and what was learned.",
 });
 
-export default function LabsPage() {
-  const labs = getPublishedContent("lab");
-  const featuredLabs = getFeaturedContent("lab");
+export default async function LabsPage() {
+  const { value: labs } = await getPublishedLabs();
+  const featuredLabs = labs.filter((item) => item.featured);
   const featured = featuredLabs.length > 0 ? featuredLabs.slice(0, 2) : labs.slice(0, 2);
   const featuredIds = new Set(featured.map((item) => item.id));
   const rest = labs.filter((item) => !featuredIds.has(item.id));
@@ -48,12 +48,6 @@ export default function LabsPage() {
           {featured.length > 0 ? (
             <section className="mt-12 grid gap-6 sm:grid-cols-2">
               {featured.map((lab) => {
-                const statusLabel =
-                  lab.maturityLevel === "poc"
-                    ? domainIndexCopy.labs.statusLabelPoc
-                    : lab.maturityLevel === "idea"
-                      ? domainIndexCopy.labs.statusLabelIdea
-                      : domainIndexCopy.labs.statusLabelActive;
                 const dateLabel = lab.updatedAt
                   ? `Updated ${formatContentDate(lab.updatedAt)}`
                   : formatContentDate(lab.publishedAt);
@@ -70,9 +64,8 @@ export default function LabsPage() {
                       meta={
                         <ContentMeta
                           items={[
-                            { label: `STATUS ${statusLabel.toUpperCase()}`, type: "text" },
+                            { label: `STATUS ${lab.status.toUpperCase()}`, type: "text" },
                             { label: dateLabel, type: "text" },
-                            { label: lab.experimentType.toUpperCase(), type: "text" },
                           ]}
                         />
                       }
@@ -86,12 +79,6 @@ export default function LabsPage() {
           {rest.length > 0 ? (
             <section className="mt-8 border-t border-black/8">
               {rest.map((lab) => {
-                const statusLabel =
-                  lab.maturityLevel === "poc"
-                    ? domainIndexCopy.labs.statusLabelPoc
-                    : lab.maturityLevel === "idea"
-                      ? domainIndexCopy.labs.statusLabelIdea
-                      : domainIndexCopy.labs.statusLabelActive;
                 const dateLabel = lab.updatedAt
                   ? `Updated ${formatContentDate(lab.updatedAt)}`
                   : formatContentDate(lab.publishedAt);
@@ -107,9 +94,8 @@ export default function LabsPage() {
                       meta={
                         <ContentMeta
                           items={[
-                            { label: `STATUS ${statusLabel.toUpperCase()}`, type: "text" },
+                            { label: `STATUS ${lab.status.toUpperCase()}`, type: "text" },
                             { label: dateLabel, type: "text" },
-                            { label: lab.experimentType.toUpperCase(), type: "text" },
                           ]}
                         />
                       }

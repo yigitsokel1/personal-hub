@@ -58,26 +58,28 @@ Legacy note:
 - `src/content/_legacy/work/` is archival only and not a runtime source.
 - `src/content/templates/work-template.mdx` is historical reference only.
 
-## MDX-Managed Domains
+### Labs (source of truth: database/admin)
 
-### Labs (source of truth: MDX)
+- Creation/edit path: `/admin/labs`.
+- Public runtime source is DB-only (`getPublishedLabs`, `getLabBySlug`).
+- Required fields: `title`, `slug`, `summary`, `body`, `status`.
+- Optional fields: `tags`, `featured`, `published`, `publishedAt`.
+- Rules:
+  - `tags` max **3**
+  - `featured` max **2** active lab items
+  - if `published = true`, `publishedAt` is required
+  - `status` must be one of: `idea | exploring | building | paused | completed`
 
-- Files live in `src/content/labs/`.
-- Authoring templates live in `src/content/templates/`.
-- Required base fields per MDX entry:
-  - `id`, `type`, `title`, `slug`, `summary`, `publishedAt`
-- Optional base fields:
-  - `updatedAt`, `featured`, `tags`, `cover`, `seo`, `status`
-
-Domain-specific MDX requirements:
-- `lab`: `experimentType`, `tools`
+Legacy note:
+- `src/content/_legacy/labs/` is archival only and not a runtime source.
+- `src/content/templates/lab-template.mdx` is historical reference only.
 
 ## Shared Content Rules
 
 - Use stable slugs (kebab-case, ASCII).
 - Do not use `#` headings in MDX body; start from `##`.
 - Tags should be lowercase and kebab-case.
-- For MDX-managed domains, keep tags concise and editorially meaningful.
+- For legacy MDX references, keep tags concise and editorially meaningful.
 
 ## Related Docs
 

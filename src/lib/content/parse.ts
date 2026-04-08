@@ -2,9 +2,7 @@ import matter from "gray-matter";
 import type {
   BaseContent,
   ContentEntry,
-  ContentStatus,
   ContentType,
-  LabContent,
   ProjectContent,
   WorkContent,
   WritingContent,
@@ -12,16 +10,12 @@ import type {
 
 const CONTENT_TYPES = ["project", "work", "writing", "lab"] as const satisfies readonly ContentType[];
 
-const CONTENT_STATUSES = ["draft", "published"] as const satisfies readonly ContentStatus[];
+const CONTENT_STATUSES = ["draft", "published"] as const;
 
 const ENGAGEMENT_TYPES = ["freelance", "contract", "full-time"] as const satisfies readonly WorkContent["engagementType"][];
 
 const CONFIDENTIALITY_LEVELS = ["public", "limited"] as const satisfies readonly NonNullable<
   WorkContent["confidentialityLevel"]
->[];
-
-const MATURITY_LEVELS = ["idea", "poc", "exploration"] as const satisfies readonly NonNullable<
-  LabContent["maturityLevel"]
 >[];
 
 function parseRequiredEnum<T extends string>(
@@ -202,17 +196,14 @@ export function toContentEntry(data: Record<string, unknown>): ContentEntry {
       return {
         ...base,
         type: "lab",
-        experimentType: assertString(data.experimentType, "experimentType"),
-        tools: assertStringArray(data.tools, "tools"),
-        hypothesis: optionalString(data.hypothesis),
-        learnings: optionalStringArray(data.learnings),
-        nextSteps: optionalStringArray(data.nextSteps),
-        maturityLevel: parseOptionalEnum(
-          data.maturityLevel,
-          "maturityLevel",
-          MATURITY_LEVELS
-        ),
-      } satisfies LabContent;
+        status: parseRequiredEnum(data.status, "status", [
+          "idea",
+          "exploring",
+          "building",
+          "paused",
+          "completed",
+        ] as const),
+      };
 
     default:
       throw new Error(`Unsupported content type: ${String(base.type)}`);

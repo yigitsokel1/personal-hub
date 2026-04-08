@@ -1,7 +1,5 @@
 export type ContentType = "project" | "work" | "writing" | "lab";
 
-export type ContentStatus = "draft" | "published";
-
 export type BaseContent = {
   id: string;
   type: ContentType;
@@ -11,7 +9,7 @@ export type BaseContent = {
   publishedAt: string;
   updatedAt?: string;
   featured?: boolean;
-  status?: ContentStatus;
+  status?: string;
   tags?: string[];
   cover?: {
     src: string;
@@ -61,12 +59,7 @@ export type WritingContent = BaseContent & {
 
 export type LabContent = BaseContent & {
   type: "lab";
-  experimentType: string;
-  tools: string[];
-  hypothesis?: string;
-  learnings?: string[];
-  nextSteps?: string[];
-  maturityLevel?: "idea" | "poc" | "exploration";
+  status: "idea" | "exploring" | "building" | "paused" | "completed";
 };
 
 export type ContentEntry =
