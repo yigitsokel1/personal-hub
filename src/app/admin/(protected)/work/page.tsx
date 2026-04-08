@@ -26,14 +26,10 @@ export default async function AdminWorkPage({
         </Link>
       </div>
       <div className="mt-3 min-h-5 text-sm">
-        {params.status === "saved" ? <p className="text-green-700">Work item saved.</p> : null}
-        {params.status === "deleted" ? <p className="text-green-700">Work item deleted.</p> : null}
-        {params.status === "delete_missing" ? (
-          <p className="text-red-700">Delete failed: item was not found.</p>
-        ) : null}
-        {params.status === "delete_error" ? (
-          <p className="text-red-700">Delete failed: invalid request.</p>
-        ) : null}
+        {params.status === "saved" ? <p className="text-green-700">Saved</p> : null}
+        {params.status === "deleted" ? <p className="text-green-700">Deleted</p> : null}
+        {params.status === "delete_missing" ? <p className="text-red-700">Not found</p> : null}
+        {params.status === "delete_error" ? <p className="text-red-700">Delete failed</p> : null}
       </div>
 
       {items.length === 0 ? (
@@ -47,11 +43,10 @@ export default async function AdminWorkPage({
                 <th className="px-2 py-3">Slug</th>
                 <th className="px-2 py-3">State</th>
                 <th className="px-2 py-3">Featured</th>
-                <th className="px-2 py-3">Published at</th>
-                <th className="px-2 py-3">Updated at</th>
+                <th className="px-2 py-3">PublishedAt</th>
+                <th className="px-2 py-3">UpdatedAt</th>
                 <th className="px-2 py-3">Client</th>
                 <th className="px-2 py-3">Engagement</th>
-                <th className="px-2 py-3">Role</th>
                 <th className="px-2 py-3">Actions</th>
               </tr>
             </thead>
@@ -60,8 +55,16 @@ export default async function AdminWorkPage({
                 <tr key={item.dbId} className="border-b border-black/8 text-sm">
                   <td className="px-2 py-3">{item.title}</td>
                   <td className="px-2 py-3 font-mono text-xs text-black/60">{item.slug}</td>
-                  <td className="px-2 py-3">{item.published ? "published" : "draft"}</td>
-                  <td className="px-2 py-3">{item.featured ? "Yes" : "No"}</td>
+                  <td className="px-2 py-3">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-xs ${
+                        item.published ? "bg-black text-white" : "bg-black/10 text-black/70"
+                      }`}
+                    >
+                      {item.published ? "Published" : "Draft"}
+                    </span>
+                  </td>
+                  <td className="px-2 py-3 font-mono text-xs">{item.featured ? "✔" : ""}</td>
                   <td className="px-2 py-3 font-mono text-xs text-black/60">
                     {item.publishedAt ? new Date(item.publishedAt).toISOString().slice(0, 10) : "-"}
                   </td>
@@ -70,13 +73,12 @@ export default async function AdminWorkPage({
                   </td>
                   <td className="px-2 py-3">{item.client}</td>
                   <td className="px-2 py-3">{item.engagementType}</td>
-                  <td className="px-2 py-3">{item.role}</td>
                   <td className="px-2 py-3">
                     <Link
                       href={`/admin/work/${item.dbId}`}
                       className="font-mono text-xs text-black/65 underline decoration-black/20 underline-offset-4 hover:text-black"
                     >
-                      edit
+                      Edit
                     </Link>
                     <span className="px-2 text-black/35">|</span>
                     <form action={deleteWorkAction} className="inline">

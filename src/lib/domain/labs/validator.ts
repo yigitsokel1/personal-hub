@@ -35,10 +35,10 @@ export function validateLabInput(input: LabInput): {
     errors.status = "Status is invalid.";
   }
   if (value.tags.length > MAX_LAB_TAGS) {
-    errors.tags = `Maximum ${MAX_LAB_TAGS} tags allowed.`;
+    errors.tags = `You can add up to ${MAX_LAB_TAGS} tags.`;
   }
   if (value.published && !value.publishedAt) {
-    errors.publishedAt = "publishedAt is required when published is enabled.";
+    errors.publishedAt = "Set a publish date when Published is enabled.";
   }
 
   return {

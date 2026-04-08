@@ -61,10 +61,10 @@ export function validateProjectInput(input: ProjectInput): {
     errors.stack = "At least one stack item is required.";
   }
   if (value.tags.length > MAX_PROJECT_TAGS) {
-    errors.tags = `Maximum ${MAX_PROJECT_TAGS} tags allowed.`;
+    errors.tags = `You can add up to ${MAX_PROJECT_TAGS} tags.`;
   }
   if (value.published && !value.publishedAt) {
-    errors.publishedAt = "publishedAt is required when published is enabled.";
+    errors.publishedAt = "Set a publish date when Published is enabled.";
   }
   if (value.repoUrl && !isValidHttpUrl(value.repoUrl)) {
     errors.repoUrl = "Repo URL must be a valid http(s) URL.";

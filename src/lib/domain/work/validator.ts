@@ -54,10 +54,10 @@ export function validateWorkInput(input: WorkInput): {
   }
 
   if (value.tags.length > MAX_WORK_TAGS) {
-    errors.tags = `Maximum ${MAX_WORK_TAGS} tags allowed.`;
+    errors.tags = `You can add up to ${MAX_WORK_TAGS} tags.`;
   }
   if (value.published && !value.publishedAt) {
-    errors.publishedAt = "publishedAt is required when published is enabled.";
+    errors.publishedAt = "Set a publish date when Published is enabled.";
   }
 
   if (value.scope.length === 0) {

@@ -117,10 +117,12 @@ export default async function EditAdminProjectPage({
       <h1 className="text-2xl font-semibold tracking-tight">Edit Project</h1>
       <p className="mt-2 text-sm text-black/60">Update content, publication state, and featured flag.</p>
       {sp.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Please fix the highlighted fields and try again.</p>
+        <p className="mt-3 text-sm text-red-700">Error saving</p>
       ) : null}
 
-      <form action={updateProjectAction.bind(null, id)} className="mt-8 space-y-5">
+      <form action={updateProjectAction.bind(null, id)} className="mt-8 space-y-8">
+        <section className="space-y-5 border-b border-black/10 pb-8">
+          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Content</h2>
         <label className="block">
           <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Title *</span>
           <input name="title" defaultValue={current.title} className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
@@ -129,6 +131,7 @@ export default async function EditAdminProjectPage({
         <label className="block">
           <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Slug *</span>
           <input name="slug" defaultValue={current.slug} className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+          <p className="mt-1 text-xs text-black/45">Used in URL. Auto-generated from title but editable.</p>
           {parsedErrors.slug ? <p className="mt-1 text-xs text-red-700">{parsedErrors.slug}</p> : null}
         </label>
         <label className="block">
@@ -142,10 +145,17 @@ export default async function EditAdminProjectPage({
           {parsedErrors.body ? <p className="mt-1 text-xs text-red-700">{parsedErrors.body}</p> : null}
         </label>
         <label className="block">
-          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Tags (comma, max 3)</span>
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Tags</span>
           <input name="tags" defaultValue={serializeCommaList(current.tags ?? [])} className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
           {parsedErrors.tags ? <p className="mt-1 text-xs text-red-700">{parsedErrors.tags}</p> : null}
+          <p className="mt-1 text-xs text-black/45">Max 3 tags. Used for grouping and discovery.</p>
         </label>
+        </section>
+        <section className="space-y-5 border-b border-black/10 pb-8">
+          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Publishing</h2>
+          <div className="rounded-md border border-black/10 bg-black/[0.02] px-3 py-2 text-xs text-black/60">
+            State: {current.published ? "Published" : "Draft"} {`|`} Featured: {current.featured ? "Yes" : "No"}
+          </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Role *</span>
@@ -207,22 +217,31 @@ export default async function EditAdminProjectPage({
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Published at</span>
             <input name="publishedAt" type="datetime-local" defaultValue={publishedAtValue} className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
             {parsedErrors.publishedAt ? <p className="mt-1 text-xs text-red-700">{parsedErrors.publishedAt}</p> : null}
+            <p className="mt-1 text-xs text-black/45">Controls ordering on the public site.</p>
           </label>
         </div>
         <div className="flex flex-wrap gap-6">
           <label className="inline-flex items-center gap-2 text-sm text-black/70">
             <input type="checkbox" name="featured" defaultChecked={Boolean(current.featured)} />
             Featured
+            <span className="text-xs text-black/45">Shown on homepage and highlighted sections (max 2).</span>
           </label>
           <label className="inline-flex items-center gap-2 text-sm text-black/70">
             <input type="checkbox" name="published" defaultChecked={current.published} />
             Published
+            <span className="text-xs text-black/45">Only published items are visible on the public site.</span>
           </label>
         </div>
         {parsedErrors.featured ? <p className="mt-1 text-xs text-red-700">{parsedErrors.featured}</p> : null}
-        <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
-          Save project
-        </button>
+        </section>
+        <section className="space-y-5">
+          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Domain-specific</h2>
+          <div className="flex justify-end">
+            <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
+              Save
+            </button>
+          </div>
+        </section>
       </form>
     </main>
   );

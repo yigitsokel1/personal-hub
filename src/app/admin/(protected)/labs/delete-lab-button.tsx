@@ -9,9 +9,14 @@ export function DeleteLabButton() {
     <button
       type="submit"
       disabled={pending}
-      className="font-mono text-xs text-red-700 underline decoration-red-300 underline-offset-4 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+      className="font-mono text-xs text-red-700 underline decoration-red-300 underline-offset-4 hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+      onClick={(event) => {
+        if (!window.confirm("Are you sure you want to delete this item?")) {
+          event.preventDefault();
+        }
+      }}
     >
-      {pending ? "deleting..." : "delete"}
+      {pending ? "Deleting..." : "Delete"}
     </button>
   );
 }

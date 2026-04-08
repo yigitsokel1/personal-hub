@@ -34,13 +34,13 @@ export function validateWritingInput(input: WritingInput): {
   if (!value.summary) errors.summary = "Summary is required.";
   if (!value.body) errors.body = "Body is required.";
   if (value.tags.length > MAX_WRITING_TAGS) {
-    errors.tags = `Maximum ${MAX_WRITING_TAGS} tags allowed.`;
+    errors.tags = `You can add up to ${MAX_WRITING_TAGS} tags.`;
   }
   if (value.readingTime != null && (!Number.isInteger(value.readingTime) || value.readingTime <= 0)) {
     errors.readingTime = "Reading time must be a positive whole number.";
   }
   if (value.published && !value.publishedAt) {
-    errors.publishedAt = "publishedAt is required when published is enabled.";
+    errors.publishedAt = "Set a publish date when Published is enabled.";
   }
 
   return {

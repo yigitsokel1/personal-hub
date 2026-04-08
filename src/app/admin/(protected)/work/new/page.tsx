@@ -100,12 +100,12 @@ export default async function NewAdminWorkPage({
       <h1 className="text-2xl font-semibold tracking-tight">New Work</h1>
       <p className="mt-2 text-sm text-black/60">Create a work item for public or draft state.</p>
       {params.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Please fix the highlighted fields and try again.</p>
+        <p className="mt-3 text-sm text-red-700">Error saving</p>
       ) : null}
 
       <form action={createWorkAction} className="mt-8 space-y-8">
         <section className="space-y-5 border-b border-black/10 pb-8">
-          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Group 1 - Core</h2>
+          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Content</h2>
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Title *</span>
             <input name="title" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
@@ -114,48 +114,55 @@ export default async function NewAdminWorkPage({
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Slug *</span>
             <input name="slug" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
-            <p className="mt-1 text-xs text-black/45">Leave blank to auto-generate from title.</p>
+            <p className="mt-1 text-xs text-black/45">Used in URL. Auto-generated from title but editable.</p>
             {parsedErrors.slug ? <p className="mt-1 text-xs text-red-700">{parsedErrors.slug}</p> : null}
           </label>
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Summary *</span>
-            <textarea name="summary" className="h-24 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+            <textarea name="summary" className="min-h-32 w-full resize-y rounded-md border border-black/15 px-3 py-2 leading-6 text-sm outline-none focus:border-black/35" required />
             {parsedErrors.summary ? <p className="mt-1 text-xs text-red-700">{parsedErrors.summary}</p> : null}
           </label>
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Body *</span>
-            <textarea name="body" className="h-56 w-full rounded-md border border-black/15 px-3 py-2 font-mono text-xs outline-none focus:border-black/35" required />
+            <textarea name="body" className="min-h-80 w-full resize-y rounded-md border border-black/15 px-3 py-2 font-mono text-sm leading-7 outline-none focus:border-black/35" required />
             {parsedErrors.body ? <p className="mt-1 text-xs text-red-700">{parsedErrors.body}</p> : null}
           </label>
           <label className="block">
-            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Tags (comma, max 3)</span>
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Tags</span>
             <input name="tags" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
             {parsedErrors.tags ? <p className="mt-1 text-xs text-red-700">{parsedErrors.tags}</p> : null}
+            <p className="mt-1 text-xs text-black/45">Max 3 tags. Used for grouping and discovery.</p>
           </label>
         </section>
 
         <section className="space-y-5 border-b border-black/10 pb-8">
-          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Group 2 - Publishing</h2>
+          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Publishing</h2>
+          <div className="rounded-md border border-black/10 bg-black/[0.02] px-3 py-2 text-xs text-black/60">
+            State: Draft {`|`} Featured: No
+          </div>
           <label className="block max-w-sm">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Published at</span>
             <input name="publishedAt" type="datetime-local" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
             {parsedErrors.publishedAt ? <p className="mt-1 text-xs text-red-700">{parsedErrors.publishedAt}</p> : null}
+            <p className="mt-1 text-xs text-black/45">Controls ordering on the public site.</p>
           </label>
           <div className="flex flex-wrap gap-6">
             <label className="inline-flex items-center gap-2 text-sm text-black/70">
               <input type="checkbox" name="featured" />
               Featured
+              <span className="text-xs text-black/45">Shown on homepage and highlighted sections (max 2).</span>
             </label>
             <label className="inline-flex items-center gap-2 text-sm text-black/70">
               <input type="checkbox" name="published" />
               Published
+              <span className="text-xs text-black/45">Only published items are visible on the public site.</span>
             </label>
           </div>
           {parsedErrors.featured ? <p className="mt-1 text-xs text-red-700">{parsedErrors.featured}</p> : null}
         </section>
 
         <section className="space-y-5">
-          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Group 3 - Engagement</h2>
+          <h2 className="font-mono text-xs uppercase tracking-[0.15em] text-black/55">Domain-specific</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
               <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Client *</span>
@@ -209,16 +216,18 @@ export default async function NewAdminWorkPage({
           </label>
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Constraints (one line each)</span>
-            <textarea name="constraints" className="h-20 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+            <textarea name="constraints" className="min-h-24 w-full resize-y rounded-md border border-black/15 px-3 py-2 leading-6 text-sm outline-none focus:border-black/35" />
           </label>
           <label className="block">
             <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Impact (one line each)</span>
-            <textarea name="impact" className="h-20 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+            <textarea name="impact" className="min-h-24 w-full resize-y rounded-md border border-black/15 px-3 py-2 leading-6 text-sm outline-none focus:border-black/35" />
           </label>
         </section>
-        <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
-          Create work
-        </button>
+        <div className="flex justify-end">
+          <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
+            Save
+          </button>
+        </div>
       </form>
     </main>
   );
