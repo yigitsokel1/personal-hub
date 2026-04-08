@@ -4,6 +4,7 @@ import { HomeHero } from "@/components/home/home-hero";
 import { HomeSection } from "@/components/home/home-section";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getPublishedProjects } from "@/lib/content-source/get-projects";
 import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { getFeaturedContent } from "@/lib/content/get-content";
@@ -62,7 +63,8 @@ export default async function HomePage() {
   const webSiteLd = buildWebSiteJsonLd();
   const { value: settings } = await getSiteSettings();
   const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);
-  const featuredProjects = getFeaturedContent("project").slice(0, PREVIEW_LIMIT);
+  const { value: allProjects } = await getPublishedProjects();
+  const featuredProjects = allProjects.filter((item) => item.featured).slice(0, PREVIEW_LIMIT);
   const { value: writing } = await getPublishedWriting();
   const latestWriting = writing.slice(0, PREVIEW_LIMIT);
 

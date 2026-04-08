@@ -22,6 +22,9 @@ export default async function ProtectedAdminLayout({
           <Link href="/admin/settings" className="hover:text-black">
             settings
           </Link>
+          <Link href="/admin/projects" className="hover:text-black">
+            projects
+          </Link>
           <Link href="/admin/writing" className="hover:text-black">
             writing
           </Link>

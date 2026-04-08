@@ -42,6 +42,7 @@ npm run dev
 2. Sign in with `ADMIN_PASSWORD`.
 3. You will be redirected to `/admin/settings`.
 4. Writing CMS operations live under `/admin/writing` (create/edit/delete).
+5. Projects CMS operations live under `/admin/projects` (create/edit/delete).
 
 ## Local dev workflow
 
@@ -53,9 +54,22 @@ npm run dev
    - `/admin/settings`
    - `/admin/writing`
    - `/admin/writing/new`
+   - `/admin/projects`
+   - `/admin/projects/new`
    - `/writing`
+   - `/projects`
 
 ## Migration notes
 
 If you see Prisma drift warnings in local development, follow:
 - `docs/db-migrations.md`
+
+## Project migration helper
+
+After applying migrations, import project MDX into DB with:
+
+```bash
+npm run migrate:projects-db
+```
+
+This script reads from `src/content/projects/` and `src/content/_legacy/projects/`, validates required fields, and upserts by `slug`.

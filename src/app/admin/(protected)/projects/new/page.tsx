@@ -1,0 +1,216 @@
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import {
+  countOtherFeaturedProjects,
+  createProject,
+  isProjectSlugTaken,
+} from "@/lib/content-source/get-projects";
+import {
+  MAX_FEATURED_PROJECTS,
+  toProjectInput,
+} from "@/lib/domain/projects/mapper";
+import { validateProjectInput } from "@/lib/domain/projects/validator";
+
+async function validateMdxBody(body: string): Promise<string | null> {
+  try {
+    const { serialize } = await import("next-mdx-remote/serialize");
+    await serialize(body);
+    return null;
+  } catch {
+    return "Body must be valid MDX syntax.";
+  }
+}
+
+async function createProjectAction(formData: FormData): Promise<void> {
+  "use server";
+
+  const validated = validateProjectInput(
+    toProjectInput({
+      title: String(formData.get("title") ?? ""),
+      slug: String(formData.get("slug") ?? ""),
+      summary: String(formData.get("summary") ?? ""),
+      body: String(formData.get("body") ?? ""),
+      tagsRaw: String(formData.get("tags") ?? ""),
+      featured: formData.get("featured") === "on",
+      published: formData.get("published") === "on",
+      publishedAt: String(formData.get("publishedAt") ?? ""),
+      role: String(formData.get("role") ?? ""),
+      stackRaw: String(formData.get("stack") ?? ""),
+      platform: String(formData.get("platform") ?? ""),
+      problem: String(formData.get("problem") ?? ""),
+      solution: String(formData.get("solution") ?? ""),
+      architectureHighlightsRaw: String(formData.get("architectureHighlights") ?? ""),
+      decisionsRaw: String(formData.get("decisions") ?? ""),
+      outcomesRaw: String(formData.get("outcomes") ?? ""),
+      repoUrl: String(formData.get("repoUrl") ?? ""),
+      liveUrl: String(formData.get("liveUrl") ?? ""),
+      timeline: String(formData.get("timeline") ?? ""),
+    })
+  );
+
+  if (!validated.success) {
+    const payload = encodeURIComponent(JSON.stringify(validated.errors));
+    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+  }
+
+  const mdxError = await validateMdxBody(validated.value.body);
+  if (mdxError) {
+    const payload = encodeURIComponent(JSON.stringify({ body: mdxError }));
+    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+  }
+
+  if (await isProjectSlugTaken(validated.value.slug)) {
+    const payload = encodeURIComponent(JSON.stringify({ slug: "Slug must be unique." }));
+    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+  }
+
+  if (
+    validated.value.featured &&
+    (await countOtherFeaturedProjects()) >= MAX_FEATURED_PROJECTS
+  ) {
+    const payload = encodeURIComponent(
+      JSON.stringify({
+        featured: `Maximum ${MAX_FEATURED_PROJECTS} featured projects are allowed.`,
+      })
+    );
+    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+  }
+
+  await createProject(validated.value);
+  revalidatePath("/projects");
+  redirect("/admin/projects?status=saved");
+}
+
+export default async function NewAdminProjectPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; errors?: string }>;
+}) {
+  const params = await searchParams;
+  let parsedErrors: Record<string, string> = {};
+  if (params.errors) {
+    try {
+      parsedErrors = JSON.parse(params.errors) as Record<string, string>;
+    } catch {
+      parsedErrors = {};
+    }
+  }
+
+  return (
+    <main>
+      <h1 className="text-2xl font-semibold tracking-tight">New Project</h1>
+      <p className="mt-2 text-sm text-black/60">
+        Create a project item for public or draft state.
+      </p>
+      {params.status === "error" ? (
+        <p className="mt-3 text-sm text-red-700">Please fix the highlighted fields and try again.</p>
+      ) : null}
+
+      <form action={createProjectAction} className="mt-8 space-y-5">
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Title *</span>
+          <input name="title" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+          {parsedErrors.title ? <p className="mt-1 text-xs text-red-700">{parsedErrors.title}</p> : null}
+        </label>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Slug *</span>
+          <input name="slug" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+          <p className="mt-1 text-xs text-black/45">Leave blank to auto-generate from title.</p>
+          {parsedErrors.slug ? <p className="mt-1 text-xs text-red-700">{parsedErrors.slug}</p> : null}
+        </label>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Summary *</span>
+          <textarea name="summary" className="h-24 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+          {parsedErrors.summary ? <p className="mt-1 text-xs text-red-700">{parsedErrors.summary}</p> : null}
+        </label>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Body *</span>
+          <textarea name="body" className="h-56 w-full rounded-md border border-black/15 px-3 py-2 font-mono text-xs outline-none focus:border-black/35" required />
+          {parsedErrors.body ? <p className="mt-1 text-xs text-red-700">{parsedErrors.body}</p> : null}
+        </label>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Tags (comma, max 3)</span>
+          <input name="tags" placeholder="system-design, backend, ai" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+          {parsedErrors.tags ? <p className="mt-1 text-xs text-red-700">{parsedErrors.tags}</p> : null}
+        </label>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Role *</span>
+            <input name="role" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+            {parsedErrors.role ? <p className="mt-1 text-xs text-red-700">{parsedErrors.role}</p> : null}
+          </label>
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Platform</span>
+            <input name="platform" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+          </label>
+        </div>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Stack * (comma)</span>
+          <input name="stack" placeholder="Next.js, TypeScript, Prisma" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+          {parsedErrors.stack ? <p className="mt-1 text-xs text-red-700">{parsedErrors.stack}</p> : null}
+        </label>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Problem *</span>
+          <textarea name="problem" className="h-24 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+          {parsedErrors.problem ? <p className="mt-1 text-xs text-red-700">{parsedErrors.problem}</p> : null}
+        </label>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Solution *</span>
+          <textarea name="solution" className="h-24 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" required />
+          {parsedErrors.solution ? <p className="mt-1 text-xs text-red-700">{parsedErrors.solution}</p> : null}
+        </label>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Architecture highlights (one line each)</span>
+            <textarea name="architectureHighlights" className="h-32 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Decisions (one line each)</span>
+            <textarea name="decisions" className="h-32 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+          </label>
+        </div>
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Outcomes (one line each)</span>
+          <textarea name="outcomes" className="h-24 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+        </label>
+        <div className="grid gap-5 sm:grid-cols-3">
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Repo URL</span>
+            <input name="repoUrl" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+            {parsedErrors.repoUrl ? <p className="mt-1 text-xs text-red-700">{parsedErrors.repoUrl}</p> : null}
+          </label>
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Live URL</span>
+            <input name="liveUrl" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+            {parsedErrors.liveUrl ? <p className="mt-1 text-xs text-red-700">{parsedErrors.liveUrl}</p> : null}
+          </label>
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Timeline</span>
+            <input name="timeline" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+          </label>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">Published at</span>
+            <input name="publishedAt" type="datetime-local" className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35" />
+            {parsedErrors.publishedAt ? <p className="mt-1 text-xs text-red-700">{parsedErrors.publishedAt}</p> : null}
+          </label>
+        </div>
+        <div className="flex flex-wrap gap-6">
+          <label className="inline-flex items-center gap-2 text-sm text-black/70">
+            <input type="checkbox" name="featured" />
+            Featured
+          </label>
+          <label className="inline-flex items-center gap-2 text-sm text-black/70">
+            <input type="checkbox" name="published" />
+            Published
+          </label>
+        </div>
+        {parsedErrors.featured ? <p className="mt-1 text-xs text-red-700">{parsedErrors.featured}</p> : null}
+        <button type="submit" className="rounded-md bg-black px-4 py-2 font-mono text-sm text-white transition-opacity hover:opacity-90">
+          Create project
+        </button>
+      </form>
+    </main>
+  );
+}

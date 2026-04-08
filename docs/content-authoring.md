@@ -2,7 +2,7 @@
 
 This document is the operational authoring contract for content domains.
 
-## Admin-Managed Domain
+## Admin-Managed Domains
 
 ### Writing (source of truth: database/admin)
 
@@ -18,12 +18,30 @@ This document is the operational authoring contract for content domains.
 Legacy note:
 - `src/content/templates/writing-template.mdx` is historical reference only.
 
+### Projects (source of truth: database/admin)
+
+- Creation/edit path: `/admin/projects`.
+- Public runtime source is DB-only (`getPublishedProjects`, `getProjectBySlug`).
+- Required fields: `title`, `slug`, `summary`, `body`, `role`, `problem`, `solution`.
+- Structured fields:
+  - `stack` (required, non-empty)
+  - `architectureHighlights`, `decisions`, `outcomes` (line-based arrays in admin UI)
+- Optional fields: `tags`, `featured`, `published`, `publishedAt`, `platform`, `repoUrl`, `liveUrl`, `timeline`.
+- Rules:
+  - `tags` max **3**
+  - `featured` max **2** active projects
+  - if `published = true`, `publishedAt` is required
+  - `repoUrl` / `liveUrl` must be valid http(s) URLs when provided
+
+Legacy note:
+- `src/content/_legacy/projects/` is archival only and not a runtime source.
+- `src/content/templates/project-template.mdx` is historical reference only.
+
 ## MDX-Managed Domains
 
-### Projects / Work / Labs (source of truth: MDX)
+### Work / Labs (source of truth: MDX)
 
 - Files live in:
-  - `src/content/projects/`
   - `src/content/work/`
   - `src/content/labs/`
 - Authoring templates live in `src/content/templates/`.
@@ -33,7 +51,6 @@ Legacy note:
   - `updatedAt`, `featured`, `tags`, `cover`, `seo`, `status`
 
 Domain-specific MDX requirements:
-- `project`: `role`, `stack`, `problem`, `solution`
 - `work`: `client`, `engagementType`, `role`, `scope`, `responsibilities`
 - `lab`: `experimentType`, `tools`
 

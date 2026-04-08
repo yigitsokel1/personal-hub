@@ -3,7 +3,7 @@ id: project-content-release-workbench
 type: project
 title: "Content Release Workbench"
 slug: content-release-workbench
-summary: "A git-native release workflow for structured MDX content with validation gates, preview checks, and predictable publish windows."
+summary: "A release workflow designed during the MDX-first phase, later adapted to support DB/admin-managed domains."
 publishedAt: "2025-12-05"
 status: published
 tags:
@@ -22,8 +22,8 @@ architectureHighlights:
   - "Preview step blocks merge on broken links or invalid metadata."
   - "Release notes compile from changed content entries."
 decisions:
-  - "Used existing CI primitives instead of introducing a new CMS workflow."
-  - "Kept authoring in plain MDX to preserve versioned edits."
+  - "Used existing CI primitives instead of introducing a CMS in v1."
+  - "Kept authoring in plain MDX initially, then evolved workflows as DB-admin domains were introduced."
 outcomes:
   - "Publishing quality became repeatable across contributors."
   - "Release confidence improved without adding editorial overhead."

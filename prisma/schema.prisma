@@ -40,3 +40,30 @@ model Writing {
 
   @@map("writing")
 }
+
+model Project {
+  id                     String    @id @default(cuid())
+  title                  String
+  slug                   String    @unique
+  summary                String
+  body                   String
+  tags                   String[]
+  featured               Boolean   @default(false)
+  published              Boolean   @default(false)
+  publishedAt            DateTime? @map("published_at")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+  role                   String
+  stack                  String[]
+  platform               String?
+  problem                String
+  solution               String
+  architectureHighlights String[]  @map("architecture_highlights")
+  decisions              String[]
+  outcomes               String[]
+  repoUrl                String?   @map("repo_url")
+  liveUrl                String?   @map("live_url")
+  timeline               String?
+
+  @@map("projects")
+}

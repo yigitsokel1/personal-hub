@@ -6,13 +6,15 @@ A **personal hub platform** (not a portfolio template): structured content for p
 
 - Next.js (App Router), React, TypeScript
 - Tailwind CSS
-- MDX via `gray-matter` + `next-mdx-remote` (projects/work/labs)
-- Prisma + Postgres (admin-managed writing + settings)
+- MDX via `gray-matter` + `next-mdx-remote` (work/labs)
+- Prisma + Postgres (admin-managed writing + projects + settings)
 
 ## Content
 
 - Writing is admin-managed and database-backed (`/admin/writing`).
-- Projects, work, and labs are MDX-managed under `src/content/{projects,work,labs}`.
+- Projects are admin-managed and database-backed (`/admin/projects`).
+- Work and labs remain MDX-managed under `src/content/{work,labs}`.
+- Legacy project MDX entries are archived under `src/content/_legacy/projects/` and are not runtime sources.
 - The UI reads through content-source/domain layers; see `CLAUDE.md` for architecture notes.
 
 ## Scripts
@@ -22,6 +24,7 @@ npm run dev    # local dev
 npm run build  # production build
 npm run start  # run production server
 npm run lint   # ESLint
+npm run migrate:projects-db # import legacy project MDX into DB
 ```
 
 ## Environment

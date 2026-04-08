@@ -5,8 +5,11 @@ import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { ProjectDetailIntro } from "@/components/content/project-detail-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
-import { getContentBySlug, getPublishedContent } from "@/lib/content/get-content";
-import { getRelatedInDomain } from "@/lib/content/related";
+import {
+  getProjectBySlug,
+  getPublishedProjects,
+  getRelatedProjects,
+} from "@/lib/content-source/get-projects";
 import {
   buildContentDetailMetadata,
   contentSectionLabel,
@@ -16,8 +19,9 @@ type ProjectDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getPublishedContent("project").map((project) => ({
+export async function generateStaticParams() {
+  const { value } = await getPublishedProjects();
+  return value.map((project) => ({
     slug: project.slug,
   }));
 }
@@ -26,7 +30,7 @@ export async function generateMetadata({
   params,
 }: ProjectDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = getContentBySlug("project", slug);
+  const project = await getProjectBySlug(slug);
   if (!project) return {};
 
   return buildContentDetailMetadata({
@@ -44,13 +48,13 @@ export default async function ProjectDetailPage({
   params,
 }: ProjectDetailPageProps) {
   const { slug } = await params;
-  const project = getContentBySlug("project", slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
 
-  const related = getRelatedInDomain("project", slug, project.tags);
+  const related = await getRelatedProjects(slug, project.tags);
   const relatedLinks = related.map((r) => ({
     href: `${CONTENT_PATH_PREFIX.project}/${r.slug}`,
     title: r.title,

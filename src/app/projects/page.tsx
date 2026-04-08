@@ -4,7 +4,7 @@ import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { domainIndexCopy } from "@/lib/content/domain-index-copy";
-import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
+import { getPublishedProjects } from "@/lib/content-source/get-projects";
 import { formatContentYear } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
@@ -16,9 +16,9 @@ export const metadata: Metadata = buildSimplePageMetadata({
     "Productized systems and technical case studies—architecture, decisions, and outcomes.",
 });
 
-export default function ProjectsPage() {
-  const projects = getPublishedContent("project");
-  const featuredProjects = getFeaturedContent("project");
+export default async function ProjectsPage() {
+  const { value: projects } = await getPublishedProjects();
+  const featuredProjects = projects.filter((item) => item.featured);
   const featured =
     featuredProjects.length > 0 ? featuredProjects.slice(0, 2) : projects.slice(0, 2);
   const featuredIds = new Set(featured.map((item) => item.id));

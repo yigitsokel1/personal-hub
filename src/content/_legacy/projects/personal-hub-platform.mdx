@@ -3,7 +3,7 @@ id: project-personal-hub
 type: project
 title: "Personal Hub Platform"
 slug: personal-hub-platform
-summary: "Structured MDX for projects, work, writing, and labs—strict frontmatter, shared parse layer, and hub navigation instead of a single portfolio stream."
+summary: "Personal Hub’s v1 content architecture: MDX-first origins and the transition path toward DB/admin-managed domains."
 publishedAt: "2026-04-01"
 status: published
 featured: true
@@ -19,11 +19,11 @@ stack:
 problem: "Portfolio sites optimize for visuals and shallow case tiles; they rarely model multiple kinds of work or enforce one schema per domain, so the same story gets rewritten in inconsistent shapes."
 solution: "Treat the hub as a small content system: four domains with strict frontmatter, one parse layer, and pages that only compose validated data—so every new entry follows the same contract."
 architectureHighlights:
-  - "Filesystem MDX as source of truth; build-time validation fails bad frontmatter."
+  - "V1 used filesystem MDX as source of truth; later iterations moved writing/projects to DB-admin."
   - "Domain-specific types (project, work, writing, lab) share base fields only where they truly overlap."
   - "MDX body for long-form narrative; intro chrome from structured fields and layout components."
 decisions:
-  - "No CMS in v1: git and review flow stay the single editorial path."
+  - "No CMS in v1: git and review flow was the initial editorial path before admin surfaces shipped."
   - "Draft entries use `status: draft` so they never leak into sitemap, RSS, or static routes."
   - "Featured flags stay sparse so the homepage stays a curated signal, not a dump of everything."
 outcomes:
@@ -48,7 +48,7 @@ I wanted a structure where **discipline is default**: invalid content fails the 
 
 ## Solution
 
-The implementation stays boring on purpose: **Next.js App Router**, **MDX** with **gray-matter** for frontmatter, and TypeScript types that mirror what `parse.ts` enforces. List pages and detail intros consume the same parsed objects; the MDX body is only responsible for the long-form narrative.
+The first implementation stayed boring on purpose: **Next.js App Router**, **MDX** with **gray-matter** for frontmatter, and TypeScript types that mirror what `parse.ts` enforces. Later iterations kept the typed contracts but shifted writing and projects to DB/admin-managed flows.
 
 Nothing here tries to be a headless CMS, a design system, or a novel renderer. It is a **content-first spine** you can ship and then improve in place.
 
@@ -56,7 +56,7 @@ Nothing here tries to be a headless CMS, a design system, or a novel renderer. I
 
 At a high level:
 
-- **Content** lives under `src/content/{projects,work,writing,labs}/` as `.mdx` files.
+- **V1 content** lived under `src/content/{projects,work,writing,labs}/` as `.mdx` files.
 - **Parsing** turns each file into a typed entry plus a raw body string for MDX.
 - **Routes** map slugs to those entries; metadata and JSON-LD helpers read the same shapes.
 

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:settings": "ts-node prisma/seed.ts"
+    "seed:settings": "node prisma/seed.mjs",
+    "migrate:projects-db": "node scripts/migrate-projects-to-db.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
