@@ -3,7 +3,7 @@ id: project-personal-hub
 type: project
 title: "Personal Hub Platform"
 slug: personal-hub-platform
-summary: "Personal Hub’s v1 content architecture: MDX-first origins and the transition path toward DB/admin-managed domains."
+summary: "Historical v1 content architecture (MDX-first) and the transition to today’s DB/admin-managed domains."
 publishedAt: "2026-04-01"
 status: published
 featured: true
@@ -19,7 +19,7 @@ stack:
 problem: "Portfolio sites optimize for visuals and shallow case tiles; they rarely model multiple kinds of work or enforce one schema per domain, so the same story gets rewritten in inconsistent shapes."
 solution: "Treat the hub as a small content system: four domains with strict frontmatter, one parse layer, and pages that only compose validated data—so every new entry follows the same contract."
 architectureHighlights:
-  - "V1 used filesystem MDX as source of truth; later iterations moved writing/projects to DB-admin."
+  - "V1 used filesystem MDX as source of truth; later iterations moved writing/projects/work/labs to DB-admin."
   - "Domain-specific types (project, work, writing, lab) share base fields only where they truly overlap."
   - "MDX body for long-form narrative; intro chrome from structured fields and layout components."
 decisions:
@@ -48,7 +48,7 @@ I wanted a structure where **discipline is default**: invalid content fails the 
 
 ## Solution
 
-The first implementation stayed boring on purpose: **Next.js App Router**, **MDX** with **gray-matter** for frontmatter, and TypeScript types that mirror what `parse.ts` enforces. Later iterations kept the typed contracts but shifted writing and projects to DB/admin-managed flows.
+The first implementation stayed boring on purpose: **Next.js App Router**, **MDX** with **gray-matter** for frontmatter, and TypeScript types that mirror what `parse.ts` enforces. Later iterations kept typed contracts but shifted all runtime domains to DB/admin-managed flows.
 
 Nothing here tries to be a headless CMS, a design system, or a novel renderer. It is a **content-first spine** you can ship and then improve in place.
 

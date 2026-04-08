@@ -27,6 +27,7 @@ Smoke locally on `http://localhost:3000` after `npm run start`.
 - **Canonical URLs**: View source or devtools on a detail page and confirm `<link rel="canonical">` points at the production origin when the env var is set.
 - **`metadataBase`**: Set indirectly via `NEXT_PUBLIC_SITE_URL` in [src/app/layout.tsx](../src/app/layout.tsx). Without it, Open Graph and canonical tags are incomplete.
 - **Sitemap**: With `NEXT_PUBLIC_SITE_URL` unset, [src/app/sitemap.ts](../src/app/sitemap.ts) returns **no entries** (path-only URLs are invalid for sitemaps). After deploy, open `/sitemap.xml` and confirm full `https://` URLs for static routes, content slugs, and tag pages.
+- **Published semantics**: Published entries should have meaningful `publishedAt` values (editorial date), not system-created timestamps.
 - **RSS**: Open `/writing/feed.xml`. Item `<link>` and `<guid>` must be absolute `https://` URLs in production. Relative links appear only when the site URL env is missing (feed readers will not resolve them correctly).
 - **Content health**: Run `npm run build` with `CI=true` or `CONTENT_HEALTH_STRICT=1` in CI so duplicate slugs, duplicate ids, bad dates, and tag issues fail the pipeline. Advisory messages (missing site URL, optional `cover` alt reminders) log as warnings and do not fail strict mode.
 
@@ -37,7 +38,7 @@ Smoke locally on `http://localhost:3000` after `npm run start`.
 
 ## Image strategy
 
-- **Local assets**: Place files under `public/` and reference them with a root-relative path (e.g. `/og.png`) in frontmatter `cover` or MDX.
+- **Local assets**: Place files under `public/` and reference them with a root-relative path (e.g. `/og.png`) in database-backed `cover` fields (or legacy MDX references where applicable).
 - **Remote images**: Configure `images.remotePatterns` in [next.config.ts](../next.config.ts) before using `https://` image URLs with `next/image`.
 - **RSS / OG**: Cover images use the `src` string as-is; prefer absolute URLs if feeds or social crawlers must fetch them without a base URL.
 - **Default share image**: The fallback social card is generated at `/opengraph-image` (not a committed PNG). With `NEXT_PUBLIC_SITE_URL` set, metadata and [`build-metadata.ts`](../src/lib/seo/build-metadata.ts) reference it as an absolute URL; entries with `cover` override it on detail pages.
@@ -61,7 +62,7 @@ Use your host’s or a social debugger’s “Open Graph” / “link preview”
 
 ## Authoring and accessibility (light)
 
-- **MDX headings**: Page templates already provide the main `h1`. Start MDX body at `##` / `###` unless the page intentionally has no chrome title.
+- **Legacy MDX references**: Runtime content is DB/admin-managed. When reviewing archived MDX files, keep body headings at `##` / `###` unless the page intentionally has no chrome title.
 - **`cover.alt`**: Recommended when `cover.src` is set; content health logs an advisory if `alt` is omitted (decorative images may use empty alt with a deliberate choice).
 
 ## Related docs

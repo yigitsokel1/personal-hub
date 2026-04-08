@@ -15,6 +15,9 @@ export function adaptDbWork(record: PrismaWork): DbWorkItem {
     : [];
   const constraints = Array.isArray(record.constraints) ? record.constraints.filter(Boolean) : [];
   const impact = Array.isArray(record.impact) ? record.impact.filter(Boolean) : [];
+  if (record.published && !record.publishedAt) {
+    throw new Error(`Published work entry "${record.slug}" is missing publishedAt.`);
+  }
 
   return {
     dbId: record.id,

@@ -8,11 +8,11 @@ export function getDefaultSiteSettings(): SiteSettings {
     productSignals: [
       {
         label: "content_first_system",
-        detail: "Typed content layer enforced at build-time via content parsing and schema validation.",
+        detail: "Content is structured and typed across all domains with explicit schema contracts.",
       },
       {
         label: "code_first_delivery",
-        detail: "CMS-free workflow with MDX templates and type-safe route generation.",
+        detail: "Content is managed through an admin panel with domain-driven publishing workflows.",
       },
       {
         label: "engineering_judgment",
@@ -20,7 +20,7 @@ export function getDefaultSiteSettings(): SiteSettings {
       },
       {
         label: "continuous_builder",
-        detail: "Projects, writing, and labs ship through one shared content pipeline.",
+        detail: "Consistency is enforced by validators with no implicit content parsing in runtime.",
       },
     ],
     aboutShort: homepageCopy.compactAbout,

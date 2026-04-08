@@ -15,10 +15,12 @@ function isMissingProjectsTableError(error: unknown): boolean {
   );
 }
 
-function sortByPublishedDateDesc<T extends { publishedAt: string }>(items: T[]): T[] {
-  return [...items].sort((a, b) => {
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-  });
+function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
+  if (!published) return publishedAt ? new Date(publishedAt) : null;
+  if (!publishedAt) {
+    throw new Error("publishedAt is required when published is true.");
+  }
+  return new Date(publishedAt);
 }
 
 export async function listAdminProjects(): Promise<DbProjectItem[]> {
@@ -57,7 +59,7 @@ export async function createProject(input: ProjectInput): Promise<DbProjectItem>
       tags: input.tags,
       featured: input.featured,
       published: input.published,
-      publishedAt: input.publishedAt ? new Date(input.publishedAt) : null,
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
       role: input.role,
       stack: input.stack,
       platform: input.platform,
@@ -86,7 +88,7 @@ export async function updateProject(id: string, input: ProjectInput): Promise<Db
       tags: input.tags,
       featured: input.featured,
       published: input.published,
-      publishedAt: input.publishedAt ? new Date(input.publishedAt) : null,
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
       role: input.role,
       stack: input.stack,
       platform: input.platform,
@@ -154,7 +156,7 @@ export async function getPublishedProjects(): Promise<{
 
     return {
       source: "database",
-      value: sortByPublishedDateDesc(rows.map(adaptDbProject)),
+      value: rows.map(adaptDbProject),
     };
   } catch (error) {
     if (isMissingProjectsTableError(error)) {

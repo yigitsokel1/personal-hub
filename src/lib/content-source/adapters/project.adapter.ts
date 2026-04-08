@@ -15,6 +15,9 @@ export function adaptDbProject(record: PrismaProject): DbProjectItem {
     : [];
   const decisions = Array.isArray(record.decisions) ? record.decisions.filter(Boolean) : [];
   const outcomes = Array.isArray(record.outcomes) ? record.outcomes.filter(Boolean) : [];
+  if (record.published && !record.publishedAt) {
+    throw new Error(`Published project entry "${record.slug}" is missing publishedAt.`);
+  }
 
   return {
     dbId: record.id,

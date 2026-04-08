@@ -6,8 +6,11 @@
 - Legacy project MDX files are archived under `src/content/_legacy/projects/`.
 - Work runtime source is now DB/admin-managed.
 - Legacy work MDX files are archived under `src/content/_legacy/work/`.
-- Labs remain MDX-managed.
-- Remaining operational cleanup: resolve Prisma migration drift in local/dev databases before running `npm run migrate:projects-db`.
+- Labs runtime source is now DB/admin-managed.
+- Legacy labs MDX files are archived under `src/content/_legacy/labs/`.
+- Remaining operational cleanup:
+  - resolve Prisma migration drift in local/dev databases before rerunning migration scripts
+  - keep migration scripts and docs aligned with `_legacy/*` source paths until legacy cleanup sprint
 
 ---
 

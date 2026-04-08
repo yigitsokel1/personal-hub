@@ -28,6 +28,7 @@ export default async function AdminWritingPage({
         </Link>
       </div>
       <div className="mt-3 min-h-5 text-sm">
+        {params.status === "saved" ? <p className="text-green-700">Writing saved.</p> : null}
         {params.status === "deleted" ? <p className="text-green-700">Writing deleted.</p> : null}
         {params.status === "delete_missing" ? (
           <p className="text-red-700">Delete failed: item was not found.</p>

@@ -2,6 +2,8 @@
 
 This document is the operational authoring contract for content domains.
 
+All runtime domains are admin-managed and DB-backed. MDX templates and legacy MDX files are historical references only.
+
 ## Admin-Managed Domains
 
 ### Writing (source of truth: database/admin)

@@ -15,6 +15,7 @@ A **personal hub platform** (not a portfolio template): structured content for p
 - Projects are admin-managed and database-backed (`/admin/projects`).
 - Work is admin-managed and database-backed (`/admin/work`).
 - Labs are admin-managed and database-backed (`/admin/labs`).
+- Admin panel is the primary content entry point for all runtime domains.
 - Legacy writing MDX entries are archived under `src/content/_legacy/writing/` and are not runtime sources.
 - Legacy project MDX entries are archived under `src/content/_legacy/projects/` and are not runtime sources.
 - Legacy work MDX entries are archived under `src/content/_legacy/work/` and are not runtime sources.
@@ -41,7 +42,7 @@ Set `NEXT_PUBLIC_SITE_URL` in production (e.g. `https://your-domain.com`, no tra
 
 - Favicon: `src/app/icon.svg` (served at `/icon.svg`). Apple touch: `src/app/apple-icon.tsx`.
 - Web manifest: `public/manifest.webmanifest` (update `name` / `short_name` if you change branding in `src/lib/content/homepage-copy.ts`).
-- Default link-preview image: `src/app/opengraph-image.tsx` (route `/opengraph-image`), with Twitter parity via `twitter-image.tsx`. Entry `cover` in MDX overrides the default on detail pages when set.
+- Default link-preview image: `src/app/opengraph-image.tsx` (route `/opengraph-image`), with Twitter parity via `twitter-image.tsx`. Entry `cover` in database records overrides the default on detail pages when set.
 
 ## Deploy
 

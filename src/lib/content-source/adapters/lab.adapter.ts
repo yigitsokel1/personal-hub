@@ -9,6 +9,9 @@ export type DbLabItem = ContentWithBody<LabContent> & {
 
 export function adaptDbLab(record: PrismaLab): DbLabItem {
   const tags = Array.isArray(record.tags) ? record.tags.filter(Boolean) : [];
+  if (record.published && !record.publishedAt) {
+    throw new Error(`Published lab entry "${record.slug}" is missing publishedAt.`);
+  }
 
   return {
     dbId: record.id,

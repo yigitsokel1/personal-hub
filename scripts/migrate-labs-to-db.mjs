@@ -1,3 +1,8 @@
+// NOTE:
+// This script is intended for one-time migration from MDX to DB.
+// It is idempotent based on slug.
+// Not used in runtime.
+
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
@@ -78,8 +83,9 @@ function parseLab(filePath) {
 async function main() {
   const prisma = new PrismaClient();
   try {
+    const checkedDir = path.resolve(CONTENT_DIR);
     if (!fs.existsSync(CONTENT_DIR)) {
-      throw new Error("No labs MDX directory found at src/content/_legacy/labs.");
+      throw new Error(`No labs MDX directory found. Checked directory: ${checkedDir}`);
     }
 
     const files = fs
@@ -87,7 +93,7 @@ async function main() {
       .filter((name) => name.endsWith(".mdx"))
       .map((name) => path.join(CONTENT_DIR, name));
     if (files.length === 0) {
-      throw new Error("No labs MDX files found in src/content/_legacy/labs.");
+      throw new Error(`No labs MDX files found. Checked directory: ${checkedDir}`);
     }
 
     const parsed = files.map(parseLab);
@@ -96,6 +102,23 @@ async function main() {
       console.error("Validation failed for labs migration:");
       for (const entry of invalid) {
         console.error(`- ${path.basename(entry.filePath)}: ${entry.errors.join("; ")}`);
+      }
+      process.exitCode = 1;
+      return;
+    }
+
+    const slugToFiles = new Map();
+    for (const entry of parsed) {
+      const slug = entry.value.slug;
+      const list = slugToFiles.get(slug) ?? [];
+      list.push(path.basename(entry.filePath));
+      slugToFiles.set(slug, list);
+    }
+    const duplicateSlugEntries = [...slugToFiles.entries()].filter(([, list]) => list.length > 1);
+    if (duplicateSlugEntries.length > 0) {
+      console.error("Duplicate lab slugs found in source files:");
+      for (const [slug, list] of duplicateSlugEntries) {
+        console.error(`- ${slug}: ${list.join(", ")}`);
       }
       process.exitCode = 1;
       return;

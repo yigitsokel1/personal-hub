@@ -6,10 +6,12 @@ import type { WorkInput } from "@/lib/domain/work/types";
 
 type WorkSource = "database";
 
-function sortByPublishedDateDesc<T extends { publishedAt: string }>(items: T[]): T[] {
-  return [...items].sort((a, b) => {
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-  });
+function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
+  if (!published) return publishedAt ? new Date(publishedAt) : null;
+  if (!publishedAt) {
+    throw new Error("publishedAt is required when published is true.");
+  }
+  return new Date(publishedAt);
 }
 
 export async function listAdminWork(): Promise<DbWorkItem[]> {
@@ -38,7 +40,7 @@ export async function createWork(input: WorkInput): Promise<DbWorkItem> {
       tags: input.tags,
       featured: input.featured,
       published: input.published,
-      publishedAt: input.publishedAt ? new Date(input.publishedAt) : null,
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
       client: input.client,
       engagementType: input.engagementType,
       role: input.role,
@@ -65,7 +67,7 @@ export async function updateWork(id: string, input: WorkInput): Promise<DbWorkIt
       tags: input.tags,
       featured: input.featured,
       published: input.published,
-      publishedAt: input.publishedAt ? new Date(input.publishedAt) : null,
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
       client: input.client,
       engagementType: input.engagementType,
       role: input.role,
@@ -130,7 +132,7 @@ export async function getPublishedWork(): Promise<{
 
   return {
     source: "database",
-    value: sortByPublishedDateDesc(rows.map(adaptDbWork)),
+    value: rows.map(adaptDbWork),
   };
 }
 

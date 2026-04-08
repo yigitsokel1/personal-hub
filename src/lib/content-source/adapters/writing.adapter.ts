@@ -9,6 +9,9 @@ export type DbWritingItem = ContentWithBody<WritingContent> & {
 
 export function adaptDbWriting(record: PrismaWriting): DbWritingItem {
   const tags = Array.isArray(record.tags) ? record.tags.filter(Boolean) : [];
+  if (record.published && !record.publishedAt) {
+    throw new Error(`Published writing entry "${record.slug}" is missing publishedAt.`);
+  }
 
   return {
     dbId: record.id,

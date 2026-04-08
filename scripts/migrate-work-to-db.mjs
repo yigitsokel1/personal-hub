@@ -1,9 +1,17 @@
+// NOTE:
+// This script is intended for one-time migration from MDX to DB.
+// It is idempotent based on slug.
+// Not used in runtime.
+
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { PrismaClient } from "@prisma/client";
 
-const CONTENT_DIR = path.join(process.cwd(), "src", "content", "work");
+const CONTENT_DIRS = [
+  path.join(process.cwd(), "src", "content", "work"),
+  path.join(process.cwd(), "src", "content", "_legacy", "work"),
+];
 const ENGAGEMENT_TYPES = new Set(["freelance", "contract", "full-time"]);
 const CONFIDENTIALITY_LEVELS = new Set(["public", "limited"]);
 
@@ -98,17 +106,17 @@ function parseWork(filePath) {
 async function main() {
   const prisma = new PrismaClient();
   try {
-    if (!fs.existsSync(CONTENT_DIR)) {
-      throw new Error("No work MDX directory found at src/content/work.");
-    }
-
-    const files = fs
-      .readdirSync(CONTENT_DIR)
-      .filter((name) => name.endsWith(".mdx"))
-      .map((name) => path.join(CONTENT_DIR, name));
+    const checkedDirs = CONTENT_DIRS.map((dir) => path.resolve(dir));
+    const files = CONTENT_DIRS.flatMap((dir) => {
+      if (!fs.existsSync(dir)) return [];
+      return fs
+        .readdirSync(dir)
+        .filter((name) => name.endsWith(".mdx"))
+        .map((name) => path.join(dir, name));
+    });
 
     if (files.length === 0) {
-      throw new Error("No work MDX files found in src/content/work.");
+      throw new Error(`No work MDX files found. Checked directories: ${checkedDirs.join(", ")}`);
     }
 
     const parsed = files.map(parseWork);
@@ -117,6 +125,23 @@ async function main() {
       console.error("Validation failed for work migration:");
       for (const entry of invalid) {
         console.error(`- ${path.basename(entry.filePath)}: ${entry.errors.join("; ")}`);
+      }
+      process.exitCode = 1;
+      return;
+    }
+
+    const slugToFiles = new Map();
+    for (const entry of parsed) {
+      const slug = entry.value.slug;
+      const list = slugToFiles.get(slug) ?? [];
+      list.push(path.basename(entry.filePath));
+      slugToFiles.set(slug, list);
+    }
+    const duplicateSlugEntries = [...slugToFiles.entries()].filter(([, list]) => list.length > 1);
+    if (duplicateSlugEntries.length > 0) {
+      console.error("Duplicate work slugs found in source files:");
+      for (const [slug, list] of duplicateSlugEntries) {
+        console.error(`- ${slug}: ${list.join(", ")}`);
       }
       process.exitCode = 1;
       return;
