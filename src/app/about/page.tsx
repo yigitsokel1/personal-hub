@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
 import { buildAboutPersonJsonLd } from "@/lib/seo/json-ld";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
@@ -10,8 +11,9 @@ export const metadata: Metadata = buildSimplePageMetadata({
   description: homepageCopy.compactAbout,
 });
 
-export default function AboutPage() {
+export default async function AboutPage() {
   const { title, intro, sections } = homepageCopy.aboutPage;
+  const { value: settings } = await getSiteSettings();
   const personLd = buildAboutPersonJsonLd();
 
   return (
@@ -28,7 +30,7 @@ export default function AboutPage() {
           <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
             {title}
           </h1>
-          <p className="mt-5 text-lg leading-relaxed text-black/75">{intro}</p>
+          <p className="mt-5 text-lg leading-relaxed text-black/75">{settings.aboutShort || intro}</p>
 
           <div className="mt-12 grid gap-12 sm:grid-cols-2">
             {sections.map((section) => (

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
 import { TREE_PREFIX, ARROW } from "@/lib/ui/terminal-tokens";
 
@@ -9,19 +10,17 @@ const footerNav = [
   { href: "/about", label: "About" },
 ] as const;
 
-const footerConnect = [
-  { href: "mailto:oyigitsokell@gmail.com", label: "oyigitsokell@gmail.com" },
-  { href: "https://github.com/yigitsokel1", label: "github.com/yigitsokel1" },
-  {
-    href: "https://www.linkedin.com/in/osman-yigit-sokel/",
-    label: "linkedin.com/in/osman-yigit-sokel",
-  },
-] as const;
-
 const sectionHeadingClassName =
   "font-mono text-xs uppercase tracking-[0.15em] text-black/40";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const { value: settings } = await getSiteSettings();
+  const footerConnect = [
+    { href: `mailto:${settings.contactEmail}`, label: settings.contactEmail },
+    { href: settings.githubUrl, label: settings.githubUrl.replace(/^https?:\/\//, "") },
+    { href: settings.linkedinUrl, label: settings.linkedinUrl.replace(/^https?:\/\//, "") },
+  ] as const;
+
   return (
     <footer className="border-t border-black/8 text-foreground">
       <div className="mx-auto max-w-5xl px-6 py-10 sm:py-12">
@@ -31,8 +30,7 @@ export function SiteFooter() {
               {TREE_PREFIX} INFO
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-black/55">
-              Personal hub for building and documenting real systems across
-              projects, work, writing, and labs.
+              {settings.footerIntro}
             </p>
           </div>
 

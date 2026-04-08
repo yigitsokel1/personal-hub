@@ -4,6 +4,7 @@ import { HomeHero } from "@/components/home/home-hero";
 import { HomeSection } from "@/components/home/home-section";
 import { SectionReveal } from "@/components/ui/section-reveal";
 import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import { getFeaturedContent, getPublishedContent } from "@/lib/content/get-content";
 import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentYearMonth } from "@/lib/format-content-date";
@@ -23,25 +24,6 @@ import {
 } from "@/lib/ui/terminal-tokens";
 
 const PREVIEW_LIMIT = 3;
-
-const productSignals = [
-  {
-    label: "content_first_system",
-    detail: "Typed content layer enforced at build-time via content parsing and schema validation.",
-  },
-  {
-    label: "code_first_delivery",
-    detail: "CMS-free workflow with MDX templates and type-safe route generation.",
-  },
-  {
-    label: "engineering_judgment",
-    detail: "Case studies capture scope, trade-offs, and delivery constraints as first-class metadata.",
-  },
-  {
-    label: "continuous_builder",
-    detail: "Projects, writing, and labs ship through one shared content pipeline.",
-  },
-] as const;
 
 const siteBase = getSiteMetadataBase();
 const homeOgUrl = siteBase ? new URL("/", siteBase).toString() : "/";
@@ -75,8 +57,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
   const webSiteLd = buildWebSiteJsonLd();
+  const { value: settings } = await getSiteSettings();
   const featuredWork = getFeaturedContent("work").slice(0, PREVIEW_LIMIT);
   const featuredProjects = getFeaturedContent("project").slice(0, PREVIEW_LIMIT);
   const latestWriting = getPublishedContent("writing").slice(0, PREVIEW_LIMIT);
@@ -91,7 +74,7 @@ export default function HomePage() {
       ) : null}
       <main className="mx-auto max-w-5xl px-6 py-16 sm:py-20 lg:py-24">
         <div className="border-b border-black/6 pb-12 sm:pb-16 lg:pb-20">
-          <HomeHero />
+          <HomeHero title={settings.heroTitle} subtitle={settings.heroSubtitle} />
         </div>
 
         {homepageSections.featuredWork && featuredWork.length > 0 ? (
@@ -219,7 +202,7 @@ export default function HomePage() {
                 {TREE_PREFIX} PRODUCT SIGNALS
               </p>
               <div className="mt-8 grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-6">
-                {productSignals.map((signal) => (
+                {settings.productSignals.map((signal) => (
                   <div key={signal.label}>
                     <p className="font-mono text-sm text-white/65">{signal.label}</p>
                     <p className="mt-2 text-sm leading-relaxed text-white/70">
@@ -265,7 +248,7 @@ export default function HomePage() {
                 {homepageCopy.sections.about.title.toUpperCase()}
               </h2>
               <p className="mt-4 text-base leading-relaxed text-black/75">
-                {homepageCopy.compactAbout}
+                {settings.aboutShort}
               </p>
               <p className="mt-5">
                 <Link

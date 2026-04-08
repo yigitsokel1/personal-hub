@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SiteSettings {
+  id             Int      @id @default(1)
+  heroTitle      String   @map("hero_title")
+  heroSubtitle   String   @map("hero_subtitle")
+  productSignals Json     @map("product_signals")
+  aboutShort     String   @map("about_short")
+  footerIntro    String   @map("footer_intro")
+  contactEmail   String   @map("contact_email")
+  githubUrl      String   @map("github_url")
+  linkedinUrl    String   @map("linkedin_url")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("site_settings")
+}

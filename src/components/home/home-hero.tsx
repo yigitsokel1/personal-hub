@@ -7,8 +7,13 @@ import {
   terminalButtonOutlineClassName,
 } from "@/lib/ui/terminal-tokens";
 
-export function HomeHero() {
-  const { kicker, titleLines, subtitle } = homepageCopy.hero;
+type HomeHeroProps = {
+  title: string;
+  subtitle: string;
+};
+
+export function HomeHero({ title, subtitle }: HomeHeroProps) {
+  const { kicker } = homepageCopy.hero;
   const { label: ctaLabel, href: ctaHref } = homepageCopy.cta;
 
   return (
@@ -18,11 +23,7 @@ export function HomeHero() {
           <span className="text-foreground">$</span> {kicker.toLowerCase()}
         </p>
         <h1 className="mt-5 max-w-3xl text-3xl font-bold leading-[1.14] tracking-tight sm:mt-6 sm:text-5xl sm:leading-[1.1]">
-          {titleLines.map((line, i) => (
-            <span key={i} className="block md:whitespace-nowrap">
-              {line}
-            </span>
-          ))}
+          {title}
         </h1>
         <p className="mt-5 max-w-lg text-base leading-relaxed text-black/75 sm:mt-6 sm:text-lg">
           {subtitle}
