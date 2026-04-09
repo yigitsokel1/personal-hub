@@ -12,15 +12,15 @@ export const sectionLabelClassName =
 export const terminalButtonClassName = [
   "inline-flex items-center gap-2 bg-foreground text-white",
   "px-5 py-2.5 font-mono text-sm tracking-wide",
-  "transition-[background-color,transform] duration-200 ease-out",
-  "hover:bg-black/85 active:scale-[0.98]",
+  "transition-[background-color,transform,box-shadow] duration-200 ease-out",
+  "hover:bg-black/85 hover:shadow-[0_1px_0_0_rgba(0,0,0,0.08)] active:scale-[0.98]",
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/25",
 ].join(" ");
 
 export const terminalButtonOutlineClassName = [
   "inline-flex items-center gap-2 border border-foreground text-foreground",
   "px-5 py-2.5 font-mono text-sm tracking-wide",
-  "transition-[background-color,color,transform] duration-200 ease-out",
+  "transition-[background-color,color,transform,box-shadow] duration-200 ease-out",
   "hover:bg-foreground hover:text-white active:scale-[0.98]",
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/25",
 ].join(" ");

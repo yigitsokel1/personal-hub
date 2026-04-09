@@ -25,7 +25,7 @@ export default async function ProjectsPage() {
   const rest = projects.filter((item) => !featuredIds.has(item.id));
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-22 lg:py-24">
       <SectionReveal>
         <p className={sectionLabelClassName}>{domainIndexCopy.projects.sectionLabel}</p>
         <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">

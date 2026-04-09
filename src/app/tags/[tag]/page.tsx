@@ -23,6 +23,7 @@ import {
 import {
   contentInlineLinkClassName,
 } from "@/lib/ui/link-tokens";
+import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
 type TagDetailPageProps = {
   params: Promise<{ tag: string }>;
@@ -105,15 +106,21 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
   const displayTag = formatTagDisplay(label);
   const groups = grouped?.groups;
   const totalCount = grouped?.totalCount ?? 0;
+  const nonEmptyGroupCount = groups
+    ? (["writing", "project", "work", "lab"] as const).filter(
+        (domain) => groups[domain].length > 0,
+      ).length
+    : 0;
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-22 lg:py-24">
       <header className="max-w-3xl">
         <p className="text-sm text-black/50">
           <Link href="/tags" className={contentInlineLinkClassName}>
             Tags
           </Link>
         </p>
+        <p className={`${sectionLabelClassName} mt-5`}>TAG VIEW</p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight">
           {label !== "" ? (
             <>
@@ -125,8 +132,14 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
           )}
         </h1>
         {totalCount > 0 ? (
-          <p className="mt-3 text-sm text-black/60">
-            {totalCount} {totalCount === 1 ? "item" : "items"}
+          <p className="mt-3 font-mono text-sm text-black/55">
+            {totalCount} {totalCount === 1 ? "item" : "items"} across{" "}
+            {nonEmptyGroupCount} {nonEmptyGroupCount === 1 ? "domain" : "domains"}
+          </p>
+        ) : null}
+        {totalCount > 0 ? (
+          <p className="mt-2 text-sm leading-relaxed text-black/58">
+            Grouped by domain for faster scanning.
           </p>
         ) : null}
       </header>
@@ -139,11 +152,11 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
             const entries = groups[domain];
             if (entries.length === 0) return null;
             return (
-              <section key={domain} className="pt-8">
+              <section key={domain} className="pt-9 sm:pt-10">
                 <h2 className="font-mono text-sm uppercase tracking-wide text-black/55">
                   {contentSectionLabel[domain]} ({entries.length})
                 </h2>
-                <div className="mt-3">
+                <div className="mt-4">
                   {entries.map((item) => (
                     <ContentListItem
                       key={item.id}

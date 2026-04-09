@@ -4,7 +4,7 @@
  */
 
 export const linkTransitionClassName =
-  "transition-[color,text-decoration-color] duration-200 ease-out";
+  "transition-[color,text-decoration-color,opacity] duration-200 ease-out";
 
 /** Keyboard focus ring for text links (in addition to decoration where applicable). */
 export const linkFocusVisibleClassName =
@@ -67,16 +67,18 @@ export const tagLinkClassName = [
 /** Home featured cards: subtle border-only interaction. */
 export const homeCardClassName = [
   "group rounded-lg border border-black/10",
-  "transition-[border-color,box-shadow] duration-200 ease-out",
+  "transition-[border-color,box-shadow,transform] duration-200 ease-out",
   "hover:border-black/18 hover:shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
+  "active:translate-y-[1px]",
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/25",
 ].join(" ");
 
 /** Home writing rows: lightweight editorial interaction. */
 export const homeWritingRowClassName = [
   "flex items-center justify-between border-l-2 border-black/10 py-3 pl-4",
-  "transition-[border-color,color,opacity] duration-200 ease-out",
+  "transition-[border-color,color,opacity,transform] duration-200 ease-out",
   "hover:border-black/35 hover:text-black/90",
+  "active:translate-x-[1px]",
   linkFocusVisibleClassName,
 ].join(" ");
 

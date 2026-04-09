@@ -74,7 +74,7 @@ export default async function LabDetailPage({ params }: LabDetailPageProps) {
       <RelatedContentLinks
         heading="Related labs"
         items={relatedLinks}
-        emptyMessage="No other labs share these tags yet."
+        emptyMessage="No matching experiments linked yet."
         sectionHref="/labs"
         sectionLinkLabel="Browse all labs"
       />

@@ -10,7 +10,7 @@ export const homepageCopy = {
   siteTitle: "OYS — Personal Hub",
   /** Root layout / OG description; aligned with the hero subtitle. */
   siteDescription:
-    "Production systems, engagements, technical writing, and experiments—organized as an operating hub.",
+    "Systems-focused product engineering across projects, client work, writing, and labs.",
   hero: {
     kicker: "Product engineer",
 
@@ -20,39 +20,39 @@ export const homepageCopy = {
       "AI, backend engineering, and product thinking.",
     ],
     subtitle:
-      "Production systems, engagements, writing, and experiments—organized as an operating hub.",
+      "I ship systems end to end and document the decisions behind projects, work, writing, and labs.",
   },
   compactAbout:
-    "I build and ship real systems end to end: framing, architecture, validation, and iteration after launch. This site documents that operating practice.",
+    "I frame, build, and operate real systems with an emphasis on product outcomes and technical clarity.",
   sections: {
     featuredWork: {
-      title: "Selected work",
-      viewAllLabel: "All work",
+      title: "Work",
+      viewAllLabel: "View all work",
       viewAllHref: "/work",
     },
     featuredProjects: {
-      title: "Featured projects",
-      viewAllLabel: "All projects",
+      title: "Projects",
+      viewAllLabel: "View all projects",
       viewAllHref: "/projects",
     },
     writing: {
-      title: "Latest writing",
-      viewAllLabel: "All writing",
+      title: "Writing",
+      viewAllLabel: "View all writing",
       viewAllHref: "/writing",
     },
     labs: {
       title: "Labs",
-      viewAllLabel: "All labs",
+      viewAllLabel: "View all labs",
       viewAllHref: "/labs",
     },
     about: {
       title: "About",
-      linkLabel: "Read more",
+      linkLabel: "Read about my approach",
       href: "/about",
     },
   },
   cta: {
-    label: "Explore projects",
+    label: "Explore selected projects",
     href: "/projects",
   },
   aboutPage: {

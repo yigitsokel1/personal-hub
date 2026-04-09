@@ -83,6 +83,11 @@ export default async function HomePage() {
   const latestLabs = selection.domainHighlights.labs;
   const isSingleWork = featuredWork.length === 1;
   const isSingleProject = featuredProjects.length === 1;
+  const hasHomepageContent =
+    featuredWork.length > 0 ||
+    featuredProjects.length > 0 ||
+    writingItems.length > 0 ||
+    latestLabs.length > 0;
 
   return (
     <>
@@ -96,6 +101,22 @@ export default async function HomePage() {
         <div className="border-b border-black/6 pb-12 sm:pb-16 lg:pb-20">
           <HomeHero title={settings.heroTitle} subtitle={settings.heroSubtitle} />
         </div>
+
+        {!hasHomepageContent ? (
+          <SectionReveal>
+            <section className="mt-12 max-w-3xl border-t border-black/8 pt-8 sm:mt-14 sm:pt-10">
+              <p className={sectionLabelClassName}>{TREE_PREFIX} UPDATES</p>
+              <p className="mt-3 text-base leading-relaxed text-black/62">
+                New projects and writing are being prepared. Explore the current archive.
+              </p>
+              <p className="mt-4">
+                <Link href="/projects" className={shellSecondaryLinkClassName}>
+                  view all projects {ARROW}
+                </Link>
+              </p>
+            </section>
+          </SectionReveal>
+        ) : null}
 
         {homepageSections.featuredWork && featuredWork.length > 0 ? (
           <SectionReveal>
@@ -219,7 +240,7 @@ export default async function HomePage() {
           <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-14 w-screen bg-terminal-bg py-12 text-white sm:mt-16 sm:py-16">
             <div className="mx-auto max-w-5xl px-6">
               <p className="font-mono text-xs uppercase tracking-[0.15em] text-white/50">
-                {TREE_PREFIX} PRODUCT SIGNALS
+                {TREE_PREFIX} ENGINEERING SIGNALS
               </p>
               <div className="mt-8 grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-6">
                 {settings.productSignals.map((signal) => (
@@ -243,11 +264,11 @@ export default async function HomePage() {
               </p>
               <div className="mt-4 border-l-2 border-foreground pl-6">
                 <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Labs &amp; Explorations
+                  Labs and Experiments
                 </h2>
                 <p className="mt-3 max-w-lg text-base leading-relaxed text-black/62">
-                  Fast spikes, sharp notes, and iteration logs. Not polished,
-                  but useful.
+                  Fast experiments, architecture spikes, and technical notes in
+                  progress.
                 </p>
                 {latestLabs.length > 0 ? (
                   <div className="mt-5 space-y-2.5">
@@ -266,7 +287,7 @@ export default async function HomePage() {
                   href={homepageCopy.sections.labs.viewAllHref}
                   className={`${terminalButtonClassName} mt-6`}
                 >
-                  {ARROW} explore labs
+                  {ARROW} {homepageCopy.sections.labs.viewAllLabel.toLowerCase()}
                 </Link>
               </div>
             </section>
@@ -298,12 +319,12 @@ export default async function HomePage() {
         <SectionReveal>
           <section className="mt-12 border-t border-black/8 pt-6 sm:mt-14 sm:pt-8">
             <p className="font-mono text-sm text-black/50">
-              {TREE_PREFIX} closure
+              {TREE_PREFIX} next
             </p>
             <p className="mt-2">
               <Link
                 href={homepageCopy.cta.href}
-                className="font-mono text-sm text-black/50 underline decoration-black/20 underline-offset-4 transition-[color,text-decoration-color] duration-200 ease-out hover:text-black/75 hover:decoration-black/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/25"
+                className={shellSecondaryLinkClassName}
               >
                 {homepageCopy.cta.label.toLowerCase()} {ARROW}
               </Link>

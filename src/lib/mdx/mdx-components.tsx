@@ -24,26 +24,26 @@ function MDXAnchor({ href, children, ...rest }: AnchorProps) {
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     h1: (props) => (
-      <h1 className="mt-10 text-4xl font-semibold tracking-tight" {...props} />
+      <h1 className="mt-12 text-4xl font-semibold tracking-tight" {...props} />
     ),
     h2: (props) => (
-      <h2 className="mt-10 text-2xl font-semibold tracking-tight" {...props} />
+      <h2 className="mt-11 text-2xl font-semibold tracking-tight" {...props} />
     ),
     h3: (props) => (
-      <h3 className="mt-8 text-xl font-semibold tracking-tight" {...props} />
+      <h3 className="mt-9 text-xl font-semibold tracking-tight" {...props} />
     ),
     p: (props) => (
-      <p className="mt-5 text-base leading-8 text-foreground/88" {...props} />
+      <p className="mt-6 text-base leading-8 text-foreground/88" {...props} />
     ),
     ul: (props) => (
       <ul
-        className="mt-5 list-disc space-y-2 pl-6 text-foreground/88 [&_ul]:mt-2 [&_ol]:mt-2"
+        className="mt-6 list-disc space-y-2.5 pl-6 text-foreground/88 [&_ul]:mt-2.5 [&_ol]:mt-2.5"
         {...props}
       />
     ),
     ol: (props) => (
       <ol
-        className="mt-5 list-decimal space-y-2 pl-6 text-foreground/88 [&_ul]:mt-2 [&_ol]:mt-2"
+        className="mt-6 list-decimal space-y-2.5 pl-6 text-foreground/88 [&_ul]:mt-2.5 [&_ol]:mt-2.5"
         {...props}
       />
     ),
@@ -53,11 +53,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <strong className="font-semibold text-foreground" {...props} />
     ),
     hr: (props) => (
-      <hr className="mt-10 border-0 border-t border-black/10" {...props} />
+      <hr className="mt-12 border-0 border-t border-black/10" {...props} />
     ),
     img: (props) => <MdxImage {...props} />,
     table: (props) => (
-      <div className="mt-6 overflow-x-auto">
+      <div className="mt-8 overflow-x-auto">
         <table
           className="w-full min-w-[20rem] border-collapse text-left text-sm text-foreground/88"
           {...props}
@@ -78,7 +78,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     blockquote: (props) => (
       <blockquote
-        className="mt-6 border-l-2 pl-4 italic text-black/70"
+        className="mt-8 border-l-2 border-black/18 pl-4 italic text-black/70"
         {...props}
       />
     ),
@@ -90,7 +90,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     pre: (props) => (
       <pre
-        className="mt-6 overflow-x-auto rounded-2xl bg-black px-4 py-4 text-white [&_code]:rounded-none [&_code]:bg-transparent [&_code]:px-0 [&_code]:py-0 [&_code]:text-sm [&_code]:text-inherit"
+        className="mt-8 overflow-x-auto rounded-2xl bg-black px-4 py-4 text-white [&_code]:rounded-none [&_code]:bg-transparent [&_code]:px-0 [&_code]:py-0 [&_code]:text-sm [&_code]:text-inherit"
         {...props}
       />
     ),

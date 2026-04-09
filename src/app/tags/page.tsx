@@ -34,7 +34,7 @@ export default async function TagsPage() {
   });
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-22 lg:py-24">
       <header className="max-w-3xl">
         <p className={sectionLabelClassName}>CONTENT TAXONOMY</p>
         <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
@@ -43,6 +43,11 @@ export default async function TagsPage() {
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-black/60">
           Browse by topic across projects, work, writing, and labs.
         </p>
+        {tags.length > 0 ? (
+          <p className="mt-4 font-mono text-sm text-black/50">
+            {tags.length} {tags.length === 1 ? "tag" : "tags"} available
+          </p>
+        ) : null}
       </header>
 
       {tags.length === 0 ? (
@@ -61,7 +66,10 @@ export default async function TagsPage() {
                 summary={hint || undefined}
                 meta={
                   <ContentMeta
-                    items={[{ label: `${count} ${count === 1 ? "item" : "items"}`, type: "text" }]}
+                    items={[
+                      { label: `${count} ${count === 1 ? "item" : "items"}`, type: "text" },
+                      ...(hint ? [{ label: "cross-domain", type: "text" as const }] : []),
+                    ]}
                   />
                 }
               />

@@ -28,8 +28,8 @@ export function ContentListItem({
     <article
       className={
         isCard
-          ? "group/item rounded-lg border border-black/10 p-6 transition-[border-color,box-shadow] duration-200 ease-out hover:border-black/16 hover:shadow-[0_1px_0_0_rgba(0,0,0,0.035)] focus-within:border-black/16"
-          : "group/item border-b border-black/8 py-6 transition-[border-color] duration-200 ease-out hover:border-black/12 focus-within:border-black/12"
+          ? "group/item rounded-lg border border-black/10 p-6 transition-[border-color,box-shadow,transform] duration-200 ease-out hover:border-black/16 hover:shadow-[0_1px_0_0_rgba(0,0,0,0.035)] focus-within:border-black/16 focus-within:shadow-[0_1px_0_0_rgba(0,0,0,0.035)]"
+          : "group/item border-b border-black/8 py-6 transition-[border-color,background-color] duration-200 ease-out hover:border-black/12 hover:bg-black/[0.012] focus-within:border-black/12"
       }
     >
       {featured && isCard ? (

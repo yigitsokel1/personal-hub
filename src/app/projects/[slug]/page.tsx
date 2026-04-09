@@ -99,7 +99,7 @@ export default async function ProjectDetailPage({
       <RelatedContentLinks
         heading="Related projects"
         items={relatedLinks}
-        emptyMessage="No other projects share these tags yet."
+        emptyMessage="No matching project links yet."
         sectionHref="/projects"
         sectionLinkLabel="Browse all projects"
       />

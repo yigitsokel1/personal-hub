@@ -26,7 +26,7 @@ export default async function WritingPage() {
   const rest = allWriting.filter((item) => !featuredIds.has(item.id));
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
+    <main className="mx-auto max-w-5xl px-6 py-16 sm:py-22 lg:py-24">
       <SectionReveal>
         <p className={sectionLabelClassName}>{domainIndexCopy.writing.sectionLabel}</p>
         <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-[2.8rem]">

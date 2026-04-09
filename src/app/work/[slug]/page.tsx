@@ -76,7 +76,7 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
       <RelatedContentLinks
         heading="Related work"
         items={relatedLinks}
-        emptyMessage="No other work shares these tags yet."
+        emptyMessage="No matching engagements linked yet."
         sectionHref="/work"
         sectionLinkLabel="Browse all work"
       />

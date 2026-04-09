@@ -91,7 +91,7 @@ export default async function WritingDetailPage({
         <RelatedContentLinks
           heading="Related writing"
           items={relatedLinks}
-          emptyMessage="No other writing shares these tags yet."
+          emptyMessage="More pieces on this topic are coming soon."
           sectionHref="/writing"
           sectionLinkLabel="Browse all writing"
         />

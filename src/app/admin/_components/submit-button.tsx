@@ -21,7 +21,7 @@ export function SubmitButton({
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
   const baseClass =
-    "rounded-md px-4 py-2 font-mono text-sm transition-opacity disabled:cursor-not-allowed disabled:opacity-60";
+    "rounded-md px-4 py-2 font-mono text-sm transition-[opacity,transform,background-color] duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black/25";
   const variantClass =
     variant === "secondary"
       ? "border border-black/20 text-black hover:bg-black/[0.03]"
@@ -36,6 +36,7 @@ export function SubmitButton({
       value={value}
       formTarget={formTarget}
       disabled={pending}
+      aria-busy={pending}
       className={`${baseClass} ${variantClass}`}
     >
       {pending ? pendingLabel : label}
