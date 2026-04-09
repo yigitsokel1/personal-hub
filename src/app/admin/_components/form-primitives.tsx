@@ -132,7 +132,7 @@ export function AdminStatus({
   publishedAt?: string | null;
 }) {
   return (
-    <div className="rounded-md border border-black/10 bg-black/[0.02] px-3 py-2 text-xs text-black/65">
+    <div className="rounded-md border border-black/10 bg-black/2 px-3 py-2 text-xs text-black/65">
       State: {published ? "Published" : "Draft"} | Featured: {featured ? "Yes" : "No"} | Last published:{" "}
       {publishedAt ? new Date(publishedAt).toISOString().slice(0, 16).replace("T", " ") : "-"}
     </div>
