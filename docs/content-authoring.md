@@ -2,7 +2,7 @@
 
 This document is the operational authoring contract for content domains.
 
-All runtime domains are admin-managed and DB-backed. MDX templates and legacy MDX files are historical references only.
+All runtime domains are admin-managed and DB-backed.
 
 ## Admin-Managed Domains
 
@@ -16,9 +16,6 @@ All runtime domains are admin-managed and DB-backed. MDX templates and legacy MD
   - `tags` max **3**
   - `featured` max **1** active item
   - if `published = true`, `publishedAt` is required
-
-Legacy note:
-- `src/content/templates/writing-template.mdx` is historical reference only.
 
 ### Projects (source of truth: database/admin)
 
@@ -34,10 +31,6 @@ Legacy note:
   - `featured` max **2** active projects
   - if `published = true`, `publishedAt` is required
   - `repoUrl` / `liveUrl` must be valid http(s) URLs when provided
-
-Legacy note:
-- `src/content/_legacy/projects/` is archival only and not a runtime source.
-- `src/content/templates/project-template.mdx` is historical reference only.
 
 ### Work (source of truth: database/admin)
 
@@ -56,10 +49,6 @@ Legacy note:
   - `engagementType` must be one of: `freelance | contract | full-time`
   - `confidentialityLevel` must be one of: `public | limited` when provided
 
-Legacy note:
-- `src/content/_legacy/work/` is archival only and not a runtime source.
-- `src/content/templates/work-template.mdx` is historical reference only.
-
 ### Labs (source of truth: database/admin)
 
 - Creation/edit path: `/admin/labs`.
@@ -72,19 +61,106 @@ Legacy note:
   - if `published = true`, `publishedAt` is required
   - `status` must be one of: `idea | exploring | building | paused | completed`
 
-Legacy note:
-- `src/content/_legacy/labs/` is archival only and not a runtime source.
-- `src/content/templates/lab-template.mdx` is historical reference only.
-
 ## Shared Content Rules
 
 - Use stable slugs (kebab-case, ASCII).
 - Do not use `#` headings in MDX body; start from `##`.
 - Tags should be lowercase and kebab-case.
-- For legacy MDX references, keep tags concise and editorially meaningful.
+- For archive references, keep tags concise and editorially meaningful.
+
+## Historical Template Reference (Docs-Only)
+
+These structures are retained as documentation examples only. They are not runtime sources and are not active file-based authoring paths.
+
+### Project structure example
+
+```md
+---
+id: project-your-slug-here
+type: project
+title: "Your project title"
+slug: your-slug-here
+summary: "One or two sentences: what this system is and why it exists."
+publishedAt: "2026-04-01"
+tags:
+  - nextjs
+  - typescript
+role: "Your role"
+stack:
+  - nextjs
+  - typescript
+problem: "Short summary of the problem."
+solution: "Short summary of the approach."
+---
+## Overview
+## Problem
+## Solution
+## Architecture
+## Key Decisions
+## Outcomes
+```
+
+### Work structure example
+
+```md
+---
+id: work-your-slug-here
+type: work
+title: "Engagement title"
+slug: your-slug-here
+summary: "What the engagement was and expected outcome."
+publishedAt: "2026-04-01"
+client: "Public or anonymized client label"
+engagementType: contract
+role: "Your role"
+tags:
+  - api-design
+  - reliability
+scope:
+  - "Area one"
+responsibilities:
+  - "Responsibility one"
+---
+## Context
+## Scope
+## Responsibilities
+## Constraints
+## Delivery / impact
+```
+
+### Lab structure example
+
+```md
+---
+id: lab-your-slug-here
+type: lab
+title: "Experiment name"
+slug: your-slug-here
+summary: "What you tried in one sentence."
+publishedAt: "2026-04-01"
+tags:
+  - tool-one
+status: exploring
+---
+## Experiment
+## Hypothesis
+## Process
+## Learnings
+## Next steps
+```
+
+### Writing structure example
+
+Writing is fully admin-driven. Historical MDX writing used:
+
+- `title`
+- `slug`
+- `summary`
+- markdown body (`##` heading start)
 
 ## Related Docs
 
 - `docs/admin-setup.md`
 - `docs/db-migrations.md`
+- `docs/legacy-content.md`
 - `src/lib/seo/metadata-conventions.md`

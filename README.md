@@ -6,7 +6,7 @@ A **personal hub platform** (not a portfolio template): structured content for p
 
 - Next.js (App Router), React, TypeScript
 - Tailwind CSS
-- MDX via `gray-matter` + `next-mdx-remote` (body rendering + legacy migration inputs)
+- MDX via `gray-matter` + `next-mdx-remote` (body rendering)
 - Prisma + Postgres (admin-managed writing + projects + work + labs + settings)
 
 ## Content
@@ -16,10 +16,7 @@ A **personal hub platform** (not a portfolio template): structured content for p
 - Work is admin-managed and database-backed (`/admin/work`).
 - Labs are admin-managed and database-backed (`/admin/labs`).
 - Admin panel is the primary content entry point for all runtime domains.
-- Legacy writing MDX entries are archived under `src/content/_legacy/writing/` and are not runtime sources.
-- Legacy project MDX entries are archived under `src/content/_legacy/projects/` and are not runtime sources.
-- Legacy work MDX entries are archived under `src/content/_legacy/work/` and are not runtime sources.
-- Legacy labs MDX entries are archived under `src/content/_legacy/labs/` and are not runtime sources.
+- Legacy artifacts are documented in `docs/legacy-content.md`.
 - The UI reads through content-source/domain layers; see `CLAUDE.md` for architecture notes.
 
 ## Scripts
@@ -29,9 +26,9 @@ npm run dev    # local dev
 npm run build  # production build
 npm run start  # run production server
 npm run lint   # ESLint
-npm run migrate:projects-db # import legacy project MDX into DB
-npm run migrate:work-db # import legacy work MDX into DB
-npm run migrate:labs-db # import legacy labs MDX into DB
+npm run legacy:migrate:projects-db # archive migration tool (one-time use)
+npm run legacy:migrate:work-db # archive migration tool (one-time use)
+npm run legacy:migrate:labs-db # archive migration tool (one-time use)
 ```
 
 ## Environment
@@ -52,3 +49,5 @@ Designed for static-friendly deployment (e.g. Vercel). Run `npm run build` befor
 
 - Admin setup: `docs/admin-setup.md`
 - Migration runbook: `docs/db-migrations.md`
+- Legacy policy: `docs/legacy-content.md`
+- Post-migration snapshot: `docs/post-migration-state.md`

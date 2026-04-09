@@ -44,3 +44,5 @@ Use manual baseline/alignment when:
 
 - `docs/admin-setup.md`
 - `docs/content-authoring.md`
+- `docs/legacy-content.md`
+- `scripts/legacy-migrations/README.md`

@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
-import { reportContentHealthAtBuild } from "@/lib/content/content-health";
 import { getAllContent } from "@/lib/content-source/get-all-content";
 import { tagPathSegment } from "@/lib/content/tags";
 import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
@@ -22,8 +21,6 @@ function absoluteUrl(pathname: string, origin: string): string {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  reportContentHealthAtBuild();
-
   const base = getSiteMetadataBase();
   const origin = base?.origin ?? "";
 

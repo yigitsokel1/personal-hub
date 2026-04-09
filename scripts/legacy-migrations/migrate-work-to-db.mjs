@@ -1,7 +1,7 @@
 // NOTE:
-// This script is intended for one-time migration from MDX to DB.
-// It is idempotent based on slug.
-// Not used in runtime.
+// One-time migration from MDX to DB.
+// Idempotent by slug.
+// Kept for archive/audit reference. Not used in runtime.
 
 import fs from "node:fs";
 import path from "node:path";

@@ -68,22 +68,33 @@ npm run dev
 If you see Prisma drift warnings in local development, follow:
 - `docs/db-migrations.md`
 
-## Project migration helper
+## Legacy migration helpers (archive)
 
 After applying migrations, import project MDX into DB with:
 
 ```bash
-npm run migrate:projects-db
+npm run legacy:migrate:projects-db
 ```
 
-This script reads from `src/content/projects/` and `src/content/_legacy/projects/`, validates required fields, and upserts by `slug`.
+This script is archived under `scripts/legacy-migrations/`, reads historical MDX inputs, and upserts by `slug`.
 
-## Work migration helper
+## Legacy migration helper (work)
 
 After applying migrations, import work MDX into DB with:
 
 ```bash
-npm run migrate:work-db
+npm run legacy:migrate:work-db
 ```
 
-This script reads from `src/content/work/`, validates required fields, and upserts by `slug`.
+This script is archived under `scripts/legacy-migrations/`, reads historical MDX inputs, and upserts by `slug`.
+
+## Legacy migration helper (labs)
+
+```bash
+npm run legacy:migrate:labs-db
+```
+
+This script is archived under `scripts/legacy-migrations/` and should be used only for controlled backfill/recovery.
+
+For archive policy and runtime boundaries, see:
+- `docs/legacy-content.md`

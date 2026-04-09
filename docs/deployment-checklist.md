@@ -38,7 +38,7 @@ Smoke locally on `http://localhost:3000` after `npm run start`.
 
 ## Image strategy
 
-- **Local assets**: Place files under `public/` and reference them with a root-relative path (e.g. `/og.png`) in database-backed `cover` fields (or legacy MDX references where applicable).
+- **Local assets**: Place files under `public/` and reference them with a root-relative path (e.g. `/og.png`) in database-backed `cover` fields.
 - **Remote images**: Configure `images.remotePatterns` in [next.config.ts](../next.config.ts) before using `https://` image URLs with `next/image`.
 - **RSS / OG**: Cover images use the `src` string as-is; prefer absolute URLs if feeds or social crawlers must fetch them without a base URL.
 - **Default share image**: The fallback social card is generated at `/opengraph-image` (not a committed PNG). With `NEXT_PUBLIC_SITE_URL` set, metadata and [`build-metadata.ts`](../src/lib/seo/build-metadata.ts) reference it as an absolute URL; entries with `cover` override it on detail pages.
@@ -62,10 +62,11 @@ Use your host’s or a social debugger’s “Open Graph” / “link preview”
 
 ## Authoring and accessibility (light)
 
-- **Legacy MDX references**: Runtime content is DB/admin-managed. When reviewing archived MDX files, keep body headings at `##` / `###` unless the page intentionally has no chrome title.
+- **Runtime source**: Runtime content is DB/admin-managed across all domains.
 - **`cover.alt`**: Recommended when `cover.src` is set; content health logs an advisory if `alt` is omitted (decorative images may use empty alt with a deliberate choice).
 
 ## Related docs
 
 - [Content authoring](content-authoring.md)
+- [Legacy policy](legacy-content.md)
 - [Metadata conventions](../src/lib/seo/metadata-conventions.md)

@@ -1,16 +1,15 @@
 # Tech Debt / Follow-up Notes
 
-## Sprint 24 migration status
+## Sprint 29 post-migration cleanup status
 
 - Projects runtime source is now DB/admin-managed.
-- Legacy project MDX files are archived under `src/content/_legacy/projects/`.
 - Work runtime source is now DB/admin-managed.
-- Legacy work MDX files are archived under `src/content/_legacy/work/`.
 - Labs runtime source is now DB/admin-managed.
-- Legacy labs MDX files are archived under `src/content/_legacy/labs/`.
-- Remaining operational cleanup:
-  - resolve Prisma migration drift in local/dev databases before rerunning migration scripts
-  - keep migration scripts and docs aligned with `_legacy/*` source paths until legacy cleanup sprint
+- Legacy domain files were removed from `src/content/_legacy/*` after migration closure checks.
+- Migration scripts moved to `scripts/legacy-migrations/*` as archive tools.
+- Legacy policy and runtime boundary rules are centralized in:
+  - `docs/legacy-content.md`
+  - `docs/post-migration-state.md`
 
 ---
 
