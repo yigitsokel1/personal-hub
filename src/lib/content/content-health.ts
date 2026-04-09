@@ -112,24 +112,6 @@ export async function collectContentHealthReport(): Promise<ContentHealthReport>
       }
     }
 
-    const byLower = new Map<string, Set<string>>();
-    for (const n of norms) {
-      const low = n.toLowerCase();
-      let variants = byLower.get(low);
-      if (!variants) {
-        variants = new Set();
-        byLower.set(low, variants);
-      }
-      variants.add(n);
-    }
-    for (const variants of byLower.values()) {
-      if (variants.size > 1) {
-        blocking.push(
-          `[${e.type} ${e.slug}] Tags differ only by case: ${[...variants].join(" vs ")}.`
-        );
-      }
-    }
-
     if (e.cover?.src && (e.cover.alt === undefined || e.cover.alt === "")) {
       advisory.push(
         `[${e.type} ${e.slug}] cover has src but no alt; add alt text or document as decorative.`

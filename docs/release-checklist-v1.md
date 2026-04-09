@@ -87,3 +87,10 @@ Release is blocked unless all three commands pass.
 - Confirm sitemap and feed serve current published content only.
 - Confirm old slugs 301 to new slugs after recent slug edits.
 - Verify admin login and preview access controls in production.
+
+## 10) V1 Accepted Risks (Intentional)
+
+- Admin auth is intentionally lightweight single-owner auth for a private operational panel; it is not a public SaaS-grade auth system.
+- Public copy source is split between `homepageCopy` (static shell copy) and `SiteSettings` (DB-driven mutable copy); unify later if editorial drift appears.
+- Content health checks are focused on published surfaces; draft quality diagnostics can expand post-V1.
+- Settings page currently uses a lightweight form implementation; migrating to shared admin primitives is a planned follow-up.

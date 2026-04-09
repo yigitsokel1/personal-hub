@@ -62,3 +62,28 @@ export async function resolveSlugRedirect(
 
   return redirect.newSlug;
 }
+
+export async function cleanupSlugRedirectsForDeletedSlug(
+  domain: ContentDomain,
+  deletedSlug: string
+): Promise<void> {
+  const slug = deletedSlug.trim();
+  if (!slug) {
+    return;
+  }
+
+  await prisma.$transaction([
+    prisma.contentSlugRedirect.deleteMany({
+      where: {
+        domain,
+        oldSlug: slug,
+      },
+    }),
+    prisma.contentSlugRedirect.deleteMany({
+      where: {
+        domain,
+        newSlug: slug,
+      },
+    }),
+  ]);
+}

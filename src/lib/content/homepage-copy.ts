@@ -1,6 +1,6 @@
 /**
- * Curated homepage and shell copy. Featured project/work/lab lists are driven by
- * `featured: true` in MDX frontmatter (`getFeaturedContent`).
+ * Curated homepage and shell copy. Featured project/work/lab selections are
+ * driven by DB/admin-managed content fields.
  *
  * Edit `siteName` / `siteTitle` to match your public name or byline (also used in JSON-LD).
  */

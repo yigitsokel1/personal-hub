@@ -19,7 +19,10 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
-import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
+import {
+  cleanupSlugRedirectsForDeletedSlug,
+  recordSlugRedirect,
+} from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createProjectAction(formData: FormData): Promise<void> {
@@ -158,6 +161,9 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
     const result = await deleteProjectById(id);
     if (!result.ok) {
       redirect("/admin/projects?status=delete_missing");
+    }
+    if (result.slug) {
+      await cleanupSlugRedirectsForDeletedSlug("projects", result.slug);
     }
     logMutationEvent({ domain: "projects", action: "delete", slug: result.slug ?? "" });
 

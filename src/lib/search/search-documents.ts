@@ -4,7 +4,7 @@ import type { ContentWithBody } from "@/lib/content-source/types";
 import type { SearchDocument } from "@/lib/content-intelligence/types";
 
 function toSearchableText(entry: ContentWithBody<ContentEntry>): string {
-  return [entry.summary, entry.body, ...(entry.tags ?? [])].filter(Boolean).join(" ").toLowerCase();
+  return [entry.summary, ...(entry.tags ?? [])].filter(Boolean).join(" ").toLowerCase();
 }
 
 function toSearchDocument(entry: ContentWithBody<ContentEntry>): SearchDocument {
@@ -14,6 +14,7 @@ function toSearchDocument(entry: ContentWithBody<ContentEntry>): SearchDocument 
     slug: entry.slug,
     title: entry.title,
     summary: entry.summary,
+    bodyText: entry.body.toLowerCase(),
     tags: (entry.tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean),
     searchableText: toSearchableText(entry),
   };

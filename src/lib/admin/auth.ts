@@ -33,6 +33,8 @@ function parseSessionValue(raw: string): { expiresAt: number; signature: string 
 }
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
+  // V1 scope: lightweight single-owner admin auth for a private operational panel.
+  // This is intentionally not a multi-user, production-grade SaaS auth model.
   const expected = getRequiredEnv("ADMIN_PASSWORD");
   return password === expected;
 }

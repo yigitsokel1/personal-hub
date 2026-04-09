@@ -7,13 +7,11 @@ describe("publish eligibility", () => {
       slug: "",
       summary: "",
       body: "",
-      publishedAt: "",
     });
 
     expect(errors.slug).toBeDefined();
     expect(errors.summary).toBeDefined();
     expect(errors.body).toBeDefined();
-    expect(errors.publishedAt).toBeDefined();
     expect(errors._global).toBeDefined();
   });
 
@@ -22,7 +20,6 @@ describe("publish eligibility", () => {
       slug: "valid-slug",
       summary: "summary",
       body: "body",
-      publishedAt: "2026-04-09T12:00",
     });
     expect(errors).toEqual({});
   });

@@ -35,5 +35,5 @@ Site-level rules for DB-backed content metadata, env, and SEO helpers (`build-me
 
 ## Related documentation
 
-- **[Content authoring guide](../../../docs/content-authoring.md)** — domain definitions, required and optional frontmatter per type, slugs, tags, MDX body conventions, and how structured fields relate to the narrative. Tag rules live there; this file stays focused on env, dates, SEO overrides, and publish state.
+- **[Content authoring guide](../../../docs/content-authoring.md)** — domain definitions, required and optional content fields per type, slugs, tags, MDX body conventions, and how structured fields relate to the narrative. Tag rules live there; this file stays focused on env, dates, SEO overrides, and publish state.
 - **[Deployment checklist](../../../docs/deployment-checklist.md)** — env vars, build, sitemap/RSS, canonical/`metadataBase`, images, and post-deploy routes.

@@ -23,7 +23,10 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
-import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
+import {
+  cleanupSlugRedirectsForDeletedSlug,
+  recordSlugRedirect,
+} from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createWorkAction(formData: FormData): Promise<void> {
@@ -169,6 +172,9 @@ export async function deleteWorkAction(formData: FormData): Promise<void> {
     const result = await deleteWorkById(id);
     if (!result.ok) {
       redirect("/admin/work?status=delete_missing");
+    }
+    if (result.slug) {
+      await cleanupSlugRedirectsForDeletedSlug("work", result.slug);
     }
     logMutationEvent({ domain: "work", action: "delete", slug: result.slug ?? "" });
 

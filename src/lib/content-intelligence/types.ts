@@ -92,6 +92,7 @@ export type SearchDocument = {
   slug: string;
   title: string;
   summary: string;
+  bodyText: string;
   tags: string[];
   searchableText: string;
 };

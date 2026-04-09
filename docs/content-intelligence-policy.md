@@ -40,9 +40,9 @@ This policy defines how content is selected and ranked across homepage, related 
 ## Search Foundation
 
 - Shared search document shape:
-  - `domain`, `slug`, `title`, `summary`, `tags`, `searchableText`
+  - `domain`, `slug`, `title`, `summary`, `tags`, `searchableText`, `bodyText`
 - Initial server-side ranking:
-  - exact title match > tag match > summary/body contains
+  - exact title match > tag match > summary contains > body contains (body scoring is gated for longer queries)
 - Scope of this sprint:
   - minimal `/search?q=` experience
   - no external search infrastructure

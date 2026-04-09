@@ -20,7 +20,10 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
-import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
+import {
+  cleanupSlugRedirectsForDeletedSlug,
+  recordSlugRedirect,
+} from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createLabAction(formData: FormData): Promise<void> {
@@ -139,6 +142,9 @@ export async function deleteLabAction(formData: FormData): Promise<void> {
     const result = await deleteLabById(id);
     if (!result.ok) {
       redirect("/admin/labs?status=delete_missing");
+    }
+    if (result.slug) {
+      await cleanupSlugRedirectsForDeletedSlug("labs", result.slug);
     }
     logMutationEvent({ domain: "labs", action: "delete", slug: result.slug ?? "" });
 

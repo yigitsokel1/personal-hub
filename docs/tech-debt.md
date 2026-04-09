@@ -31,7 +31,7 @@
 
 Partially addressed by Sprint 5 (`build-metadata.ts`, root `title.template`, `seo` overrides on detail routes).
 
-**Sprint 12:** Default Open Graph / Twitter images use `/opengraph-image` when `NEXT_PUBLIC_SITE_URL` is set; per-entry `cover` overrides on detail routes. Icons (`icon.svg`, `apple-icon`), manifest, and docs are aligned. Optional later work: dynamic OG generation per URL, richer `twitter` fields, or stricter frontmatter docs for `featured` / `updatedAt`.
+**Sprint 12:** Default Open Graph / Twitter images use `/opengraph-image` when `NEXT_PUBLIC_SITE_URL` is set; per-entry `cover` overrides on detail routes. Icons (`icon.svg`, `apple-icon`), manifest, and docs are aligned. Optional later work: dynamic OG generation per URL, richer `twitter` fields, or stricter DB content-field docs for `featured` / `updatedAt`.
 
 Priority: low
 

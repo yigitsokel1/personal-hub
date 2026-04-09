@@ -12,6 +12,7 @@ const TAG_EXACT = 120;
 const TAG_CONTAINS = 80;
 const SUMMARY_CONTAINS = 40;
 const BODY_CONTAINS = 20;
+const MIN_QUERY_LENGTH_FOR_BODY_MATCH = 3;
 
 function normalizeQuery(input: string): string {
   return input.trim().toLowerCase();
@@ -27,7 +28,7 @@ export function rankSearchDocuments(documents: SearchDocument[], query: string):
     .map((document) => {
       const title = document.title.toLowerCase();
       const summary = document.summary.toLowerCase();
-      const body = document.searchableText.toLowerCase();
+      const body = document.bodyText.toLowerCase();
       const tags = document.tags.map((tag) => normalizeTag(tag));
 
       let score = 0;
@@ -39,7 +40,12 @@ export function rankSearchDocuments(documents: SearchDocument[], query: string):
       else if (tags.some((tag) => tag.includes(normalizedTagNeedle))) score += TAG_CONTAINS;
 
       if (summary.includes(normalizedQuery)) score += SUMMARY_CONTAINS;
-      if (body.includes(normalizedQuery)) score += BODY_CONTAINS;
+      if (
+        normalizedQuery.length >= MIN_QUERY_LENGTH_FOR_BODY_MATCH &&
+        body.includes(normalizedQuery)
+      ) {
+        score += BODY_CONTAINS;
+      }
 
       return { document, score };
     })

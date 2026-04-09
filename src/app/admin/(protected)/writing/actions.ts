@@ -19,7 +19,10 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
-import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
+import {
+  cleanupSlugRedirectsForDeletedSlug,
+  recordSlugRedirect,
+} from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createWritingAction(formData: FormData): Promise<void> {
@@ -149,6 +152,9 @@ export async function deleteWritingAction(formData: FormData): Promise<void> {
     const result = await deleteWritingById(id);
     if (!result.ok) {
       redirect("/admin/writing?status=delete_missing");
+    }
+    if (result.slug) {
+      await cleanupSlugRedirectsForDeletedSlug("writing", result.slug);
     }
     logMutationEvent({ domain: "writing", action: "delete", slug: result.slug ?? "" });
 

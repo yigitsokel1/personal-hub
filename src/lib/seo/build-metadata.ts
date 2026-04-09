@@ -1,6 +1,6 @@
 /**
  * Route metadata helpers (detail pages, simple indexes — not a general SEO framework).
- * Site-wide frontmatter and env rules: `metadata-conventions.md` in this folder.
+ * Site-wide content metadata and env rules: `metadata-conventions.md` in this folder.
  *
  * Title rules:
  * - If `seo.title` is set: use `{ absolute: seo.title }` so the root `title.template` does not apply.
