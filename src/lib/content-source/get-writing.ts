@@ -1,11 +1,21 @@
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@prisma/client";
 import { cache } from "react";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { WritingContent } from "@/lib/content/types";
 import { adaptDbWriting, type DbWritingItem } from "@/lib/content-source/adapters/writing.adapter";
 import type { WritingInput } from "@/lib/domain/writing/types";
+import { normalizeTag } from "@/lib/tags/normalize-tag";
 
 type WritingSource = "database";
+
+function isMissingWritingTableError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2021" &&
+    String(error.meta?.table ?? "").includes("writing")
+  );
+}
 
 function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
   if (!published) return publishedAt ? new Date(publishedAt) : null;
@@ -16,21 +26,29 @@ function toPublishedAtDate(published: boolean, publishedAt?: string): Date | nul
 }
 
 export async function listAdminWriting(): Promise<DbWritingItem[]> {
-  const rows = await prisma.writing.findMany({
-    orderBy: {
-      updatedAt: "desc",
-    },
-  });
-
-  return rows.map(adaptDbWriting);
+  try {
+    const rows = await prisma.writing.findMany({
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+    return rows.map(adaptDbWriting);
+  } catch (error) {
+    if (isMissingWritingTableError(error)) return [];
+    throw error;
+  }
 }
 
 export async function getAdminWritingById(id: string): Promise<DbWritingItem | null> {
-  const row = await prisma.writing.findUnique({
-    where: { id },
-  });
-
-  return row ? adaptDbWriting(row) : null;
+  try {
+    const row = await prisma.writing.findUnique({
+      where: { id },
+    });
+    return row ? adaptDbWriting(row) : null;
+  } catch (error) {
+    if (isMissingWritingTableError(error)) return null;
+    throw error;
+  }
 }
 
 export async function createWriting(input: WritingInput): Promise<DbWritingItem> {
@@ -75,33 +93,45 @@ export async function updateWriting(id: string, input: WritingInput): Promise<Db
 }
 
 export async function countOtherFeaturedWriting(excludeId?: string): Promise<number> {
-  return prisma.writing.count({
-    where: {
-      featured: true,
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
-  });
+  try {
+    return await prisma.writing.count({
+      where: {
+        featured: true,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+    });
+  } catch (error) {
+    if (isMissingWritingTableError(error)) return 0;
+    throw error;
+  }
 }
 
 export async function isSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
-  const existing = await prisma.writing.findFirst({
-    where: {
-      slug,
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
-    select: { id: true },
-  });
-
-  return Boolean(existing);
+  try {
+    const existing = await prisma.writing.findFirst({
+      where: {
+        slug,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+      select: { id: true },
+    });
+    return Boolean(existing);
+  } catch (error) {
+    if (isMissingWritingTableError(error)) return false;
+    throw error;
+  }
 }
 
 export async function deleteWritingById(id: string): Promise<{
   ok: boolean;
   slug?: string;
+  tags?: string[];
+  published?: boolean;
+  featured?: boolean;
 }> {
   const existing = await prisma.writing.findUnique({
     where: { id },
-    select: { id: true, slug: true },
+    select: { id: true, slug: true, tags: true, published: true, featured: true },
   });
 
   if (!existing) {
@@ -112,39 +142,56 @@ export async function deleteWritingById(id: string): Promise<{
     where: { id },
   });
 
-  return { ok: true, slug: existing.slug };
+  return {
+    ok: true,
+    slug: existing.slug,
+    tags: existing.tags,
+    published: existing.published,
+    featured: existing.featured,
+  };
 }
 
 export const getPublishedWriting = cache(async function getPublishedWriting(): Promise<{
   source: WritingSource;
   value: ContentWithBody<WritingContent>[];
 }> {
-  const rows = await prisma.writing.findMany({
-    where: { published: true },
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-  });
+  try {
+    const rows = await prisma.writing.findMany({
+      where: { published: true },
+      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    });
 
-  return {
-    source: "database",
-    value: rows.map(adaptDbWriting),
-  };
+    return {
+      source: "database",
+      value: rows.map(adaptDbWriting),
+    };
+  } catch (error) {
+    if (isMissingWritingTableError(error)) {
+      return { source: "database", value: [] };
+    }
+    throw error;
+  }
 });
 
 export async function getWritingBySlug(
   slug: string,
   options?: { includeUnpublished?: boolean }
 ): Promise<ContentWithBody<WritingContent> | null> {
-  const dbRow = await prisma.writing.findFirst({
-    where: {
-      slug,
-      ...(options?.includeUnpublished ? {} : { published: true }),
-    },
-  });
-  if (dbRow) {
-    return adaptDbWriting(dbRow);
+  try {
+    const dbRow = await prisma.writing.findFirst({
+      where: {
+        slug,
+        ...(options?.includeUnpublished ? {} : { published: true }),
+      },
+    });
+    if (dbRow) {
+      return adaptDbWriting(dbRow);
+    }
+    return null;
+  } catch (error) {
+    if (isMissingWritingTableError(error)) return null;
+    throw error;
   }
-
-  return null;
 }
 
 export async function getWritingNeighbors(slug: string): Promise<{
@@ -171,7 +218,7 @@ export async function getRelatedWriting(
   slug: string,
   tags: string[] | undefined
 ): Promise<{ slug: string; title: string }[]> {
-  const currentTags = new Set((tags ?? []).map((tag) => tag.toLowerCase()).filter(Boolean));
+  const currentTags = new Set((tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
   if (currentTags.size === 0) {
     return [];
   }
@@ -180,7 +227,7 @@ export async function getRelatedWriting(
   return value
     .filter((entry) => entry.slug !== slug)
     .map((entry) => {
-      const entryTags = new Set((entry.tags ?? []).map((tag) => tag.toLowerCase()).filter(Boolean));
+      const entryTags = new Set((entry.tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
       let shared = 0;
       for (const tag of currentTags) {
         if (entryTags.has(tag)) shared += 1;

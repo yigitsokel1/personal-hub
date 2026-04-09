@@ -1,5 +1,8 @@
 import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
-import { getPublishedContentEntries } from "./get-content";
+import { getPublishedLabs } from "@/lib/content-source/get-labs";
+import { getPublishedProjects } from "@/lib/content-source/get-projects";
+import { getPublishedWork } from "@/lib/content-source/get-work";
+import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { normalizeTag } from "./tags";
 import type { ContentEntry, ContentType } from "./types";
 
@@ -15,12 +18,14 @@ function isStrict(): boolean {
   );
 }
 
-function allPublishedEntries(): ContentEntry[] {
-  const out: ContentEntry[] = [];
-  for (const type of TYPES) {
-    out.push(...getPublishedContentEntries(type));
-  }
-  return out;
+async function allPublishedEntries(): Promise<ContentEntry[]> {
+  const [projects, work, writing, labs] = await Promise.all([
+    getPublishedProjects(),
+    getPublishedWork(),
+    getPublishedWriting(),
+    getPublishedLabs(),
+  ]);
+  return [...projects.value, ...work.value, ...writing.value, ...labs.value];
 }
 
 export type ContentHealthReport = {
@@ -33,7 +38,7 @@ export type ContentHealthReport = {
 /**
  * Non-throwing scan of published content. Used by sitemap generation and optional strict builds.
  */
-export function collectContentHealthReport(): ContentHealthReport {
+export async function collectContentHealthReport(): Promise<ContentHealthReport> {
   const blocking: string[] = [];
   const advisory: string[] = [];
 
@@ -43,8 +48,9 @@ export function collectContentHealthReport(): ContentHealthReport {
     );
   }
 
+  const allEntries = await allPublishedEntries();
   for (const type of TYPES) {
-    const entries = getPublishedContentEntries(type);
+    const entries = allEntries.filter((entry) => entry.type === type);
     const slugCounts = new Map<string, string[]>();
     for (const e of entries) {
       const list = slugCounts.get(e.slug) ?? [];
@@ -61,7 +67,7 @@ export function collectContentHealthReport(): ContentHealthReport {
   }
 
   const idCounts = new Map<string, ContentType[]>();
-  for (const e of allPublishedEntries()) {
+  for (const e of allEntries) {
     const types = idCounts.get(e.id) ?? [];
     types.push(e.type);
     idCounts.set(e.id, types);
@@ -75,7 +81,7 @@ export function collectContentHealthReport(): ContentHealthReport {
   }
 
   const now = Date.now();
-  for (const e of allPublishedEntries()) {
+  for (const e of allEntries) {
     const t = new Date(e.publishedAt).getTime();
     if (Number.isNaN(t)) {
       blocking.push(
@@ -90,7 +96,7 @@ export function collectContentHealthReport(): ContentHealthReport {
     }
   }
 
-  for (const e of allPublishedEntries()) {
+  for (const e of allEntries) {
     const tags = e.tags ?? [];
     const norms = tags.map((t) => normalizeTag(t)).filter((n) => n.length > 0);
 
@@ -137,8 +143,8 @@ export function collectContentHealthReport(): ContentHealthReport {
 /**
  * Run during sitemap (build). Warns or throws based on env.
  */
-export function reportContentHealthAtBuild(): void {
-  const { blocking, advisory } = collectContentHealthReport();
+export async function reportContentHealthAtBuild(): Promise<void> {
+  const { blocking, advisory } = await collectContentHealthReport();
   if (advisory.length > 0) {
     console.warn(
       `Content health (advisory):\n${advisory.map((l) => `  - ${l}`).join("\n")}`

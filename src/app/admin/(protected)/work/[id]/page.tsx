@@ -1,5 +1,10 @@
-import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
+import {
+  enforceFeaturedLimit,
+  enforcePublishEligibility,
+  redirectWithErrors,
+  validateMdxBody,
+} from "@/lib/admin/content-mutations";
 import {
   countOtherFeaturedWork,
   getAdminWorkById,
@@ -7,7 +12,6 @@ import {
   updateWork,
 } from "@/lib/content-source/get-work";
 import {
-  MAX_FEATURED_WORK,
   serializeCommaList,
   serializeLineList,
   toWorkInput,
@@ -15,16 +19,7 @@ import {
   WORK_ENGAGEMENT_TYPES,
 } from "@/lib/domain/work/mapper";
 import { validateWorkInput } from "@/lib/domain/work/validator";
-
-async function validateMdxBody(body: string): Promise<string | null> {
-  try {
-    const { serialize } = await import("next-mdx-remote/serialize");
-    await serialize(body);
-    return null;
-  } catch {
-    return "Body must be valid MDX syntax.";
-  }
-}
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 async function updateWorkAction(id: string, formData: FormData): Promise<void> {
   "use server";
@@ -56,47 +51,41 @@ async function updateWorkAction(id: string, formData: FormData): Promise<void> {
   );
 
   if (!validated.success) {
-    const payload = encodeURIComponent(JSON.stringify(validated.errors));
-    redirect(`/admin/work/${id}?status=error&errors=${payload}`);
+    redirectWithErrors(`/admin/work/${id}`, validated.errors);
   }
 
-  if (publishRequested) {
-    const publishErrors: Record<string, string> = {};
-    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
-    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
-    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
-    if (!validated.value.publishedAt) {
-      publishErrors.publishedAt = "Publish date is required before publishing.";
-    }
-    if (Object.keys(publishErrors).length > 0) {
-      const payload = encodeURIComponent(JSON.stringify(publishErrors));
-      redirect(`/admin/work/${id}?status=error&errors=${payload}`);
-    }
-  }
+  enforcePublishEligibility(publishRequested, `/admin/work/${id}`, validated.value);
 
   const mdxError = await validateMdxBody(validated.value.body);
   if (mdxError) {
-    const payload = encodeURIComponent(JSON.stringify({ body: mdxError }));
-    redirect(`/admin/work/${id}?status=error&errors=${payload}`);
+    redirectWithErrors(`/admin/work/${id}`, { body: mdxError });
   }
 
   if (await isWorkSlugTaken(validated.value.slug, id)) {
-    const payload = encodeURIComponent(JSON.stringify({ slug: "Slug must be unique." }));
-    redirect(`/admin/work/${id}?status=error&errors=${payload}`);
+    redirectWithErrors(`/admin/work/${id}`, { slug: "Slug must be unique." });
   }
 
-  if (validated.value.featured && (await countOtherFeaturedWork(id)) >= MAX_FEATURED_WORK) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        featured: `Maximum ${MAX_FEATURED_WORK} featured work items are allowed.`,
-      })
-    );
-    redirect(`/admin/work/${id}?status=error&errors=${payload}`);
-  }
+  enforceFeaturedLimit({
+    featured: validated.value.featured,
+    featuredCount: await countOtherFeaturedWork(id),
+    domain: "work",
+    basePath: `/admin/work/${id}`,
+  });
 
+  const current = await getAdminWorkById(id);
+  if (!current) notFound();
   const saved = await updateWork(id, validated.value);
-  revalidatePath("/work");
-  revalidatePath(`/work/${saved.slug}`);
+  revalidateContentSurfaces({
+    domain: "work",
+    slug: saved.slug,
+    previousSlug: current.slug,
+    tags: saved.tags,
+    previousTags: current.tags ?? [],
+    published: saved.published,
+    previousPublished: current.published,
+    featured: Boolean(saved.featured),
+    previousFeatured: Boolean(current.featured),
+  });
   if (isPreviewIntent) {
     redirect(`/preview/work/${saved.slug}`);
   }
@@ -135,7 +124,7 @@ export default async function EditAdminWorkPage({
       <h1 className="text-2xl font-semibold tracking-tight">Edit Work</h1>
       <p className="mt-2 text-sm text-black/60">Update work content, publication state, and featured flag.</p>
       {sp.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Error saving</p>
+        <p className="mt-3 text-sm text-red-700">{parsedErrors._global ?? "Error saving"}</p>
       ) : null}
 
       <form action={updateWorkAction.bind(null, id)} className="mt-8 space-y-8">

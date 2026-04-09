@@ -1,7 +1,7 @@
 import type { ProjectFormInput, ProjectInput } from "@/lib/domain/projects/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 export const MAX_PROJECT_TAGS = 3;
-export const MAX_FEATURED_PROJECTS = 2;
 
 export function parseCommaList(raw: string): string[] {
   return Array.from(
@@ -49,7 +49,7 @@ export function toProjectInput(form: ProjectFormInput): ProjectInput {
     slug: (form.slug.trim() || slugifyTitle(form.title)).toLowerCase(),
     summary: form.summary.trim(),
     body: form.body.trim(),
-    tags: parseCommaList(form.tagsRaw),
+    tags: parseTags(form.tagsRaw),
     featured: form.featured,
     published: form.published,
     publishedAt: form.publishedAt.trim() || undefined,

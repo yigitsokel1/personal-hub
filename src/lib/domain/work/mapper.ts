@@ -1,7 +1,7 @@
 import type { WorkConfidentialityLevel, WorkFormInput, WorkInput } from "@/lib/domain/work/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 export const MAX_WORK_TAGS = 3;
-export const MAX_FEATURED_WORK = 2;
 
 export const WORK_ENGAGEMENT_TYPES = ["freelance", "contract", "full-time"] as const;
 export const WORK_CONFIDENTIALITY_LEVELS = ["public", "limited"] as const;
@@ -59,7 +59,7 @@ export function toWorkInput(form: WorkFormInput): WorkInput {
     slug: (form.slug.trim() || slugifyTitle(form.title)).toLowerCase(),
     summary: form.summary.trim(),
     body: form.body.trim(),
-    tags: parseCommaList(form.tagsRaw),
+    tags: parseTags(form.tagsRaw),
     featured: form.featured,
     published: form.published,
     publishedAt: form.publishedAt.trim() || undefined,

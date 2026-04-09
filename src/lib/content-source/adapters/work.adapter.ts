@@ -1,5 +1,5 @@
 import type { Work as PrismaWork } from "@prisma/client";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { WorkContent } from "@/lib/content/types";
 
 export type DbWorkItem = ContentWithBody<WorkContent> & {

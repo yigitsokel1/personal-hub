@@ -1,5 +1,6 @@
 import { MAX_WRITING_TAGS } from "@/lib/domain/writing/mapper";
 import type { WritingInput, WritingValidationErrors } from "@/lib/domain/writing/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -13,7 +14,7 @@ export function validateWritingInput(input: WritingInput): {
     slug: input.slug.trim().toLowerCase(),
     summary: input.summary.trim(),
     body: input.body.trim(),
-    tags: input.tags.map((tag) => tag.trim()).filter(Boolean),
+    tags: parseTags(input.tags),
     category: input.category?.trim() || undefined,
     series: input.series?.trim() || undefined,
     featured: input.featured,

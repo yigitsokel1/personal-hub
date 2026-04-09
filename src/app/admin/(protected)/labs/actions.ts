@@ -1,8 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { deleteLabById } from "@/lib/content-source/get-labs";
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function deleteLabAction(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
@@ -15,10 +15,12 @@ export async function deleteLabAction(formData: FormData): Promise<void> {
     redirect("/admin/labs?status=delete_missing");
   }
 
-  revalidatePath("/labs");
-  revalidatePath("/admin/labs");
-  if (result.slug) {
-    revalidatePath(`/labs/${result.slug}`);
-  }
+  revalidateContentSurfaces({
+    domain: "labs",
+    previousSlug: result.slug,
+    previousTags: result.tags,
+    previousPublished: result.published,
+    previousFeatured: result.featured,
+  });
   redirect("/admin/labs?status=deleted");
 }

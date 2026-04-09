@@ -1,17 +1,7 @@
 import type { WritingFormInput, WritingInput } from "@/lib/domain/writing/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 export const MAX_WRITING_TAGS = 3;
-
-export function parseTags(tagsRaw: string): string[] {
-  return Array.from(
-    new Set(
-      tagsRaw
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean)
-    )
-  );
-}
 
 export function toWritingInput(form: WritingFormInput): WritingInput {
   const readingTime = Number(form.readingTime);

@@ -1,8 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { deleteProjectById } from "@/lib/content-source/get-projects";
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function deleteProjectAction(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
@@ -15,10 +15,12 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
     redirect("/admin/projects?status=delete_missing");
   }
 
-  revalidatePath("/projects");
-  revalidatePath("/admin/projects");
-  if (result.slug) {
-    revalidatePath(`/projects/${result.slug}`);
-  }
+  revalidateContentSurfaces({
+    domain: "projects",
+    previousSlug: result.slug,
+    previousTags: result.tags,
+    previousPublished: result.published,
+    previousFeatured: result.featured,
+  });
   redirect("/admin/projects?status=deleted");
 }

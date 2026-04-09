@@ -1,5 +1,5 @@
 import type { Lab as PrismaLab } from "@prisma/client";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { LabContent } from "@/lib/content/types";
 
 export type DbLabItem = ContentWithBody<LabContent> & {

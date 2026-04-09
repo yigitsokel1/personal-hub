@@ -44,6 +44,7 @@ npm run dev
 4. Writing CMS operations live under `/admin/writing` (create/edit/delete).
 5. Projects CMS operations live under `/admin/projects` (create/edit/delete).
 6. Work CMS operations live under `/admin/work` (create/edit/delete).
+7. Labs CMS operations live under `/admin/labs` (create/edit/delete).
 
 ## Local dev workflow
 
@@ -59,9 +60,12 @@ npm run dev
    - `/admin/projects/new`
    - `/admin/work`
    - `/admin/work/new`
+  - `/admin/labs`
+  - `/admin/labs/new`
    - `/writing`
    - `/projects`
    - `/work`
+  - `/labs`
 
 ## Migration notes
 

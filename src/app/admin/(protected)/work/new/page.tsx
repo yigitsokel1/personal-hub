@@ -1,27 +1,22 @@
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  enforceFeaturedLimit,
+  enforcePublishEligibility,
+  redirectWithErrors,
+  validateMdxBody,
+} from "@/lib/admin/content-mutations";
 import {
   countOtherFeaturedWork,
   createWork,
   isWorkSlugTaken,
 } from "@/lib/content-source/get-work";
 import {
-  MAX_FEATURED_WORK,
   toWorkInput,
   WORK_CONFIDENTIALITY_LEVELS,
   WORK_ENGAGEMENT_TYPES,
 } from "@/lib/domain/work/mapper";
 import { validateWorkInput } from "@/lib/domain/work/validator";
-
-async function validateMdxBody(body: string): Promise<string | null> {
-  try {
-    const { serialize } = await import("next-mdx-remote/serialize");
-    await serialize(body);
-    return null;
-  } catch {
-    return "Body must be valid MDX syntax.";
-  }
-}
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 async function createWorkAction(formData: FormData): Promise<void> {
   "use server";
@@ -53,46 +48,35 @@ async function createWorkAction(formData: FormData): Promise<void> {
   );
 
   if (!validated.success) {
-    const payload = encodeURIComponent(JSON.stringify(validated.errors));
-    redirect(`/admin/work/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/work/new", validated.errors);
   }
 
-  if (publishRequested) {
-    const publishErrors: Record<string, string> = {};
-    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
-    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
-    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
-    if (!validated.value.publishedAt) {
-      publishErrors.publishedAt = "Publish date is required before publishing.";
-    }
-    if (Object.keys(publishErrors).length > 0) {
-      const payload = encodeURIComponent(JSON.stringify(publishErrors));
-      redirect(`/admin/work/new?status=error&errors=${payload}`);
-    }
-  }
+  enforcePublishEligibility(publishRequested, "/admin/work/new", validated.value);
 
   const mdxError = await validateMdxBody(validated.value.body);
   if (mdxError) {
-    const payload = encodeURIComponent(JSON.stringify({ body: mdxError }));
-    redirect(`/admin/work/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/work/new", { body: mdxError });
   }
 
   if (await isWorkSlugTaken(validated.value.slug)) {
-    const payload = encodeURIComponent(JSON.stringify({ slug: "Slug must be unique." }));
-    redirect(`/admin/work/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/work/new", { slug: "Slug must be unique." });
   }
 
-  if (validated.value.featured && (await countOtherFeaturedWork()) >= MAX_FEATURED_WORK) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        featured: `Maximum ${MAX_FEATURED_WORK} featured work items are allowed.`,
-      })
-    );
-    redirect(`/admin/work/new?status=error&errors=${payload}`);
-  }
+  enforceFeaturedLimit({
+    featured: validated.value.featured,
+    featuredCount: await countOtherFeaturedWork(),
+    domain: "work",
+    basePath: "/admin/work/new",
+  });
 
   const saved = await createWork(validated.value);
-  revalidatePath("/work");
+  revalidateContentSurfaces({
+    domain: "work",
+    slug: saved.slug,
+    tags: saved.tags,
+    published: saved.published,
+    featured: Boolean(saved.featured),
+  });
   if (isPreviewIntent) {
     redirect(`/preview/work/${saved.slug}`);
   }
@@ -119,7 +103,7 @@ export default async function NewAdminWorkPage({
       <h1 className="text-2xl font-semibold tracking-tight">New Work</h1>
       <p className="mt-2 text-sm text-black/60">Create a work item for public or draft state.</p>
       {params.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Error saving</p>
+        <p className="mt-3 text-sm text-red-700">{parsedErrors._global ?? "Error saving"}</p>
       ) : null}
 
       <form action={createWorkAction} className="mt-8 space-y-8">

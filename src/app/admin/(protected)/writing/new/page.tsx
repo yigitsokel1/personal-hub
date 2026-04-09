@@ -1,18 +1,14 @@
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  enforceFeaturedLimit,
+  enforcePublishEligibility,
+  redirectWithErrors,
+  validateMdxBody,
+} from "@/lib/admin/content-mutations";
 import { toWritingInput } from "@/lib/domain/writing/mapper";
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 import { validateWritingInput } from "@/lib/domain/writing/validator";
 import { countOtherFeaturedWriting, createWriting, isSlugTaken } from "@/lib/content-source/get-writing";
-
-async function validateMdxBody(body: string): Promise<string | null> {
-  try {
-    const { serialize } = await import("next-mdx-remote/serialize");
-    await serialize(body);
-    return null;
-  } catch {
-    return "Body must be valid MDX syntax.";
-  }
-}
 
 async function createWritingAction(formData: FormData): Promise<void> {
   "use server";
@@ -36,54 +32,35 @@ async function createWritingAction(formData: FormData): Promise<void> {
   );
 
   if (!validated.success) {
-    const payload = encodeURIComponent(JSON.stringify(validated.errors));
-    redirect(`/admin/writing/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/writing/new", validated.errors);
   }
 
-  if (publishRequested) {
-    const publishErrors: Record<string, string> = {};
-    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
-    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
-    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
-    if (!validated.value.publishedAt) {
-      publishErrors.publishedAt = "Publish date is required before publishing.";
-    }
-    if (Object.keys(publishErrors).length > 0) {
-      const payload = encodeURIComponent(JSON.stringify(publishErrors));
-      redirect(`/admin/writing/new?status=error&errors=${payload}`);
-    }
-  }
+  enforcePublishEligibility(publishRequested, "/admin/writing/new", validated.value);
 
   const mdxError = await validateMdxBody(validated.value.body);
   if (mdxError) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        body: mdxError,
-      })
-    );
-    redirect(`/admin/writing/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/writing/new", { body: mdxError });
   }
 
   if (await isSlugTaken(validated.value.slug)) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        slug: "Slug must be unique.",
-      })
-    );
-    redirect(`/admin/writing/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/writing/new", { slug: "Slug must be unique." });
   }
 
-  if (validated.value.featured && (await countOtherFeaturedWriting()) >= 2) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        featured: "You can feature up to 2 writing items.",
-      })
-    );
-    redirect(`/admin/writing/new?status=error&errors=${payload}`);
-  }
+  enforceFeaturedLimit({
+    featured: validated.value.featured,
+    featuredCount: await countOtherFeaturedWriting(),
+    domain: "writing",
+    basePath: "/admin/writing/new",
+  });
 
   const saved = await createWriting(validated.value);
-  revalidatePath("/writing");
+  revalidateContentSurfaces({
+    domain: "writing",
+    slug: saved.slug,
+    tags: saved.tags,
+    published: saved.published,
+    featured: Boolean(saved.featured),
+  });
   if (isPreviewIntent) {
     redirect(`/preview/writing/${saved.slug}`);
   }
@@ -112,7 +89,7 @@ export default async function NewAdminWritingPage({
         Create a writing item for public or draft state.
       </p>
       {params.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Error saving</p>
+        <p className="mt-3 text-sm text-red-700">{parsedErrors._global ?? "Error saving"}</p>
       ) : null}
 
       <form action={createWritingAction} className="mt-8 space-y-8">
@@ -198,7 +175,7 @@ export default async function NewAdminWritingPage({
           <label className="inline-flex items-center gap-2 text-sm text-black/70">
             <input type="checkbox" name="featured" />
             Featured
-            <span className="text-xs text-black/45">Shown on homepage and highlighted sections (max 2).</span>
+            <span className="text-xs text-black/45">Shown on homepage and highlighted sections (max 1).</span>
           </label>
           <label className="inline-flex items-center gap-2 text-sm text-black/70">
             <input type="checkbox" name="published" />

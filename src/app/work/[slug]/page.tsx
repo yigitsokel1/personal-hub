@@ -71,7 +71,7 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
         cover={item.cover}
       />
 
-      <ContentBody body={item.body} />
+      <ContentBody body={item.body} context={{ domain: "work", slug: item.slug }} />
 
       <RelatedContentLinks
         heading="Related work"

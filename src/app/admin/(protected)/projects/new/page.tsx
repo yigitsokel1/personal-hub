@@ -1,25 +1,18 @@
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  enforceFeaturedLimit,
+  enforcePublishEligibility,
+  redirectWithErrors,
+  validateMdxBody,
+} from "@/lib/admin/content-mutations";
 import {
   countOtherFeaturedProjects,
   createProject,
   isProjectSlugTaken,
 } from "@/lib/content-source/get-projects";
-import {
-  MAX_FEATURED_PROJECTS,
-  toProjectInput,
-} from "@/lib/domain/projects/mapper";
+import { toProjectInput } from "@/lib/domain/projects/mapper";
 import { validateProjectInput } from "@/lib/domain/projects/validator";
-
-async function validateMdxBody(body: string): Promise<string | null> {
-  try {
-    const { serialize } = await import("next-mdx-remote/serialize");
-    await serialize(body);
-    return null;
-  } catch {
-    return "Body must be valid MDX syntax.";
-  }
-}
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 async function createProjectAction(formData: FormData): Promise<void> {
   "use server";
@@ -51,49 +44,35 @@ async function createProjectAction(formData: FormData): Promise<void> {
   );
 
   if (!validated.success) {
-    const payload = encodeURIComponent(JSON.stringify(validated.errors));
-    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/projects/new", validated.errors);
   }
 
-  if (publishRequested) {
-    const publishErrors: Record<string, string> = {};
-    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
-    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
-    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
-    if (!validated.value.publishedAt) {
-      publishErrors.publishedAt = "Publish date is required before publishing.";
-    }
-    if (Object.keys(publishErrors).length > 0) {
-      const payload = encodeURIComponent(JSON.stringify(publishErrors));
-      redirect(`/admin/projects/new?status=error&errors=${payload}`);
-    }
-  }
+  enforcePublishEligibility(publishRequested, "/admin/projects/new", validated.value);
 
   const mdxError = await validateMdxBody(validated.value.body);
   if (mdxError) {
-    const payload = encodeURIComponent(JSON.stringify({ body: mdxError }));
-    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/projects/new", { body: mdxError });
   }
 
   if (await isProjectSlugTaken(validated.value.slug)) {
-    const payload = encodeURIComponent(JSON.stringify({ slug: "Slug must be unique." }));
-    redirect(`/admin/projects/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/projects/new", { slug: "Slug must be unique." });
   }
 
-  if (
-    validated.value.featured &&
-    (await countOtherFeaturedProjects()) >= MAX_FEATURED_PROJECTS
-  ) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        featured: `Maximum ${MAX_FEATURED_PROJECTS} featured projects are allowed.`,
-      })
-    );
-    redirect(`/admin/projects/new?status=error&errors=${payload}`);
-  }
+  enforceFeaturedLimit({
+    featured: validated.value.featured,
+    featuredCount: await countOtherFeaturedProjects(),
+    domain: "projects",
+    basePath: "/admin/projects/new",
+  });
 
   const saved = await createProject(validated.value);
-  revalidatePath("/projects");
+  revalidateContentSurfaces({
+    domain: "projects",
+    slug: saved.slug,
+    tags: saved.tags,
+    published: saved.published,
+    featured: Boolean(saved.featured),
+  });
   if (isPreviewIntent) {
     redirect(`/preview/projects/${saved.slug}`);
   }
@@ -122,7 +101,7 @@ export default async function NewAdminProjectPage({
         Create a project item for public or draft state.
       </p>
       {params.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Error saving</p>
+        <p className="mt-3 text-sm text-red-700">{parsedErrors._global ?? "Error saving"}</p>
       ) : null}
 
       <form action={createProjectAction} className="mt-8 space-y-8">

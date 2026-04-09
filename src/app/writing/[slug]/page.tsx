@@ -84,7 +84,7 @@ export default async function WritingDetailPage({
           cover={item.cover}
         />
 
-        <ContentBody body={item.body} />
+        <ContentBody body={item.body} context={{ domain: "writing", slug: item.slug }} />
 
         <WritingPrevNext prev={neighbors.prev} next={neighbors.next} />
 

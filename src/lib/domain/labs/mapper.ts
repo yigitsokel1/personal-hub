@@ -1,18 +1,7 @@
 import type { LabFormInput, LabInput } from "@/lib/domain/labs/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 export const MAX_LAB_TAGS = 3;
-export const MAX_FEATURED_LABS = 2;
-
-export function parseCommaList(raw: string): string[] {
-  return Array.from(
-    new Set(
-      raw
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    )
-  );
-}
 
 export function serializeCommaList(items: string[]): string {
   return items.join(", ");
@@ -34,7 +23,7 @@ export function toLabInput(form: LabFormInput): LabInput {
     slug: (form.slug.trim() || slugifyTitle(form.title)).toLowerCase(),
     summary: form.summary.trim(),
     body: form.body.trim(),
-    tags: parseCommaList(form.tagsRaw),
+    tags: parseTags(form.tagsRaw),
     status: form.status,
     featured: form.featured,
     published: form.published,

@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest",
+    "test:run": "vitest run",
     "seed:settings": "node prisma/seed.mjs",
+    "audit:featured-overflow": "node --loader ts-node/esm scripts/audits/featured-overflow-audit.ts",
     "legacy:migrate:projects-db": "node scripts/legacy-migrations/migrate-projects-to-db.mjs",
     "legacy:migrate:work-db": "node scripts/legacy-migrations/migrate-work-to-db.mjs",
     "legacy:migrate:labs-db": "node scripts/legacy-migrations/migrate-labs-to-db.mjs"
@@ -30,6 +33,7 @@
     "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.4"
   }
 }

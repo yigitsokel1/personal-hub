@@ -94,7 +94,7 @@ export default async function ProjectDetailPage({
         </section>
       ) : null}
 
-      <ContentBody body={project.body} />
+      <ContentBody body={project.body} context={{ domain: "projects", slug: project.slug }} />
 
       <RelatedContentLinks
         heading="Related projects"

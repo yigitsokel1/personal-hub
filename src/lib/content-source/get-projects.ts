@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/db/prisma";
 import { Prisma } from "@prisma/client";
 import { cache } from "react";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { ProjectContent } from "@/lib/content/types";
 import { adaptDbProject, type DbProjectItem } from "@/lib/content-source/adapters/project.adapter";
 import type { ProjectInput } from "@/lib/domain/projects/types";
+import { normalizeTag } from "@/lib/tags/normalize-tag";
 
 type ProjectSource = "database";
 
@@ -107,10 +108,16 @@ export async function updateProject(id: string, input: ProjectInput): Promise<Db
   return adaptDbProject(updated);
 }
 
-export async function deleteProjectById(id: string): Promise<{ ok: boolean; slug?: string }> {
+export async function deleteProjectById(id: string): Promise<{
+  ok: boolean;
+  slug?: string;
+  tags?: string[];
+  published?: boolean;
+  featured?: boolean;
+}> {
   const existing = await prisma.project.findUnique({
     where: { id },
-    select: { id: true, slug: true },
+    select: { id: true, slug: true, tags: true, published: true, featured: true },
   });
 
   if (!existing) {
@@ -121,7 +128,13 @@ export async function deleteProjectById(id: string): Promise<{ ok: boolean; slug
     where: { id },
   });
 
-  return { ok: true, slug: existing.slug };
+  return {
+    ok: true,
+    slug: existing.slug,
+    tags: existing.tags,
+    published: existing.published,
+    featured: existing.featured,
+  };
 }
 
 export async function isProjectSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
@@ -208,7 +221,7 @@ export async function getRelatedProjects(
   slug: string,
   tags: string[] | undefined
 ): Promise<{ slug: string; title: string }[]> {
-  const currentTags = new Set((tags ?? []).map((tag) => tag.toLowerCase()).filter(Boolean));
+  const currentTags = new Set((tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
   if (currentTags.size === 0) {
     return [];
   }
@@ -217,7 +230,7 @@ export async function getRelatedProjects(
   return value
     .filter((entry) => entry.slug !== slug)
     .map((entry) => {
-      const entryTags = new Set((entry.tags ?? []).map((tag) => tag.toLowerCase()).filter(Boolean));
+      const entryTags = new Set((entry.tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
       let shared = 0;
       for (const tag of currentTags) {
         if (entryTags.has(tag)) shared += 1;

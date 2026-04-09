@@ -2,6 +2,7 @@ import {
   MAX_PROJECT_TAGS,
 } from "@/lib/domain/projects/mapper";
 import type { ProjectInput, ProjectValidationErrors } from "@/lib/domain/projects/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -24,7 +25,7 @@ export function validateProjectInput(input: ProjectInput): {
     slug: input.slug.trim().toLowerCase(),
     summary: input.summary.trim(),
     body: input.body.trim(),
-    tags: input.tags.map((tag) => tag.trim()).filter(Boolean),
+    tags: parseTags(input.tags),
     featured: input.featured,
     published: input.published,
     publishedAt: input.publishedAt?.trim() || undefined,

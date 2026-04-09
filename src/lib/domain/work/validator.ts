@@ -1,5 +1,6 @@
 import { MAX_WORK_TAGS, WORK_CONFIDENTIALITY_LEVELS, WORK_ENGAGEMENT_TYPES } from "@/lib/domain/work/mapper";
 import type { WorkInput, WorkValidationErrors } from "@/lib/domain/work/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -13,7 +14,7 @@ export function validateWorkInput(input: WorkInput): {
     slug: input.slug.trim().toLowerCase(),
     summary: input.summary.trim(),
     body: input.body.trim(),
-    tags: input.tags.map((item) => item.trim()).filter(Boolean),
+    tags: parseTags(input.tags),
     featured: input.featured,
     published: input.published,
     publishedAt: input.publishedAt?.trim() || undefined,

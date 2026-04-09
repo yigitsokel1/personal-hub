@@ -68,7 +68,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
           tags={item.tags}
           cover={item.cover}
         />
-        <ContentBody body={item.body} />
+        <ContentBody body={item.body} context={{ domain: "writing", slug: item.slug, isPreview: true }} />
         <WritingPrevNext prev={neighbors.prev} next={neighbors.next} />
         <RelatedContentLinks
           heading="Related writing"
@@ -117,7 +117,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
             </div>
           </section>
         ) : null}
-        <ContentBody body={item.body} />
+        <ContentBody body={item.body} context={{ domain: "projects", slug: item.slug, isPreview: true }} />
         <RelatedContentLinks
           heading="Related projects"
           items={relatedLinks}
@@ -153,7 +153,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
           impact={item.impact}
           cover={item.cover}
         />
-        <ContentBody body={item.body} />
+        <ContentBody body={item.body} context={{ domain: "work", slug: item.slug, isPreview: true }} />
         <RelatedContentLinks
           heading="Related work"
           items={relatedLinks}
@@ -186,7 +186,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
         Exploration note: this page captures an active experiment, so outcomes may
         be partial while the direction evolves.
       </p>
-      <ContentBody body={item.body} />
+      <ContentBody body={item.body} context={{ domain: "labs", slug: item.slug, isPreview: true }} />
       <RelatedContentLinks
         heading="Related labs"
         items={relatedLinks}

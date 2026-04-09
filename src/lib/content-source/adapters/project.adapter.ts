@@ -1,5 +1,5 @@
 import type { Project as PrismaProject } from "@prisma/client";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { ProjectContent } from "@/lib/content/types";
 
 export type DbProjectItem = ContentWithBody<ProjectContent> & {

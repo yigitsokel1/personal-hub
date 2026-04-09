@@ -1,23 +1,19 @@
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  enforceFeaturedLimit,
+  enforcePublishEligibility,
+  redirectWithErrors,
+  validateMdxBody,
+} from "@/lib/admin/content-mutations";
 import {
   countOtherFeaturedLabs,
   createLab,
   isLabSlugTaken,
 } from "@/lib/content-source/get-labs";
-import { MAX_FEATURED_LABS, toLabInput } from "@/lib/domain/labs/mapper";
+import { toLabInput } from "@/lib/domain/labs/mapper";
 import { LAB_STATUSES } from "@/lib/domain/labs/types";
 import { validateLabInput } from "@/lib/domain/labs/validator";
-
-async function validateMdxBody(body: string): Promise<string | null> {
-  try {
-    const { serialize } = await import("next-mdx-remote/serialize");
-    await serialize(body);
-    return null;
-  } catch {
-    return "Body must be valid MDX syntax.";
-  }
-}
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 async function createLabAction(formData: FormData): Promise<void> {
   "use server";
@@ -39,46 +35,35 @@ async function createLabAction(formData: FormData): Promise<void> {
   );
 
   if (!validated.success) {
-    const payload = encodeURIComponent(JSON.stringify(validated.errors));
-    redirect(`/admin/labs/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/labs/new", validated.errors);
   }
 
-  if (publishRequested) {
-    const publishErrors: Record<string, string> = {};
-    if (!validated.value.slug.trim()) publishErrors.slug = "Slug is required before publishing.";
-    if (!validated.value.summary.trim()) publishErrors.summary = "Summary is required before publishing.";
-    if (!validated.value.body.trim()) publishErrors.body = "Body is required before publishing.";
-    if (!validated.value.publishedAt) {
-      publishErrors.publishedAt = "Publish date is required before publishing.";
-    }
-    if (Object.keys(publishErrors).length > 0) {
-      const payload = encodeURIComponent(JSON.stringify(publishErrors));
-      redirect(`/admin/labs/new?status=error&errors=${payload}`);
-    }
-  }
+  enforcePublishEligibility(publishRequested, "/admin/labs/new", validated.value);
 
   const mdxError = await validateMdxBody(validated.value.body);
   if (mdxError) {
-    const payload = encodeURIComponent(JSON.stringify({ body: mdxError }));
-    redirect(`/admin/labs/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/labs/new", { body: mdxError });
   }
 
   if (await isLabSlugTaken(validated.value.slug)) {
-    const payload = encodeURIComponent(JSON.stringify({ slug: "Slug must be unique." }));
-    redirect(`/admin/labs/new?status=error&errors=${payload}`);
+    redirectWithErrors("/admin/labs/new", { slug: "Slug must be unique." });
   }
 
-  if (validated.value.featured && (await countOtherFeaturedLabs()) >= MAX_FEATURED_LABS) {
-    const payload = encodeURIComponent(
-      JSON.stringify({
-        featured: `Maximum ${MAX_FEATURED_LABS} featured labs are allowed.`,
-      })
-    );
-    redirect(`/admin/labs/new?status=error&errors=${payload}`);
-  }
+  enforceFeaturedLimit({
+    featured: validated.value.featured,
+    featuredCount: await countOtherFeaturedLabs(),
+    domain: "labs",
+    basePath: "/admin/labs/new",
+  });
 
   const saved = await createLab(validated.value);
-  revalidatePath("/labs");
+  revalidateContentSurfaces({
+    domain: "labs",
+    slug: saved.slug,
+    tags: saved.tags,
+    published: saved.published,
+    featured: Boolean(saved.featured),
+  });
   if (isPreviewIntent) {
     redirect(`/preview/labs/${saved.slug}`);
   }
@@ -105,7 +90,7 @@ export default async function NewAdminLabsPage({
       <h1 className="text-2xl font-semibold tracking-tight">New Lab</h1>
       <p className="mt-2 text-sm text-black/60">Create a lightweight lab entry for exploratory work.</p>
       {params.status === "error" ? (
-        <p className="mt-3 text-sm text-red-700">Error saving</p>
+        <p className="mt-3 text-sm text-red-700">{parsedErrors._global ?? "Error saving"}</p>
       ) : null}
 
       <form action={createLabAction} className="mt-8 space-y-8">

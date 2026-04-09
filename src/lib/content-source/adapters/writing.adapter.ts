@@ -1,5 +1,5 @@
 import type { Writing as PrismaWriting } from "@prisma/client";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { WritingContent } from "@/lib/content/types";
 
 export type DbWritingItem = ContentWithBody<WritingContent> & {

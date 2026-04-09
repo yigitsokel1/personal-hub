@@ -1,11 +1,21 @@
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@prisma/client";
 import { cache } from "react";
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { WorkContent } from "@/lib/content/types";
 import { adaptDbWork, type DbWorkItem } from "@/lib/content-source/adapters/work.adapter";
 import type { WorkInput } from "@/lib/domain/work/types";
+import { normalizeTag } from "@/lib/tags/normalize-tag";
 
 type WorkSource = "database";
+
+function isMissingWorkTableError(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2021" &&
+    String(error.meta?.table ?? "").includes("work")
+  );
+}
 
 function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
   if (!published) return publishedAt ? new Date(publishedAt) : null;
@@ -16,19 +26,29 @@ function toPublishedAtDate(published: boolean, publishedAt?: string): Date | nul
 }
 
 export async function listAdminWork(): Promise<DbWorkItem[]> {
-  const rows = await prisma.work.findMany({
-    orderBy: {
-      updatedAt: "desc",
-    },
-  });
-  return rows.map(adaptDbWork);
+  try {
+    const rows = await prisma.work.findMany({
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+    return rows.map(adaptDbWork);
+  } catch (error) {
+    if (isMissingWorkTableError(error)) return [];
+    throw error;
+  }
 }
 
 export async function getAdminWorkById(id: string): Promise<DbWorkItem | null> {
-  const row = await prisma.work.findUnique({
-    where: { id },
-  });
-  return row ? adaptDbWork(row) : null;
+  try {
+    const row = await prisma.work.findUnique({
+      where: { id },
+    });
+    return row ? adaptDbWork(row) : null;
+  } catch (error) {
+    if (isMissingWorkTableError(error)) return null;
+    throw error;
+  }
 }
 
 export async function createWork(input: WorkInput): Promise<DbWorkItem> {
@@ -84,10 +104,16 @@ export async function updateWork(id: string, input: WorkInput): Promise<DbWorkIt
   return adaptDbWork(updated);
 }
 
-export async function deleteWorkById(id: string): Promise<{ ok: boolean; slug?: string }> {
+export async function deleteWorkById(id: string): Promise<{
+  ok: boolean;
+  slug?: string;
+  tags?: string[];
+  published?: boolean;
+  featured?: boolean;
+}> {
   const existing = await prisma.work.findUnique({
     where: { id },
-    select: { id: true, slug: true },
+    select: { id: true, slug: true, tags: true, published: true, featured: true },
   });
 
   if (!existing) {
@@ -98,63 +124,90 @@ export async function deleteWorkById(id: string): Promise<{ ok: boolean; slug?: 
     where: { id },
   });
 
-  return { ok: true, slug: existing.slug };
+  return {
+    ok: true,
+    slug: existing.slug,
+    tags: existing.tags,
+    published: existing.published,
+    featured: existing.featured,
+  };
 }
 
 export async function isWorkSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
-  const existing = await prisma.work.findFirst({
-    where: {
-      slug,
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
-    select: { id: true },
-  });
-
-  return Boolean(existing);
+  try {
+    const existing = await prisma.work.findFirst({
+      where: {
+        slug,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+      select: { id: true },
+    });
+    return Boolean(existing);
+  } catch (error) {
+    if (isMissingWorkTableError(error)) return false;
+    throw error;
+  }
 }
 
 export async function countOtherFeaturedWork(excludeId?: string): Promise<number> {
-  return prisma.work.count({
-    where: {
-      featured: true,
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
-  });
+  try {
+    return await prisma.work.count({
+      where: {
+        featured: true,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+    });
+  } catch (error) {
+    if (isMissingWorkTableError(error)) return 0;
+    throw error;
+  }
 }
 
 export const getPublishedWork = cache(async function getPublishedWork(): Promise<{
   source: WorkSource;
   value: ContentWithBody<WorkContent>[];
 }> {
-  const rows = await prisma.work.findMany({
-    where: { published: true },
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-  });
+  try {
+    const rows = await prisma.work.findMany({
+      where: { published: true },
+      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    });
 
-  return {
-    source: "database",
-    value: rows.map(adaptDbWork),
-  };
+    return {
+      source: "database",
+      value: rows.map(adaptDbWork),
+    };
+  } catch (error) {
+    if (isMissingWorkTableError(error)) {
+      return { source: "database", value: [] };
+    }
+    throw error;
+  }
 });
 
 export async function getWorkBySlug(
   slug: string,
   options?: { includeUnpublished?: boolean }
 ): Promise<ContentWithBody<WorkContent> | null> {
-  const row = await prisma.work.findFirst({
-    where: {
-      slug,
-      ...(options?.includeUnpublished ? {} : { published: true }),
-    },
-  });
-  return row ? adaptDbWork(row) : null;
+  try {
+    const row = await prisma.work.findFirst({
+      where: {
+        slug,
+        ...(options?.includeUnpublished ? {} : { published: true }),
+      },
+    });
+    return row ? adaptDbWork(row) : null;
+  } catch (error) {
+    if (isMissingWorkTableError(error)) return null;
+    throw error;
+  }
 }
 
 export async function getRelatedWork(
   slug: string,
   tags: string[] | undefined
 ): Promise<{ slug: string; title: string }[]> {
-  const currentTags = new Set((tags ?? []).map((tag) => tag.toLowerCase()).filter(Boolean));
+  const currentTags = new Set((tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
   if (currentTags.size === 0) {
     return [];
   }
@@ -163,7 +216,7 @@ export async function getRelatedWork(
   return value
     .filter((entry) => entry.slug !== slug)
     .map((entry) => {
-      const entryTags = new Set((entry.tags ?? []).map((tag) => tag.toLowerCase()).filter(Boolean));
+      const entryTags = new Set((entry.tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
       let shared = 0;
       for (const tag of currentTags) {
         if (entryTags.has(tag)) shared += 1;

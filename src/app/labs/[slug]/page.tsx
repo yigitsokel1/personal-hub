@@ -69,7 +69,7 @@ export default async function LabDetailPage({ params }: LabDetailPageProps) {
         be partial while the direction evolves.
       </p>
 
-      <ContentBody body={item.body} />
+      <ContentBody body={item.body} context={{ domain: "labs", slug: item.slug }} />
 
       <RelatedContentLinks
         heading="Related labs"

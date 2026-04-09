@@ -50,6 +50,9 @@ export default async function AdminSettingsPage({
       <p className="mt-2 text-sm text-black/60">
         Manage homepage, about, and footer settings from a shared contract.
       </p>
+      <p className="mt-1 text-xs text-black/45">
+        Need runtime diagnostics? Open <a href="/admin/settings/content-health" className="underline">content health</a>.
+      </p>
       <p className="mt-1 text-xs text-black/45">Fields marked with * are required.</p>
       {params.status === "saved" ? (
         <p className="mt-3 text-sm text-green-700">Settings saved. Public site reflects the saved state.</p>

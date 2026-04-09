@@ -14,7 +14,7 @@ All runtime domains are admin-managed and DB-backed.
 - Optional fields: `tags`, `category`, `series`, `readingTime`, `featured`, `published`, `publishedAt`.
 - Rules:
   - `tags` max **3**
-  - `featured` max **1** active item
+  - `featured` max **2** active items
   - if `published = true`, `publishedAt` is required
 
 ### Projects (source of truth: database/admin)
@@ -65,7 +65,7 @@ All runtime domains are admin-managed and DB-backed.
 
 - Use stable slugs (kebab-case, ASCII).
 - Do not use `#` headings in MDX body; start from `##`.
-- Tags should be lowercase and kebab-case.
+- Tag input can be free-form; runtime canonicalizes tags to lowercase kebab-case.
 - For archive references, keep tags concise and editorially meaningful.
 
 ## Historical Template Reference (Docs-Only)

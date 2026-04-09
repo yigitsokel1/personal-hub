@@ -6,7 +6,7 @@ A **personal hub platform** (not a portfolio template): structured content for p
 
 - Next.js (App Router), React, TypeScript
 - Tailwind CSS
-- MDX via `gray-matter` + `next-mdx-remote` (body rendering)
+- DB-stored MDX body rendered with `next-mdx-remote/rsc`
 - Prisma + Postgres (admin-managed writing + projects + work + labs + settings)
 
 ## Content
@@ -17,6 +17,7 @@ A **personal hub platform** (not a portfolio template): structured content for p
 - Labs are admin-managed and database-backed (`/admin/labs`).
 - Admin panel is the primary content entry point for all runtime domains.
 - Legacy artifacts are documented in `docs/legacy-content.md`.
+- Active runtime boundary is documented in `docs/runtime-content-architecture.md`.
 - The UI reads through content-source/domain layers; see `CLAUDE.md` for architecture notes.
 
 ## Scripts

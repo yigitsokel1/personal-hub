@@ -1,9 +1,14 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { useMDXComponents } from "@/lib/mdx/mdx-components";
+import { serialize } from "next-mdx-remote/serialize";
 import { mdxContentBlocks } from "@/lib/mdx/mdx-content-blocks";
 
 type ContentBodyProps = {
   body: string;
+  context?: {
+    domain: "writing" | "projects" | "work" | "labs";
+    slug: string;
+    isPreview?: boolean;
+  };
 };
 
 /**
@@ -11,13 +16,29 @@ type ContentBodyProps = {
  * child top margin is zeroed. Foot sections (related, prev/next) use `mt-16
  * border-t pt-10` to match.
  */
-export function ContentBody({ body }: ContentBodyProps) {
+export async function ContentBody({ body, context }: ContentBodyProps) {
+  try {
+    await serialize(body);
+  } catch (error) {
+    console.error("MDX render failed", {
+      error,
+      domain: context?.domain,
+      slug: context?.slug,
+      preview: Boolean(context?.isPreview),
+    });
+
+    return (
+      <div className="mt-14 max-w-3xl rounded-md border border-amber-800/20 bg-amber-50 px-4 py-3 text-sm text-amber-900/90 sm:mt-16">
+        {context?.isPreview
+          ? "This preview cannot render because the body contains invalid MDX. Fix the body and try preview again."
+          : "This content body is temporarily unavailable due to a rendering issue."}
+      </div>
+    );
+  }
+
   return (
     <div className="mt-14 max-w-3xl [&>*:first-child]:mt-0 sm:mt-16">
-      <MDXRemote
-        source={body}
-        components={useMDXComponents(mdxContentBlocks)}
-      />
+      <MDXRemote source={body} components={mdxContentBlocks} />
     </div>
   );
 }

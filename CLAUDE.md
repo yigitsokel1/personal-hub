@@ -34,6 +34,7 @@ Core signals:
 
 - The platform is built around structured content
 - NOT page-first, NOT component-first
+- Runtime source of truth is DB content authored through admin flows
 
 ### 2. Strong separation
 

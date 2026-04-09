@@ -1,8 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { deleteWritingById } from "@/lib/content-source/get-writing";
+import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function deleteWritingAction(formData: FormData): Promise<void> {
   const id = String(formData.get("id") ?? "");
@@ -15,10 +15,12 @@ export async function deleteWritingAction(formData: FormData): Promise<void> {
     redirect("/admin/writing?status=delete_missing");
   }
 
-  revalidatePath("/writing");
-  revalidatePath("/admin/writing");
-  if (result.slug) {
-    revalidatePath(`/writing/${result.slug}`);
-  }
+  revalidateContentSurfaces({
+    domain: "writing",
+    previousSlug: result.slug,
+    previousTags: result.tags,
+    previousPublished: result.published,
+    previousFeatured: result.featured,
+  });
   redirect("/admin/writing?status=deleted");
 }

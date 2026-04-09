@@ -1,5 +1,6 @@
 import { MAX_LAB_TAGS } from "@/lib/domain/labs/mapper";
 import { LAB_STATUSES, type LabInput, type LabValidationErrors } from "@/lib/domain/labs/types";
+import { parseTags } from "@/lib/tags/normalize-tag";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -13,7 +14,7 @@ export function validateLabInput(input: LabInput): {
     slug: input.slug.trim().toLowerCase(),
     summary: input.summary.trim(),
     body: input.body.trim(),
-    tags: input.tags.map((item) => item.trim()).filter(Boolean),
+    tags: parseTags(input.tags),
     status: input.status,
     featured: input.featured,
     published: input.published,

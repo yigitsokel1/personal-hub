@@ -1,4 +1,4 @@
-import type { ContentWithBody } from "@/lib/content/get-content";
+import type { ContentWithBody } from "@/lib/content-source/types";
 import type { LabContent, ProjectContent, WorkContent, WritingContent } from "@/lib/content/types";
 import { getLabBySlug } from "@/lib/content-source/get-labs";
 import { getProjectBySlug } from "@/lib/content-source/get-projects";

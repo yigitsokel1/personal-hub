@@ -35,7 +35,7 @@ Runtime must not import from these paths.
 
 ## Preview and Publishing
 
-- Preview route uses DB source with `includeUnpublished` support.
+- Preview route is admin-auth gated and uses DB source with `includeUnpublished` support.
 - Published content appears on public routes based on DB `published` and `publishedAt`.
 
 ## Operating Rule
