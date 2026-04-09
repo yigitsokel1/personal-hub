@@ -5,10 +5,14 @@ import { ContentListItem } from "@/components/content/content-list-item";
 import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import {
+  buildTagIndex,
+  formatTagDisplay,
+  groupEntriesByTag,
+} from "@/lib/content-intelligence/tag-grouping";
 import { getAllContent } from "@/lib/content-source/get-all-content";
 import { homepageCopy } from "@/lib/content/homepage-copy";
 import {
-  normalizeTag,
   tagFromPathSegment,
   tagPathSegment,
 } from "@/lib/content/tags";
@@ -26,87 +30,22 @@ type TagDetailPageProps = {
 
 async function getCanonicalTagsAndEntriesByTag(label: string) {
   const content = await getAllContent();
-  const normalizedNeedle = normalizeTag(label);
-  const tagSet = new Set<string>();
-  const entries: {
-    id: string;
-    type: "project" | "work" | "writing" | "lab";
-    slug: string;
-    title: string;
-    summary: string;
-    publishedAt: string;
-  }[] = [];
-
-  for (const entry of content.writing) {
-    for (const tag of entry.tags ?? []) {
-      const normalized = normalizeTag(tag);
-      if (normalized) tagSet.add(normalized);
-      if (normalizedNeedle && normalized === normalizedNeedle) {
-        entries.push({
-          id: entry.id,
-          type: "writing",
-          slug: entry.slug,
-          title: entry.title,
-          summary: entry.summary,
-          publishedAt: entry.publishedAt,
-        });
-      }
-    }
-  }
-  for (const entry of content.projects) {
-    for (const tag of entry.tags ?? []) {
-      const normalized = normalizeTag(tag);
-      if (normalized) tagSet.add(normalized);
-      if (normalizedNeedle && normalized === normalizedNeedle) {
-        entries.push({
-          id: entry.id,
-          type: "project",
-          slug: entry.slug,
-          title: entry.title,
-          summary: entry.summary,
-          publishedAt: entry.publishedAt,
-        });
-      }
-    }
-  }
-  for (const entry of content.work) {
-    for (const tag of entry.tags ?? []) {
-      const normalized = normalizeTag(tag);
-      if (normalized) tagSet.add(normalized);
-      if (normalizedNeedle && normalized === normalizedNeedle) {
-        entries.push({
-          id: entry.id,
-          type: "work",
-          slug: entry.slug,
-          title: entry.title,
-          summary: entry.summary,
-          publishedAt: entry.publishedAt,
-        });
-      }
-    }
-  }
-  for (const entry of content.labs) {
-    for (const tag of entry.tags ?? []) {
-      const normalized = normalizeTag(tag);
-      if (normalized) tagSet.add(normalized);
-      if (normalizedNeedle && normalized === normalizedNeedle) {
-        entries.push({
-          id: entry.id,
-          type: "lab",
-          slug: entry.slug,
-          title: entry.title,
-          summary: entry.summary,
-          publishedAt: entry.publishedAt,
-        });
-      }
-    }
-  }
+  const index = buildTagIndex({
+    writing: content.writing,
+    projects: content.projects,
+    work: content.work,
+    labs: content.labs,
+  });
+  const grouped = groupEntriesByTag(label, {
+    writing: content.writing,
+    projects: content.projects,
+    work: content.work,
+    labs: content.labs,
+  });
 
   return {
-    tags: [...tagSet].sort((a, b) => a.localeCompare(b)),
-    entries: entries.sort(
-      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    ),
+    tags: index.map((entry) => entry.tag),
+    grouped,
   };
 }
 
@@ -133,10 +72,11 @@ export async function generateMetadata({
   const canonical =
     base != null ? new URL(pathname, `${base.origin}/`).toString() : undefined;
 
-  const titleSegment = label !== "" ? `${label} — Tags` : "Tag — Tags";
+  const displayTag = formatTagDisplay(label);
+  const titleSegment = label !== "" ? `${displayTag} — Tags` : "Tag — Tags";
   const description =
     label !== ""
-      ? `Content tagged “${label}”.`
+      ? `Content tagged “${displayTag}”.`
       : "Content for this tag.";
   const ogTitle = `${titleSegment} | ${homepageCopy.siteName}`;
 
@@ -157,11 +97,14 @@ export async function generateMetadata({
 export default async function TagDetailPage({ params }: TagDetailPageProps) {
   const { tag } = await params;
   const label = tagFromPathSegment(tag);
-  const { tags, entries } = await getCanonicalTagsAndEntriesByTag(label);
+  const { tags, grouped } = await getCanonicalTagsAndEntriesByTag(label);
   const knownTags = new Set(tags);
   if (label !== "" && !knownTags.has(label)) {
     notFound();
   }
+  const displayTag = formatTagDisplay(label);
+  const groups = grouped?.groups;
+  const totalCount = grouped?.totalCount ?? 0;
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
@@ -175,32 +118,50 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
           {label !== "" ? (
             <>
               <span className="text-black/55">#</span>
-              {label}
+              {displayTag}
             </>
           ) : (
             "Tag"
           )}
         </h1>
+        {totalCount > 0 ? (
+          <p className="mt-3 text-sm text-black/60">
+            {totalCount} {totalCount === 1 ? "item" : "items"}
+          </p>
+        ) : null}
       </header>
 
-      {entries.length === 0 ? (
+      {!groups ? (
         <DomainIndexEmpty noun="tags" href="/tags" />
       ) : (
         <div className="mt-12 max-w-3xl border-t border-black/8">
-          {entries.map((item) => (
-            <ContentListItem
-              key={item.id}
-              variant="list"
-              href={`${CONTENT_PATH_PREFIX[item.type]}/${item.slug}`}
-              title={item.title}
-              summary={item.summary}
-              meta={
-                <ContentMeta
-                  items={[{ label: contentSectionLabel[item.type], type: "text" }]}
-                />
-              }
-            />
-          ))}
+          {(["writing", "project", "work", "lab"] as const).map((domain) => {
+            const entries = groups[domain];
+            if (entries.length === 0) return null;
+            return (
+              <section key={domain} className="pt-8">
+                <h2 className="font-mono text-sm uppercase tracking-wide text-black/55">
+                  {contentSectionLabel[domain]} ({entries.length})
+                </h2>
+                <div className="mt-3">
+                  {entries.map((item) => (
+                    <ContentListItem
+                      key={item.id}
+                      variant="list"
+                      href={`${CONTENT_PATH_PREFIX[item.type]}/${item.slug}`}
+                      title={item.title}
+                      summary={item.summary}
+                      meta={
+                        <ContentMeta
+                          items={[{ label: contentSectionLabel[item.type], type: "text" }]}
+                        />
+                      }
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
     </main>

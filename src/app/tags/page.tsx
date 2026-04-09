@@ -2,24 +2,19 @@ import type { Metadata } from "next";
 import { ContentListItem } from "@/components/content/content-list-item";
 import { ContentMeta } from "@/components/content/content-meta";
 import { DomainIndexEmpty } from "@/components/content/domain-index-empty";
+import { buildTagIndex } from "@/lib/content-intelligence/tag-grouping";
 import { getAllContent } from "@/lib/content-source/get-all-content";
-import {
-  normalizeTag,
-  tagPathSegment,
-} from "@/lib/content/tags";
-import type { ContentType } from "@/lib/content/types";
+import { tagPathSegment } from "@/lib/content/tags";
 import {
   buildSimplePageMetadata,
   contentSectionLabel,
 } from "@/lib/seo/build-metadata";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
-const DOMAIN_ORDER: ContentType[] = ["writing", "project", "work", "lab"];
-
-function formatDomains(set: Set<ContentType>): string {
-  return [...set]
-    .sort((a, b) => DOMAIN_ORDER.indexOf(a) - DOMAIN_ORDER.indexOf(b))
-    .map((t) => contentSectionLabel[t])
+function formatDomains(domainCounts: Partial<Record<"project" | "work" | "writing" | "lab", number>>): string {
+  return (["writing", "project", "work", "lab"] as const)
+    .filter((type) => (domainCounts[type] ?? 0) > 0)
+    .map((type) => `${contentSectionLabel[type]} (${domainCounts[type]})`)
     .join(" · ");
 }
 
@@ -31,40 +26,12 @@ export const metadata: Metadata = buildSimplePageMetadata({
 
 export default async function TagsPage() {
   const content = await getAllContent();
-  const domains = new Map<string, Set<ContentType>>();
-  const counts = new Map<string, number>();
-
-  const register = (tag: string, type: ContentType) => {
-    const normalized = normalizeTag(tag);
-    if (!normalized) return;
-    counts.set(normalized, (counts.get(normalized) ?? 0) + 1);
-    const set = domains.get(normalized) ?? new Set<ContentType>();
-    set.add(type);
-    domains.set(normalized, set);
-  };
-
-  for (const entry of content.writing) {
-    for (const tag of entry.tags ?? []) {
-      register(tag, "writing");
-    }
-  }
-  for (const entry of content.projects) {
-    for (const tag of entry.tags ?? []) {
-      register(tag, "project");
-    }
-  }
-  for (const entry of content.work) {
-    for (const tag of entry.tags ?? []) {
-      register(tag, "work");
-    }
-  }
-  for (const entry of content.labs) {
-    for (const tag of entry.tags ?? []) {
-      register(tag, "lab");
-    }
-  }
-
-  const tags = [...domains.keys()].sort((a, b) => a.localeCompare(b));
+  const tags = buildTagIndex({
+    writing: content.writing,
+    projects: content.projects,
+    work: content.work,
+    labs: content.labs,
+  });
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-24">
@@ -82,16 +49,15 @@ export default async function TagsPage() {
         <DomainIndexEmpty noun="tags" href="/tags" />
       ) : (
         <div className="mt-12 max-w-3xl border-t border-black/8">
-          {tags.map((tag) => {
-            const domainSet = domains.get(tag);
-            const hint = domainSet ? formatDomains(domainSet) : "";
-            const count = counts.get(tag) ?? 0;
+          {tags.map((entry) => {
+            const hint = formatDomains(entry.domains);
+            const count = entry.totalCount;
             return (
               <ContentListItem
-                key={tag}
+                key={entry.tag}
                 variant="list"
-                href={`/tags/${tagPathSegment(tag)}`}
-                title={`#${tag}`}
+                href={`/tags/${tagPathSegment(entry.tag)}`}
+                title={`#${entry.displayTag}`}
                 summary={hint || undefined}
                 meta={
                   <ContentMeta

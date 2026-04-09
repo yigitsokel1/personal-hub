@@ -5,7 +5,7 @@ import type { ContentWithBody } from "@/lib/content-source/types";
 import type { LabContent } from "@/lib/content/types";
 import { adaptDbLab, type DbLabItem } from "@/lib/content-source/adapters/lab.adapter";
 import type { LabInput } from "@/lib/domain/labs/types";
-import { normalizeTag } from "@/lib/tags/normalize-tag";
+import { rankRelatedContent } from "@/lib/content-intelligence/related-ranking";
 
 type LabSource = "database";
 
@@ -191,30 +191,6 @@ export async function getRelatedLabs(
   slug: string,
   tags: string[] | undefined
 ): Promise<{ slug: string; title: string }[]> {
-  const currentTags = new Set((tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
-  if (currentTags.size === 0) {
-    return [];
-  }
-
   const { value } = await getPublishedLabs();
-  return value
-    .filter((entry) => entry.slug !== slug)
-    .map((entry) => {
-      const entryTags = new Set((entry.tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean));
-      let shared = 0;
-      for (const tag of currentTags) {
-        if (entryTags.has(tag)) shared += 1;
-      }
-      return { entry, shared };
-    })
-    .filter((entry) => entry.shared > 0)
-    .sort((a, b) => {
-      if (b.shared !== a.shared) return b.shared - a.shared;
-      return new Date(b.entry.publishedAt).getTime() - new Date(a.entry.publishedAt).getTime();
-    })
-    .slice(0, 3)
-    .map(({ entry }) => ({
-      slug: entry.slug,
-      title: entry.title,
-    }));
+  return rankRelatedContent(slug, tags, value);
 }

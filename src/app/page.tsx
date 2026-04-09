@@ -12,6 +12,8 @@ import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentYearMonth } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
+import { buildHomepageSelection } from "@/lib/content-intelligence/homepage-selection";
+import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
 import {
   getDefaultOgImageAbsolute,
@@ -29,8 +31,6 @@ import {
   homeCardClassName,
   homeWritingRowClassName,
 } from "@/lib/ui/link-tokens";
-
-const PREVIEW_LIMIT = 3;
 
 const siteBase = getSiteMetadataBase();
 const homeOgUrl = siteBase ? new URL("/", siteBase).toString() : "/";
@@ -68,13 +68,19 @@ export default async function HomePage() {
   const webSiteLd = buildWebSiteJsonLd();
   const { value: settings } = await getSiteSettings();
   const { value: allWork } = await getPublishedWork();
-  const featuredWork = allWork.filter((item) => item.featured).slice(0, PREVIEW_LIMIT);
   const { value: allProjects } = await getPublishedProjects();
-  const featuredProjects = allProjects.filter((item) => item.featured).slice(0, PREVIEW_LIMIT);
-  const { value: writing } = await getPublishedWriting();
-  const latestWriting = writing.slice(0, PREVIEW_LIMIT);
-  const { value: labs } = await getPublishedLabs();
-  const latestLabs = labs.slice(0, PREVIEW_LIMIT);
+  const { value: allWriting } = await getPublishedWriting();
+  const { value: allLabs } = await getPublishedLabs();
+  const selection = buildHomepageSelection({
+    writing: allWriting,
+    projects: allProjects,
+    work: allWork,
+    labs: allLabs,
+  });
+  const featuredWork = selection.featuredWork;
+  const featuredProjects = selection.featuredProjects;
+  const writingItems = [...selection.featuredWriting, ...selection.domainHighlights.writing];
+  const latestLabs = selection.domainHighlights.labs;
   const isSingleWork = featuredWork.length === 1;
   const isSingleProject = featuredProjects.length === 1;
 
@@ -177,7 +183,7 @@ export default async function HomePage() {
           </SectionReveal>
         ) : null}
 
-        {homepageSections.writing && latestWriting.length > 0 ? (
+        {homepageSections.writing && writingItems.length > 0 ? (
           <SectionReveal>
             <HomeSection
               title={homepageCopy.sections.writing.title}
@@ -186,7 +192,7 @@ export default async function HomePage() {
               density="compact"
             >
               <div className="space-y-1.5">
-                {latestWriting.map((item) => {
+                {writingItems.map((item) => {
                   const monoDate = formatContentYearMonth(item.publishedAt);
 
                   return (
