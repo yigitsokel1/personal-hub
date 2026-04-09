@@ -6,7 +6,10 @@ import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { rankSearchDocuments } from "@/lib/content-intelligence/search-ranking";
 import { getAllContent } from "@/lib/content-source/get-all-content";
 import { buildSearchDocuments } from "@/lib/search/search-documents";
-import { contentSectionLabel } from "@/lib/seo/build-metadata";
+import {
+  buildSimplePageMetadata,
+  contentSectionLabel,
+} from "@/lib/seo/build-metadata";
 import { contentInlineLinkClassName } from "@/lib/ui/link-tokens";
 import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
@@ -14,22 +17,69 @@ type SearchPageProps = {
   searchParams: Promise<{ q?: string }>;
 };
 
-export const metadata: Metadata = {
-  title: "Search",
-  description: "Search across projects, work, writing, and labs.",
-};
+function normalizeSearchQuery(value: string): string {
+  return value.trim().replace(/\s+/g, " ").slice(0, 120);
+}
+
+function isSearchQueryInvalid(query: string): boolean {
+  return query.length > 0 && !/[a-z0-9]/i.test(query);
+}
+
+export async function generateMetadata({
+  searchParams,
+}: SearchPageProps): Promise<Metadata> {
+  const { q = "" } = await searchParams;
+  const query = normalizeSearchQuery(q);
+
+  if (!query) {
+    return {
+      ...buildSimplePageMetadata({
+        pathname: "/search",
+        title: "Search",
+        description: "Search across projects, work, writing, and labs.",
+      }),
+      robots: { index: false, follow: true },
+    };
+  }
+
+  if (isSearchQueryInvalid(query)) {
+    return {
+      ...buildSimplePageMetadata({
+        pathname: "/search",
+        title: "Search",
+        description: "Search query includes unsupported characters. Use letters or numbers.",
+      }),
+      robots: { index: false, follow: true },
+    };
+  }
+
+  return {
+    ...buildSimplePageMetadata({
+      pathname: "/search",
+      title: `Search: ${query}`,
+      description: `Search results for "${query}" across projects, work, writing, and labs.`,
+    }),
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q = "" } = await searchParams;
-  const query = q.trim();
-  const content = await getAllContent();
-  const docs = buildSearchDocuments([
-    ...content.writing,
-    ...content.projects,
-    ...content.work,
-    ...content.labs,
-  ]);
-  const results = query ? rankSearchDocuments(docs, query) : [];
+  const query = normalizeSearchQuery(q);
+  const queryInvalid = isSearchQueryInvalid(query);
+  const shouldSearch = query.length > 0 && !queryInvalid;
+  const content = shouldSearch ? await getAllContent() : null;
+  const results = shouldSearch
+    ? rankSearchDocuments(
+        buildSearchDocuments([
+          ...(content?.writing ?? []),
+          ...(content?.projects ?? []),
+          ...(content?.work ?? []),
+          ...(content?.labs ?? []),
+        ]),
+        query
+      )
+    : [];
   const resultCountLabel = `${results.length} ${results.length === 1 ? "result" : "results"}`;
 
   return (
@@ -72,6 +122,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </p>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-black/45">
             Try: architecture, case study, product thinking
+          </p>
+        </section>
+      ) : queryInvalid ? (
+        <section className="mt-10 max-w-3xl space-y-4 border-t border-black/8 pt-8">
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-black/45">
+            Query
+          </p>
+          <p className="text-lg tracking-tight">
+            Search query is invalid.
+          </p>
+          <p className="text-sm leading-relaxed text-black/60">
+            Use letters or numbers and try again.
           </p>
         </section>
       ) : results.length === 0 ? (

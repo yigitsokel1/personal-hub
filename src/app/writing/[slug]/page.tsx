@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cache } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { ContentPageIntro } from "@/components/content/content-page-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { WritingPrevNext } from "@/components/content/writing-prev-next";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import { resolveSlugRedirect } from "@/lib/content-source/slug-redirects";
 import {
   getPublishedWriting,
   getRelatedWriting,
@@ -22,6 +24,8 @@ type WritingDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const getCachedWritingBySlug = cache(async (slug: string) => getWritingBySlug(slug));
+
 export async function generateStaticParams() {
   const { value } = await getPublishedWriting();
   return value.map((item) => ({
@@ -33,7 +37,7 @@ export async function generateMetadata({
   params,
 }: WritingDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getWritingBySlug(slug);
+  const item = await getCachedWritingBySlug(slug);
   if (!item) return {};
 
   return buildContentDetailMetadata({
@@ -51,9 +55,13 @@ export default async function WritingDetailPage({
   params,
 }: WritingDetailPageProps) {
   const { slug } = await params;
-  const item = await getWritingBySlug(slug);
+  const item = await getCachedWritingBySlug(slug);
 
   if (!item) {
+    const redirectedSlug = await resolveSlugRedirect("writing", slug);
+    if (redirectedSlug) {
+      permanentRedirect(`/writing/${redirectedSlug}`);
+    }
     notFound();
   }
 

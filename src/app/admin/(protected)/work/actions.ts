@@ -23,6 +23,7 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
+import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createWorkAction(formData: FormData): Promise<void> {
@@ -136,6 +137,7 @@ export async function updateWorkAction(id: string, formData: FormData): Promise<
 
   try {
     const saved = await updateWork(id, validated.value);
+    await recordSlugRedirect("work", current.slug, saved.slug);
     logMutationEvent({ domain: "work", action: "update", slug: saved.slug });
     revalidateContentSurfaces({
       domain: "work",
@@ -163,18 +165,24 @@ export async function deleteWorkAction(formData: FormData): Promise<void> {
     redirect("/admin/work?status=delete_error");
   }
 
-  const result = await deleteWorkById(id);
-  if (!result.ok) {
-    redirect("/admin/work?status=delete_missing");
-  }
-  logMutationEvent({ domain: "work", action: "delete", slug: result.slug ?? "" });
+  try {
+    const result = await deleteWorkById(id);
+    if (!result.ok) {
+      redirect("/admin/work?status=delete_missing");
+    }
+    logMutationEvent({ domain: "work", action: "delete", slug: result.slug ?? "" });
 
-  revalidateContentSurfaces({
-    domain: "work",
-    previousSlug: result.slug,
-    previousTags: result.tags,
-    previousPublished: result.published,
-    previousFeatured: result.featured,
-  });
-  redirect("/admin/work?status=deleted");
+    revalidateContentSurfaces({
+      domain: "work",
+      previousSlug: result.slug,
+      previousTags: result.tags,
+      previousPublished: result.published,
+      previousFeatured: result.featured,
+    });
+    redirect("/admin/work?status=deleted");
+  } catch (error) {
+    if (isNextRedirectError(error)) throw error;
+    logMutationError({ domain: "work", action: "delete", reason: "mutation_error", details: error });
+    redirect("/admin/work?status=delete_error");
+  }
 }

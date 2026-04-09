@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cache } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { LabDetailIntro } from "@/components/content/lab-detail-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import { resolveSlugRedirect } from "@/lib/content-source/slug-redirects";
 import { getLabBySlug, getPublishedLabs, getRelatedLabs } from "@/lib/content-source/get-labs";
 import {
   buildContentDetailMetadata,
@@ -14,6 +16,8 @@ import {
 type LabDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+const getCachedLabBySlug = cache(async (slug: string) => getLabBySlug(slug));
 
 export async function generateStaticParams() {
   const { value } = await getPublishedLabs();
@@ -26,7 +30,7 @@ export async function generateMetadata({
   params,
 }: LabDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getLabBySlug(slug);
+  const item = await getCachedLabBySlug(slug);
   if (!item) return {};
 
   return buildContentDetailMetadata({
@@ -42,9 +46,13 @@ export async function generateMetadata({
 
 export default async function LabDetailPage({ params }: LabDetailPageProps) {
   const { slug } = await params;
-  const item = await getLabBySlug(slug);
+  const item = await getCachedLabBySlug(slug);
 
   if (!item) {
+    const redirectedSlug = await resolveSlugRedirect("labs", slug);
+    if (redirectedSlug) {
+      permanentRedirect(`/labs/${redirectedSlug}`);
+    }
     notFound();
   }
   const related = await getRelatedLabs(slug, item.tags);

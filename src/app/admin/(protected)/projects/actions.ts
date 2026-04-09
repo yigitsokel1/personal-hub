@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
+import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createProjectAction(formData: FormData): Promise<void> {
@@ -125,6 +126,7 @@ export async function updateProjectAction(id: string, formData: FormData): Promi
   if (!current) redirect("/admin/projects?status=missing");
   try {
     const saved = await updateProject(id, validated.value);
+    await recordSlugRedirect("projects", current.slug, saved.slug);
     logMutationEvent({ domain: "projects", action: "update", slug: saved.slug });
     revalidateContentSurfaces({
       domain: "projects",
@@ -152,18 +154,24 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
     redirect("/admin/projects?status=delete_error");
   }
 
-  const result = await deleteProjectById(id);
-  if (!result.ok) {
-    redirect("/admin/projects?status=delete_missing");
-  }
-  logMutationEvent({ domain: "projects", action: "delete", slug: result.slug ?? "" });
+  try {
+    const result = await deleteProjectById(id);
+    if (!result.ok) {
+      redirect("/admin/projects?status=delete_missing");
+    }
+    logMutationEvent({ domain: "projects", action: "delete", slug: result.slug ?? "" });
 
-  revalidateContentSurfaces({
-    domain: "projects",
-    previousSlug: result.slug,
-    previousTags: result.tags,
-    previousPublished: result.published,
-    previousFeatured: result.featured,
-  });
-  redirect("/admin/projects?status=deleted");
+    revalidateContentSurfaces({
+      domain: "projects",
+      previousSlug: result.slug,
+      previousTags: result.tags,
+      previousPublished: result.published,
+      previousFeatured: result.featured,
+    });
+    redirect("/admin/projects?status=deleted");
+  } catch (error) {
+    if (isNextRedirectError(error)) throw error;
+    logMutationError({ domain: "projects", action: "delete", reason: "mutation_error", details: error });
+    redirect("/admin/projects?status=delete_error");
+  }
 }

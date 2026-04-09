@@ -20,6 +20,7 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
+import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createLabAction(formData: FormData): Promise<void> {
@@ -106,6 +107,7 @@ export async function updateLabAction(id: string, formData: FormData): Promise<v
   if (!current) redirect("/admin/labs?status=missing");
   try {
     const saved = await updateLab(id, validated.value);
+    await recordSlugRedirect("labs", current.slug, saved.slug);
     logMutationEvent({ domain: "labs", action: "update", slug: saved.slug });
     revalidateContentSurfaces({
       domain: "labs",
@@ -133,18 +135,24 @@ export async function deleteLabAction(formData: FormData): Promise<void> {
     redirect("/admin/labs?status=delete_error");
   }
 
-  const result = await deleteLabById(id);
-  if (!result.ok) {
-    redirect("/admin/labs?status=delete_missing");
-  }
-  logMutationEvent({ domain: "labs", action: "delete", slug: result.slug ?? "" });
+  try {
+    const result = await deleteLabById(id);
+    if (!result.ok) {
+      redirect("/admin/labs?status=delete_missing");
+    }
+    logMutationEvent({ domain: "labs", action: "delete", slug: result.slug ?? "" });
 
-  revalidateContentSurfaces({
-    domain: "labs",
-    previousSlug: result.slug,
-    previousTags: result.tags,
-    previousPublished: result.published,
-    previousFeatured: result.featured,
-  });
-  redirect("/admin/labs?status=deleted");
+    revalidateContentSurfaces({
+      domain: "labs",
+      previousSlug: result.slug,
+      previousTags: result.tags,
+      previousPublished: result.published,
+      previousFeatured: result.featured,
+    });
+    redirect("/admin/labs?status=deleted");
+  } catch (error) {
+    if (isNextRedirectError(error)) throw error;
+    logMutationError({ domain: "labs", action: "delete", reason: "mutation_error", details: error });
+    redirect("/admin/labs?status=delete_error");
+  }
 }

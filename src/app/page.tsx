@@ -13,7 +13,6 @@ import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentYearMonth } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
 import { buildHomepageSelection } from "@/lib/content-intelligence/homepage-selection";
-import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
 import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
 import {
   getDefaultOgImageAbsolute,

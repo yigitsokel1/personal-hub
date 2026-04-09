@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cache } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { WorkDetailIntro } from "@/components/content/work-detail-intro";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import { resolveSlugRedirect } from "@/lib/content-source/slug-redirects";
 import { getPublishedWork, getRelatedWork, getWorkBySlug } from "@/lib/content-source/get-work";
 import {
   buildContentDetailMetadata,
@@ -14,6 +16,8 @@ import {
 type WorkDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+const getCachedWorkBySlug = cache(async (slug: string) => getWorkBySlug(slug));
 
 export async function generateStaticParams() {
   const { value } = await getPublishedWork();
@@ -26,7 +30,7 @@ export async function generateMetadata({
   params,
 }: WorkDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getWorkBySlug(slug);
+  const item = await getCachedWorkBySlug(slug);
   if (!item) return {};
 
   return buildContentDetailMetadata({
@@ -42,9 +46,13 @@ export async function generateMetadata({
 
 export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
   const { slug } = await params;
-  const item = await getWorkBySlug(slug);
+  const item = await getCachedWorkBySlug(slug);
 
   if (!item) {
+    const redirectedSlug = await resolveSlugRedirect("work", slug);
+    if (redirectedSlug) {
+      permanentRedirect(`/work/${redirectedSlug}`);
+    }
     notFound();
   }
 

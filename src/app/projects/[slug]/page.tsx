@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cache } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentDetailMain } from "@/components/content/content-detail-main";
 import { ProjectDetailIntro } from "@/components/content/project-detail-intro";
 import { RelatedContentLinks } from "@/components/content/related-content-links";
 import { CONTENT_PATH_PREFIX } from "@/lib/content/config";
+import { resolveSlugRedirect } from "@/lib/content-source/slug-redirects";
 import {
   getProjectBySlug,
   getPublishedProjects,
@@ -19,6 +21,8 @@ type ProjectDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const getCachedProjectBySlug = cache(async (slug: string) => getProjectBySlug(slug));
+
 export async function generateStaticParams() {
   const { value } = await getPublishedProjects();
   return value.map((project) => ({
@@ -30,7 +34,7 @@ export async function generateMetadata({
   params,
 }: ProjectDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const project = await getCachedProjectBySlug(slug);
   if (!project) return {};
 
   return buildContentDetailMetadata({
@@ -48,9 +52,13 @@ export default async function ProjectDetailPage({
   params,
 }: ProjectDetailPageProps) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const project = await getCachedProjectBySlug(slug);
 
   if (!project) {
+    const redirectedSlug = await resolveSlugRedirect("projects", slug);
+    if (redirectedSlug) {
+      permanentRedirect(`/projects/${redirectedSlug}`);
+    }
     notFound();
   }
 

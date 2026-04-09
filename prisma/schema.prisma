@@ -109,3 +109,16 @@ model Lab {
 
   @@map("labs")
 }
+
+model ContentSlugRedirect {
+  id        String   @id @default(cuid())
+  domain    String
+  oldSlug   String   @map("old_slug")
+  newSlug   String   @map("new_slug")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([domain, oldSlug])
+  @@index([domain, newSlug])
+  @@map("content_slug_redirects")
+}

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
 import { ContentDetailMain } from "@/components/content/content-detail-main";
@@ -19,6 +20,13 @@ type PreviewPageProps = {
   params: Promise<{ domain: string; slug: string }>;
 };
 
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 function isPreviewDomain(value: string): value is PreviewDomain {
   return value === "writing" || value === "projects" || value === "work" || value === "labs";
 }
@@ -32,11 +40,13 @@ function PreviewBanner({ state }: { state: "Draft" | "Published" }) {
 }
 
 export default async function PreviewDetailPage({ params }: PreviewPageProps) {
+  const { domain, slug } = await params;
+
   if (!(await isAdminAuthenticated())) {
-    redirect("/admin/login");
+    const nextPath = `/preview/${domain}/${slug}`;
+    redirect(`/admin/login?error=preview_auth_required&next=${encodeURIComponent(nextPath)}`);
   }
 
-  const { domain, slug } = await params;
   if (!isPreviewDomain(domain)) {
     notFound();
   }

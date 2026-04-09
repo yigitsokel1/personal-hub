@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContentListItem } from "@/components/content/content-list-item";
@@ -11,14 +12,13 @@ import {
   groupEntriesByTag,
 } from "@/lib/content-intelligence/tag-grouping";
 import { getAllContent } from "@/lib/content-source/get-all-content";
-import { homepageCopy } from "@/lib/content/homepage-copy";
 import {
   tagFromPathSegment,
   tagPathSegment,
 } from "@/lib/content/tags";
 import {
+  buildSimplePageMetadata,
   contentSectionLabel,
-  getSiteMetadataBase,
 } from "@/lib/seo/build-metadata";
 import {
   contentInlineLinkClassName,
@@ -29,7 +29,7 @@ type TagDetailPageProps = {
   params: Promise<{ tag: string }>;
 };
 
-async function getCanonicalTagsAndEntriesByTag(label: string) {
+const getCanonicalTagsAndEntriesByTag = cache(async (label: string) => {
   const content = await getAllContent();
   const index = buildTagIndex({
     writing: content.writing,
@@ -48,6 +48,10 @@ async function getCanonicalTagsAndEntriesByTag(label: string) {
     tags: index.map((entry) => entry.tag),
     grouped,
   };
+});
+
+function isInvalidTagSegment(rawSegment: string, normalizedTag: string): boolean {
+  return rawSegment.trim().length > 0 && normalizedTag === "";
 }
 
 export async function generateStaticParams() {
@@ -62,16 +66,16 @@ export async function generateMetadata({
 }: TagDetailPageProps): Promise<Metadata> {
   const { tag } = await params;
   const label = tagFromPathSegment(tag);
+  if (isInvalidTagSegment(tag, label)) {
+    notFound();
+  }
   const { tags } = await getCanonicalTagsAndEntriesByTag(label);
   const knownTags = new Set(tags);
   if (label !== "" && !knownTags.has(label)) {
     notFound();
   }
-  const base = getSiteMetadataBase();
   const pathname =
     label !== "" ? `/tags/${tagPathSegment(label)}` : `/tags/${tag}`;
-  const canonical =
-    base != null ? new URL(pathname, `${base.origin}/`).toString() : undefined;
 
   const displayTag = formatTagDisplay(label);
   const titleSegment = label !== "" ? `${displayTag} — Tags` : "Tag — Tags";
@@ -79,25 +83,20 @@ export async function generateMetadata({
     label !== ""
       ? `Content tagged “${displayTag}”.`
       : "Content for this tag.";
-  const ogTitle = `${titleSegment} | ${homepageCopy.siteName}`;
 
-  return {
+  return buildSimplePageMetadata({
+    pathname,
     title: titleSegment,
     description,
-    ...(canonical ? { alternates: { canonical } } : {}),
-    openGraph: {
-      title: ogTitle,
-      description,
-      url: canonical ?? pathname,
-      siteName: homepageCopy.siteName,
-      type: "website",
-    },
-  };
+  });
 }
 
 export default async function TagDetailPage({ params }: TagDetailPageProps) {
   const { tag } = await params;
   const label = tagFromPathSegment(tag);
+  if (isInvalidTagSegment(tag, label)) {
+    notFound();
+  }
   const { tags, grouped } = await getCanonicalTagsAndEntriesByTag(label);
   const knownTags = new Set(tags);
   if (label !== "" && !knownTags.has(label)) {

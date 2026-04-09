@@ -47,10 +47,21 @@ function shareImagesWithFallback(
   openGraph: { url: string; alt?: string; width?: number; height?: number }[];
   twitter: string[];
 } {
-  if (cover?.src) {
+  const coverSrc = cover?.src?.trim();
+  const resolvedCover = (() => {
+    if (!coverSrc) return null;
+    try {
+      // Accept fully-qualified URLs and root-relative paths.
+      return base ? new URL(coverSrc, `${base.origin}/`).toString() : new URL(coverSrc).toString();
+    } catch {
+      return null;
+    }
+  })();
+
+  if (resolvedCover) {
     return {
-      openGraph: [{ url: cover.src, alt: cover.alt }],
-      twitter: [cover.src],
+      openGraph: [{ url: resolvedCover, alt: cover?.alt }],
+      twitter: [resolvedCover],
     };
   }
   if (base) {

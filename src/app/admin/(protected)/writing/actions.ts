@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/content-mutations";
 import { isNextRedirectError } from "@/lib/admin/action-errors";
 import { logMutationError, logMutationEvent } from "@/lib/admin/mutation-logging";
+import { recordSlugRedirect } from "@/lib/content-source/slug-redirects";
 import { revalidateContentSurfaces } from "@/lib/revalidation/content-revalidation";
 
 export async function createWritingAction(formData: FormData): Promise<void> {
@@ -116,6 +117,7 @@ export async function updateWritingAction(id: string, formData: FormData): Promi
 
   try {
     const saved = await updateWriting(id, validated.value);
+    await recordSlugRedirect("writing", current.slug, saved.slug);
     logMutationEvent({ domain: "writing", action: "update", slug: saved.slug });
     revalidateContentSurfaces({
       domain: "writing",
@@ -143,18 +145,24 @@ export async function deleteWritingAction(formData: FormData): Promise<void> {
     redirect("/admin/writing?status=delete_error");
   }
 
-  const result = await deleteWritingById(id);
-  if (!result.ok) {
-    redirect("/admin/writing?status=delete_missing");
-  }
-  logMutationEvent({ domain: "writing", action: "delete", slug: result.slug ?? "" });
+  try {
+    const result = await deleteWritingById(id);
+    if (!result.ok) {
+      redirect("/admin/writing?status=delete_missing");
+    }
+    logMutationEvent({ domain: "writing", action: "delete", slug: result.slug ?? "" });
 
-  revalidateContentSurfaces({
-    domain: "writing",
-    previousSlug: result.slug,
-    previousTags: result.tags,
-    previousPublished: result.published,
-    previousFeatured: result.featured,
-  });
-  redirect("/admin/writing?status=deleted");
+    revalidateContentSurfaces({
+      domain: "writing",
+      previousSlug: result.slug,
+      previousTags: result.tags,
+      previousPublished: result.published,
+      previousFeatured: result.featured,
+    });
+    redirect("/admin/writing?status=deleted");
+  } catch (error) {
+    if (isNextRedirectError(error)) throw error;
+    logMutationError({ domain: "writing", action: "delete", reason: "mutation_error", details: error });
+    redirect("/admin/writing?status=delete_error");
+  }
 }
