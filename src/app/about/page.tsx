@@ -30,12 +30,14 @@ export default async function AboutPage() {
           <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
             {title}
           </h1>
-          <p className="mt-5 text-lg leading-relaxed text-black/75">{settings.aboutShort || intro}</p>
+          <p className="mt-5 max-w-2xl text-[1.05rem] leading-relaxed text-black/74">
+            {settings.aboutShort || intro}
+          </p>
 
-          <div className="mt-12 grid gap-12 sm:grid-cols-2">
+          <div className="mt-12 grid gap-10 sm:grid-cols-2">
             {sections.map((section) => (
               <section key={section.heading}>
-                <h2 className="font-mono text-lg font-semibold tracking-tight text-foreground">
+                <h2 className="font-mono text-base font-semibold tracking-tight text-foreground">
                   {section.heading}
                 </h2>
                 <p className="mt-4 text-base leading-relaxed text-black/75">

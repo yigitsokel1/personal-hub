@@ -10,7 +10,7 @@ export const homepageCopy = {
   siteTitle: "OYS — Personal Hub",
   /** Root layout / OG description; aligned with the hero subtitle. */
   siteDescription:
-    "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
+    "Production systems, engagements, technical writing, and experiments—organized as an operating hub.",
   hero: {
     kicker: "Product engineer",
 
@@ -20,10 +20,10 @@ export const homepageCopy = {
       "AI, backend engineering, and product thinking.",
     ],
     subtitle:
-      "Case studies, engagements, writing, and experiments—organized as a hub, not a deck.",
+      "Production systems, engagements, writing, and experiments—organized as an operating hub.",
   },
   compactAbout:
-    "I ship real systems end to end: clarity on the problem, boring-when-it-matters tech choices, and follow-through after launch. This site is where I document that work.",
+    "I build and ship real systems end to end: framing, architecture, validation, and iteration after launch. This site documents that operating practice.",
   sections: {
     featuredWork: {
       title: "Selected work",
@@ -58,15 +58,15 @@ export const homepageCopy = {
   aboutPage: {
     title: "About",
     intro:
-      "I am a product engineer: I own problems end to end—from framing and tradeoffs to shipping, measurement, and iteration. This site is my hub for how that work actually happens, not a slide deck of highlights.",
+      "I am a product engineer who builds systems, not demos. I own problems end to end: framing, tradeoffs, architecture, shipping, validation, and iteration.",
     sections: [
       {
         heading: "How I work",
-        body: "I combine AI-assisted tooling with disciplined backend and product practice: small vertical slices, explicit failure modes, and systems you can operate. I care as much about what we choose not to build as what we ship.",
+        body: "I combine AI-assisted workflows with disciplined backend and product execution: small vertical slices, explicit failure modes, and systems teams can operate. I optimize for decisions that stay correct under real constraints.",
       },
       {
         heading: "What you will find here",
-        body: "Projects are productized systems I have shaped or led. Work is real engagements, anonymized where needed. Writing is longer-form judgment on architecture and delivery. Labs are honest experiments—some stick, some do not.",
+        body: "Projects are productized systems with architecture and outcomes. Work covers real engagements and decision context. Writing captures technical judgment. Labs are raw experiments with clear learnings, not polished launches.",
       },
     ],
   },

@@ -12,7 +12,6 @@ import { getPublishedWriting } from "@/lib/content-source/get-writing";
 import { homepageSections } from "@/lib/content/homepage-sections";
 import { formatContentYearMonth } from "@/lib/format-content-date";
 import { formatEngagementType } from "@/lib/format-engagement-type";
-import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
 import { buildWebSiteJsonLd } from "@/lib/seo/json-ld";
 import {
   getDefaultOgImageAbsolute,
@@ -25,6 +24,11 @@ import {
   terminalButtonClassName,
   cardIndex,
 } from "@/lib/ui/terminal-tokens";
+import {
+  shellSecondaryLinkClassName,
+  homeCardClassName,
+  homeWritingRowClassName,
+} from "@/lib/ui/link-tokens";
 
 const PREVIEW_LIMIT = 3;
 
@@ -71,6 +75,8 @@ export default async function HomePage() {
   const latestWriting = writing.slice(0, PREVIEW_LIMIT);
   const { value: labs } = await getPublishedLabs();
   const latestLabs = labs.slice(0, PREVIEW_LIMIT);
+  const isSingleWork = featuredWork.length === 1;
+  const isSingleProject = featuredProjects.length === 1;
 
   return (
     <>
@@ -92,12 +98,12 @@ export default async function HomePage() {
               viewAllHref={homepageCopy.sections.featuredWork.viewAllHref}
               viewAllLabel={homepageCopy.sections.featuredWork.viewAllLabel}
             >
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className={isSingleWork ? "max-w-3xl" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
                 {featuredWork.map((item, i) => (
                   <Link
                     key={item.id}
                     href={`/work/${item.slug}`}
-                    className="group rounded-lg border border-black/10 p-5 transition-colors duration-200 hover:border-black/20"
+                    className={`${homeCardClassName} ${isSingleWork ? "px-6 py-6 sm:px-7" : "p-5"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-sm text-black/35">
@@ -107,7 +113,7 @@ export default async function HomePage() {
                         {ARROW}
                       </span>
                     </div>
-                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                    <h3 className="mt-3 text-lg font-medium tracking-tight sm:text-xl">
                       {item.title}
                     </h3>
                     <p className="mt-1.5 font-mono text-sm text-black/50">
@@ -135,12 +141,12 @@ export default async function HomePage() {
               viewAllHref={homepageCopy.sections.featuredProjects.viewAllHref}
               viewAllLabel={homepageCopy.sections.featuredProjects.viewAllLabel}
             >
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className={isSingleProject ? "max-w-3xl" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
                 {featuredProjects.map((project, i) => (
                   <Link
                     key={project.id}
                     href={`/projects/${project.slug}`}
-                    className="group rounded-lg border border-black/10 p-5 transition-colors duration-200 hover:border-black/20"
+                    className={`${homeCardClassName} ${isSingleProject ? "px-6 py-6 sm:px-7" : "p-5"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-sm text-black/35">
@@ -150,7 +156,7 @@ export default async function HomePage() {
                         {ARROW}
                       </span>
                     </div>
-                    <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                    <h3 className="mt-3 text-lg font-medium tracking-tight sm:text-xl">
                       {project.title}
                     </h3>
                     <p className="mt-1.5 font-mono text-sm text-black/50">
@@ -179,7 +185,7 @@ export default async function HomePage() {
               viewAllLabel={homepageCopy.sections.writing.viewAllLabel}
               density="compact"
             >
-              <div className="space-y-0">
+              <div className="space-y-1.5">
                 {latestWriting.map((item) => {
                   const monoDate = formatContentYearMonth(item.publishedAt);
 
@@ -187,9 +193,9 @@ export default async function HomePage() {
                     <Link
                       key={item.id}
                       href={`/writing/${item.slug}`}
-                      className="flex items-center justify-between border-l-2 border-black/10 py-3 pl-4 transition-colors duration-200 hover:border-foreground"
+                      className={homeWritingRowClassName}
                     >
-                      <span className="text-base font-semibold tracking-tight sm:text-lg">
+                      <span className="text-base font-medium tracking-tight sm:text-[1.05rem]">
                         {item.title}
                       </span>
                       <span className="ml-4 shrink-0 font-mono text-sm text-black/40">
@@ -213,7 +219,7 @@ export default async function HomePage() {
                 {settings.productSignals.map((signal) => (
                   <div key={signal.label}>
                     <p className="font-mono text-sm text-white/65">{signal.label}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-white/70">
+                    <p className="mt-2 text-sm leading-relaxed text-white/75">
                       {signal.detail}
                     </p>
                   </div>
@@ -238,12 +244,12 @@ export default async function HomePage() {
                   but useful.
                 </p>
                 {latestLabs.length > 0 ? (
-                  <div className="mt-5 space-y-2">
+                  <div className="mt-5 space-y-2.5">
                     {latestLabs.map((item) => (
                       <Link
                         key={item.id}
                         href={`/labs/${item.slug}`}
-                        className="block font-mono text-sm text-black/60 transition-colors hover:text-black"
+                        className="block font-mono text-sm text-black/58 transition-colors duration-200 ease-out hover:text-black/80"
                       >
                         {ARROW} {item.title}
                       </Link>
@@ -274,7 +280,7 @@ export default async function HomePage() {
               <p className="mt-5">
                 <Link
                   href={homepageCopy.sections.about.href}
-                  className={`font-mono text-sm text-black/45 transition-colors duration-200 hover:text-foreground ${linkFocusVisibleClassName}`}
+                  className={shellSecondaryLinkClassName}
                 >
                   {homepageCopy.sections.about.linkLabel.toLowerCase()} {ARROW}
                 </Link>
@@ -291,7 +297,7 @@ export default async function HomePage() {
             <p className="mt-2">
               <Link
                 href={homepageCopy.cta.href}
-                className={`font-mono text-sm text-black/45 transition-colors duration-200 hover:text-foreground ${linkFocusVisibleClassName}`}
+                className="font-mono text-sm text-black/50 underline decoration-black/20 underline-offset-4 transition-[color,text-decoration-color] duration-200 ease-out hover:text-black/75 hover:decoration-black/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/25"
               >
                 {homepageCopy.cta.label.toLowerCase()} {ARROW}
               </Link>

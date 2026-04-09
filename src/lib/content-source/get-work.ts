@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { cache } from "react";
 import type { ContentWithBody } from "@/lib/content/get-content";
 import type { WorkContent } from "@/lib/content/types";
 import { adaptDbWork, type DbWorkItem } from "@/lib/content-source/adapters/work.adapter";
@@ -121,7 +122,7 @@ export async function countOtherFeaturedWork(excludeId?: string): Promise<number
   });
 }
 
-export async function getPublishedWork(): Promise<{
+export const getPublishedWork = cache(async function getPublishedWork(): Promise<{
   source: WorkSource;
   value: ContentWithBody<WorkContent>[];
 }> {
@@ -134,7 +135,7 @@ export async function getPublishedWork(): Promise<{
     source: "database",
     value: rows.map(adaptDbWork),
   };
-}
+});
 
 export async function getWorkBySlug(
   slug: string,

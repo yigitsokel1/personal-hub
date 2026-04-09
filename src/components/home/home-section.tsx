@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
+import { shellSecondaryLinkClassName } from "@/lib/ui/link-tokens";
 import {
   TREE_PREFIX,
   ARROW,
@@ -30,7 +30,7 @@ export function HomeSection({
         </h2>
         <Link
           href={viewAllHref}
-          className={`shrink-0 font-mono text-sm text-black/45 transition-colors duration-200 hover:text-foreground ${linkFocusVisibleClassName}`}
+          className={`shrink-0 ${shellSecondaryLinkClassName}`}
         >
           {viewAllLabel.toLowerCase()} {ARROW}
         </Link>

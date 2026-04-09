@@ -7,25 +7,25 @@ export function getDefaultSiteSettings(): SiteSettings {
     heroSubtitle: homepageCopy.hero.subtitle,
     productSignals: [
       {
-        label: "content_first_system",
-        detail: "Content is structured and typed across all domains with explicit schema contracts.",
+        label: "validation_loops",
+        detail: "Each domain runs on explicit schema validation and publish gates before content goes live.",
       },
       {
-        label: "code_first_delivery",
-        detail: "Content is managed through an admin panel with domain-driven publishing workflows.",
+        label: "delivery_pipeline",
+        detail: "Admin workflows map to production delivery: draft, preview, publish, and deterministic ordering.",
       },
       {
-        label: "engineering_judgment",
-        detail: "Case studies capture scope, trade-offs, and delivery constraints as first-class metadata.",
+        label: "state_management",
+        detail: "Cross-domain state stays typed and constrained so rendering does not rely on implicit assumptions.",
       },
       {
-        label: "continuous_builder",
-        detail: "Consistency is enforced by validators with no implicit content parsing in runtime.",
+        label: "decision_systems",
+        detail: "Projects and work capture trade-offs, constraints, and outcomes as operational signals.",
       },
     ],
     aboutShort: homepageCopy.compactAbout,
     footerIntro:
-      "Personal hub for building and documenting real systems across projects, work, writing, and labs.",
+      "Personal hub for building and operating real systems across projects, work, writing, and labs.",
     contactEmail: "oyigitsokell@gmail.com",
     githubUrl: "https://github.com/yigitsokel1",
     linkedinUrl: "https://www.linkedin.com/in/osman-yigit-sokel/",

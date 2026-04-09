@@ -46,7 +46,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
     notFound();
   }
 
-  const state = item.published ? "Published" : "Draft";
+  const state: "Draft" | "Published" = "Draft";
 
   if (item.type === "writing") {
     const related = await getRelatedWriting(slug, item.tags);

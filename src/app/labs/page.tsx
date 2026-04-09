@@ -36,7 +36,7 @@ export default async function LabsPage() {
         <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
           {domainIndexCopy.labs.title}
         </h1>
-        <p className="mt-4 max-w-3xl text-base leading-relaxed text-black/60">
+        <p className="mt-4 max-w-3xl text-base leading-relaxed text-black/58">
           {domainIndexCopy.labs.lead}
         </p>
       </SectionReveal>
@@ -46,7 +46,7 @@ export default async function LabsPage() {
       ) : (
         <>
           {featured.length > 0 ? (
-            <section className="mt-12 grid gap-6 sm:grid-cols-2">
+            <section className="mt-12 grid gap-5 sm:grid-cols-2">
               {featured.map((lab) => {
                 const dateLabel = lab.updatedAt
                   ? `Updated ${formatContentDate(lab.updatedAt)}`
@@ -77,7 +77,7 @@ export default async function LabsPage() {
           ) : null}
 
           {rest.length > 0 ? (
-            <section className="mt-8 border-t border-black/8">
+            <section className="mt-9 border-t border-black/8">
               {rest.map((lab) => {
                 const dateLabel = lab.updatedAt
                   ? `Updated ${formatContentDate(lab.updatedAt)}`

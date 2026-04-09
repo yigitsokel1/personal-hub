@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/db/prisma";
+import { cache } from "react";
 import { getDefaultSiteSettings } from "@/lib/domain/site-settings/mapper";
 import type { SiteSettingsInput } from "@/lib/domain/site-settings/types";
 import { adaptDbSiteSettings } from "@/lib/content-source/adapters/site-settings.adapter";
 
-export async function getSiteSettings() {
+export const getSiteSettings = cache(async function getSiteSettings() {
   const fallback = getDefaultSiteSettings();
   let settings = null;
   try {
@@ -30,7 +31,7 @@ export async function getSiteSettings() {
       productSignals: adapted.productSignals.length > 0 ? adapted.productSignals : fallback.productSignals,
     },
   };
-}
+});
 
 export async function saveSiteSettings(input: SiteSettingsInput) {
   const saved = await prisma.siteSettings.upsert({

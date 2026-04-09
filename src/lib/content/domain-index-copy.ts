@@ -8,14 +8,14 @@ export const domainIndexCopy = {
     cardStatusLabel: "Production",
     cardCtaLabel: "View case study",
     lead:
-      "Productized systems and technical narratives—how they are shaped, what was decided, and what shipped.",
+      "Productized systems with decision trails: how they were validated, what architecture held, and what shipped.",
   },
   work: {
     sectionLabel: "ENGAGEMENTS",
     title: "Work",
     cardCtaLabel: "View case study",
     lead:
-      "Engagements framed as case studies: scope, constraints, and delivery, anonymized where that is the right tradeoff.",
+      "Engagements framed as delivery systems: scope, constraints, ownership, and outcomes, anonymized when required.",
   },
   writing: {
     sectionLabel: "TECHNICAL WRITING",
@@ -23,7 +23,7 @@ export const domainIndexCopy = {
     featuredLabel: "FEATURED",
     allArticlesLabel: "ALL ARTICLES",
     lead:
-      "Longer-form notes on architecture, delivery, and product engineering judgment.",
+      "Long-form notes on architecture, delivery pipelines, and product-engineering decisions.",
     tagsLinePrefix: "Browse by topic across the site —",
     tagsLinkLabel: "all tags",
   },
@@ -35,6 +35,6 @@ export const domainIndexCopy = {
     statusLabelPoc: "POC",
     findingsLabel: "Key Findings",
     lead:
-      "Short, real iteration logs: what we tried, what failed, what might ship.",
+      "Short iteration logs from active experiments: hypotheses, state changes, failures, and what is worth shipping.",
   },
 } as const;

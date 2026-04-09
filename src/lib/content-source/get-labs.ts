@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma";
 import { Prisma } from "@prisma/client";
+import { cache } from "react";
 import type { ContentWithBody } from "@/lib/content/get-content";
 import type { LabContent } from "@/lib/content/types";
 import { adaptDbLab, type DbLabItem } from "@/lib/content-source/adapters/lab.adapter";
@@ -133,7 +134,7 @@ export async function countOtherFeaturedLabs(excludeId?: string): Promise<number
   }
 }
 
-export async function getPublishedLabs(): Promise<{
+export const getPublishedLabs = cache(async function getPublishedLabs(): Promise<{
   source: LabSource;
   value: ContentWithBody<LabContent>[];
 }> {
@@ -153,7 +154,7 @@ export async function getPublishedLabs(): Promise<{
     }
     throw error;
   }
-}
+});
 
 export async function getLabBySlug(
   slug: string,

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { cache } from "react";
 import type { ContentWithBody } from "@/lib/content/get-content";
 import type { WritingContent } from "@/lib/content/types";
 import { adaptDbWriting, type DbWritingItem } from "@/lib/content-source/adapters/writing.adapter";
@@ -114,7 +115,7 @@ export async function deleteWritingById(id: string): Promise<{
   return { ok: true, slug: existing.slug };
 }
 
-export async function getPublishedWriting(): Promise<{
+export const getPublishedWriting = cache(async function getPublishedWriting(): Promise<{
   source: WritingSource;
   value: ContentWithBody<WritingContent>[];
 }> {
@@ -127,7 +128,7 @@ export async function getPublishedWriting(): Promise<{
     source: "database",
     value: rows.map(adaptDbWriting),
   };
-}
+});
 
 export async function getWritingBySlug(
   slug: string,

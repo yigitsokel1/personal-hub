@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db/prisma";
 import { Prisma } from "@prisma/client";
+import { cache } from "react";
 import type { ContentWithBody } from "@/lib/content/get-content";
 import type { ProjectContent } from "@/lib/content/types";
 import { adaptDbProject, type DbProjectItem } from "@/lib/content-source/adapters/project.adapter";
@@ -144,7 +145,7 @@ export async function countOtherFeaturedProjects(excludeId?: string): Promise<nu
   });
 }
 
-export async function getPublishedProjects(): Promise<{
+export const getPublishedProjects = cache(async function getPublishedProjects(): Promise<{
   source: ProjectSource;
   value: ContentWithBody<ProjectContent>[];
 }> {
@@ -164,7 +165,7 @@ export async function getPublishedProjects(): Promise<{
     }
     throw error;
   }
-}
+});
 
 export async function getProjectBySlug(
   slug: string,

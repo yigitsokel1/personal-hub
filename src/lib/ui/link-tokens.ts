@@ -64,6 +64,22 @@ export const tagLinkClassName = [
   "focus-visible:text-foreground focus-visible:decoration-foreground/40",
 ].join(" ");
 
+/** Home featured cards: subtle border-only interaction. */
+export const homeCardClassName = [
+  "group rounded-lg border border-black/10",
+  "transition-[border-color,box-shadow] duration-200 ease-out",
+  "hover:border-black/18 hover:shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground/25",
+].join(" ");
+
+/** Home writing rows: lightweight editorial interaction. */
+export const homeWritingRowClassName = [
+  "flex items-center justify-between border-l-2 border-black/10 py-3 pl-4",
+  "transition-[border-color,color,opacity] duration-200 ease-out",
+  "hover:border-black/35 hover:text-black/90",
+  linkFocusVisibleClassName,
+].join(" ");
+
 const navBase = [
   "font-mono text-sm tracking-tight",
   "transition-colors duration-200 ease-out",
