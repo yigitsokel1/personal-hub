@@ -28,43 +28,47 @@ import {
 import {
   shellSecondaryLinkClassName,
   homeCardClassName,
-  homeWritingRowClassName,
+  homeWritingRowVariantClassName,
 } from "@/lib/ui/link-tokens";
 
 const siteBase = getSiteMetadataBase();
 const homeOgUrl = siteBase ? new URL("/", siteBase).toString() : "/";
 const defaultShare = siteBase ? getDefaultOgImageAbsolute(siteBase) : null;
 
-export const metadata: Metadata = {
-  title: { absolute: homepageCopy.siteTitle },
-  description: homepageCopy.siteDescription,
-  ...(siteBase ? { alternates: { canonical: homeOgUrl } } : {}),
-  openGraph: {
-    title: homepageCopy.siteTitle,
-    description: homepageCopy.siteDescription,
-    url: homeOgUrl,
-    ...(defaultShare
-      ? {
-          images: [
-            {
-              url: defaultShare.url,
-              width: defaultShare.width,
-              height: defaultShare.height,
-            },
-          ],
-        }
-      : {}),
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: homepageCopy.siteTitle,
-    description: homepageCopy.siteDescription,
-    ...(defaultShare ? { images: [defaultShare.url] } : {}),
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { value: settings } = await getSiteSettings();
+  const siteTabTitle = "Osman Yiğit Sökel";
+  return {
+    title: { absolute: siteTabTitle },
+    description: settings.heroSubtitle,
+    ...(siteBase ? { alternates: { canonical: homeOgUrl } } : {}),
+    openGraph: {
+      title: settings.brandLabel,
+      description: settings.heroSubtitle,
+      url: homeOgUrl,
+      ...(defaultShare
+        ? {
+            images: [
+              {
+                url: defaultShare.url,
+                width: defaultShare.width,
+                height: defaultShare.height,
+              },
+            ],
+          }
+        : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: settings.brandLabel,
+      description: settings.heroSubtitle,
+      ...(defaultShare ? { images: [defaultShare.url] } : {}),
+    },
+  };
+}
 
 export default async function HomePage() {
-  const webSiteLd = buildWebSiteJsonLd();
+  const webSiteLd = await buildWebSiteJsonLd();
   const { value: settings } = await getSiteSettings();
   const { value: allWork } = await getPublishedWork();
   const { value: allProjects } = await getPublishedProjects();
@@ -78,14 +82,20 @@ export default async function HomePage() {
   });
   const featuredWork = selection.featuredWork;
   const featuredProjects = selection.featuredProjects;
-  const writingItems = [...selection.featuredWriting, ...selection.domainHighlights.writing];
+  const featuredWriting = selection.featuredWriting.slice(0, 2);
+  const latestWriting = allWriting
+    .filter((item) => !featuredWriting.some((featured) => featured.id === item.id))
+    .slice(0, 3);
   const latestLabs = selection.domainHighlights.labs;
-  const isSingleWork = featuredWork.length === 1;
-  const isSingleProject = featuredProjects.length === 1;
+  const workFeaturedLayoutClassName =
+    featuredWork.length === 1 ? "max-w-3xl w-full" : "grid gap-4 sm:grid-cols-2";
+  const projectFeaturedLayoutClassName =
+    featuredProjects.length === 1 ? "max-w-3xl w-full" : "grid gap-4 sm:grid-cols-2";
   const hasHomepageContent =
     featuredWork.length > 0 ||
     featuredProjects.length > 0 ||
-    writingItems.length > 0 ||
+    featuredWriting.length > 0 ||
+    latestWriting.length > 0 ||
     latestLabs.length > 0;
 
   return (
@@ -98,7 +108,11 @@ export default async function HomePage() {
       ) : null}
       <main className="mx-auto max-w-5xl px-6 py-16 sm:py-20 lg:py-24">
         <div className="border-b border-black/6 pb-12 sm:pb-16 lg:pb-20">
-          <HomeHero title={settings.heroTitle} subtitle={settings.heroSubtitle} />
+          <HomeHero
+            kicker={settings.positioningLine}
+            title={settings.heroTitle}
+            subtitle={settings.heroSubtitle}
+          />
         </div>
 
         {!hasHomepageContent ? (
@@ -124,12 +138,12 @@ export default async function HomePage() {
               viewAllHref={homepageCopy.sections.featuredWork.viewAllHref}
               viewAllLabel={homepageCopy.sections.featuredWork.viewAllLabel}
             >
-              <div className={isSingleWork ? "max-w-3xl" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
+              <div className={workFeaturedLayoutClassName}>
                 {featuredWork.map((item, i) => (
                   <Link
                     key={item.id}
                     href={`/work/${item.slug}`}
-                    className={`${homeCardClassName} ${isSingleWork ? "px-6 py-6 sm:px-7" : "p-5"}`}
+                    className={`${homeCardClassName} ${featuredWork.length === 1 ? "min-h-0 px-6 py-6 sm:px-7" : "p-5"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-sm text-black/35">
@@ -167,12 +181,12 @@ export default async function HomePage() {
               viewAllHref={homepageCopy.sections.featuredProjects.viewAllHref}
               viewAllLabel={homepageCopy.sections.featuredProjects.viewAllLabel}
             >
-              <div className={isSingleProject ? "max-w-3xl" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
+              <div className={projectFeaturedLayoutClassName}>
                 {featuredProjects.map((project, i) => (
                   <Link
                     key={project.id}
                     href={`/projects/${project.slug}`}
-                    className={`${homeCardClassName} ${isSingleProject ? "px-6 py-6 sm:px-7" : "p-5"}`}
+                    className={`${homeCardClassName} ${featuredProjects.length === 1 ? "min-h-0 px-6 py-6 sm:px-7" : "p-5"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-sm text-black/35">
@@ -203,7 +217,8 @@ export default async function HomePage() {
           </SectionReveal>
         ) : null}
 
-        {homepageSections.writing && writingItems.length > 0 ? (
+        {homepageSections.writing &&
+        (featuredWriting.length > 0 || latestWriting.length > 0) ? (
           <SectionReveal>
             <HomeSection
               title={homepageCopy.sections.writing.title}
@@ -211,25 +226,53 @@ export default async function HomePage() {
               viewAllLabel={homepageCopy.sections.writing.viewAllLabel}
               density="compact"
             >
-              <div className="space-y-1.5">
-                {writingItems.map((item) => {
-                  const monoDate = formatContentYearMonth(item.publishedAt);
-
-                  return (
-                    <Link
-                      key={item.id}
-                      href={`/writing/${item.slug}`}
-                      className={homeWritingRowClassName}
-                    >
-                      <span className="text-base font-medium tracking-tight sm:text-[1.05rem]">
-                        {item.title}
-                      </span>
-                      <span className="ml-4 shrink-0 font-mono text-sm text-black/40">
-                        {monoDate}
-                      </span>
-                    </Link>
-                  );
-                })}
+              <div className="space-y-2">
+                {featuredWriting.length > 0 ? (
+                  <div>
+                    <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-black/45">
+                      Featured writing
+                    </p>
+                    <div className="space-y-1.5">
+                      {featuredWriting.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={`/writing/${item.slug}`}
+                          className={homeWritingRowVariantClassName(true)}
+                        >
+                          <span className="text-[1.05rem] font-semibold tracking-tight">
+                            {item.title}
+                          </span>
+                          <span className="ml-4 shrink-0 font-mono text-sm text-black/45">
+                            {formatContentYearMonth(item.publishedAt)}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {latestWriting.length > 0 ? (
+                  <div className="pt-2">
+                    <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-black/45">
+                      Latest writing
+                    </p>
+                    <div className="space-y-1.5">
+                      {latestWriting.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={`/writing/${item.slug}`}
+                          className={homeWritingRowVariantClassName(false)}
+                        >
+                          <span className="text-base font-medium tracking-tight sm:text-[1.02rem]">
+                            {item.title}
+                          </span>
+                          <span className="ml-4 shrink-0 font-mono text-sm text-black/40">
+                            {formatContentYearMonth(item.publishedAt)}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </HomeSection>
           </SectionReveal>
@@ -293,43 +336,6 @@ export default async function HomePage() {
           </SectionReveal>
         ) : null}
 
-        {homepageSections.about ? (
-          <SectionReveal>
-            <section className="mt-14 max-w-3xl sm:mt-16">
-              <h2 className={sectionLabelClassName}>
-                {TREE_PREFIX}{" "}
-                {homepageCopy.sections.about.title.toUpperCase()}
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-black/75">
-                {settings.aboutShort}
-              </p>
-              <p className="mt-5">
-                <Link
-                  href={homepageCopy.sections.about.href}
-                  className={shellSecondaryLinkClassName}
-                >
-                  {homepageCopy.sections.about.linkLabel.toLowerCase()} {ARROW}
-                </Link>
-              </p>
-            </section>
-          </SectionReveal>
-        ) : null}
-
-        <SectionReveal>
-          <section className="mt-12 border-t border-black/8 pt-6 sm:mt-14 sm:pt-8">
-            <p className="font-mono text-sm text-black/50">
-              {TREE_PREFIX} next
-            </p>
-            <p className="mt-2">
-              <Link
-                href={homepageCopy.cta.href}
-                className={shellSecondaryLinkClassName}
-              >
-                {homepageCopy.cta.label.toLowerCase()} {ARROW}
-              </Link>
-            </p>
-          </section>
-        </SectionReveal>
       </main>
     </>
   );

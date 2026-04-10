@@ -6,6 +6,11 @@ import type { WorkContent } from "@/lib/content/types";
 import { adaptDbWork, type DbWorkItem } from "@/lib/content-source/adapters/work.adapter";
 import type { WorkInput } from "@/lib/domain/work/types";
 import { rankRelatedContent } from "@/lib/content-intelligence/related-ranking";
+import {
+  normalizeDateOnlyInput,
+  parseDateOnlyToUtc,
+  todayDateOnlyInTurkey,
+} from "@/lib/datetime/published-at";
 
 type WorkSource = "database";
 
@@ -17,12 +22,16 @@ function isMissingWorkTableError(error: unknown): boolean {
   );
 }
 
-function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
-  if (!published) return publishedAt ? new Date(publishedAt) : null;
-  if (!publishedAt) {
-    throw new Error("publishedAt is required when published is true.");
-  }
-  return new Date(publishedAt);
+function toPublishedAtDate(
+  published: boolean,
+  publishedAt?: string,
+  existingPublishedAt?: Date | null
+): Date | null {
+  const normalized = normalizeDateOnlyInput(publishedAt);
+  if (!published) return normalized ? parseDateOnlyToUtc(normalized) : null;
+  if (normalized) return parseDateOnlyToUtc(normalized);
+  if (existingPublishedAt) return existingPublishedAt;
+  return parseDateOnlyToUtc(todayDateOnlyInTurkey());
 }
 
 export async function listAdminWork(): Promise<DbWorkItem[]> {
@@ -66,6 +75,7 @@ export async function createWork(input: WorkInput): Promise<DbWorkItem> {
       engagementType: input.engagementType,
       role: input.role,
       timeline: input.timeline,
+      projectUrl: input.liveUrl,
       confidentialityLevel: input.confidentialityLevel,
       scope: input.scope,
       responsibilities: input.responsibilities,
@@ -78,6 +88,10 @@ export async function createWork(input: WorkInput): Promise<DbWorkItem> {
 }
 
 export async function updateWork(id: string, input: WorkInput): Promise<DbWorkItem> {
+  const existing = await prisma.work.findUnique({
+    where: { id },
+    select: { publishedAt: true },
+  });
   const updated = await prisma.work.update({
     where: { id },
     data: {
@@ -88,11 +102,12 @@ export async function updateWork(id: string, input: WorkInput): Promise<DbWorkIt
       tags: input.tags,
       featured: input.featured,
       published: input.published,
-      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt, existing?.publishedAt),
       client: input.client,
       engagementType: input.engagementType,
       role: input.role,
       timeline: input.timeline,
+      projectUrl: input.liveUrl,
       confidentialityLevel: input.confidentialityLevel,
       scope: input.scope,
       responsibilities: input.responsibilities,

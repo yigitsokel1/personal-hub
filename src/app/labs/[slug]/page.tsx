@@ -70,6 +70,7 @@ export default async function LabDetailPage({ params }: LabDetailPageProps) {
         tags={item.tags}
         cover={item.cover}
         status={item.status}
+        liveUrl={item.liveUrl}
       />
 
       <p className="mt-8 max-w-3xl text-sm leading-relaxed text-black/55 sm:mt-10">

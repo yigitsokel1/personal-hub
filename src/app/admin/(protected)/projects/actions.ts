@@ -88,10 +88,13 @@ export async function updateProjectAction(id: string, formData: FormData): Promi
   const isPreviewIntent = String(formData.get("intent") ?? "") === "preview";
   const publishRequested = !isPreviewIntent && formData.get("published") === "on";
   const basePath = `/admin/projects/${id}`;
+  const current = await getAdminProjectById(id);
+  if (!current) redirect("/admin/projects?status=missing");
+  const submittedSlug = String(formData.get("slug") ?? "").trim();
   const validated = validateProjectInput(
     toProjectInput({
       title: String(formData.get("title") ?? ""),
-      slug: String(formData.get("slug") ?? ""),
+      slug: submittedSlug || current.slug,
       summary: String(formData.get("summary") ?? ""),
       body: String(formData.get("body") ?? ""),
       tagsRaw: String(formData.get("tags") ?? ""),
@@ -125,8 +128,6 @@ export async function updateProjectAction(id: string, formData: FormData): Promi
     domain: "projects",
     basePath,
   });
-  const current = await getAdminProjectById(id);
-  if (!current) redirect("/admin/projects?status=missing");
   try {
     const saved = await updateProject(id, validated.value);
     await recordSlugRedirect("projects", current.slug, saved.slug);

@@ -4,10 +4,12 @@ export type SiteSettingsProductSignal = {
 };
 
 export type SiteSettings = {
+  brandLabel: string;
+  positioningLine: string;
+  footerSignature: string;
   heroTitle: string;
   heroSubtitle: string;
   productSignals: SiteSettingsProductSignal[];
-  aboutShort: string;
   footerIntro: string;
   contactEmail: string;
   githubUrl: string;
@@ -16,10 +18,12 @@ export type SiteSettings = {
 };
 
 export type SiteSettingsInput = {
+  brandLabel: string;
+  positioningLine: string;
+  footerSignature: string;
   heroTitle: string;
   heroSubtitle: string;
   productSignals: SiteSettingsProductSignal[];
-  aboutShort: string;
   footerIntro: string;
   contactEmail: string;
   githubUrl: string;

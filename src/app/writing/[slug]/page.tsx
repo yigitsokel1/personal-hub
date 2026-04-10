@@ -65,7 +65,7 @@ export default async function WritingDetailPage({
     notFound();
   }
 
-  const articleLd = buildArticleJsonLd(item);
+  const articleLd = await buildArticleJsonLd(item);
   const related = await getRelatedWriting(slug, item.tags);
   const relatedLinks = related.map((r) => ({
     href: `${CONTENT_PATH_PREFIX.writing}/${r.slug}`,

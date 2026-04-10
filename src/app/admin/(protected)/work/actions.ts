@@ -47,6 +47,7 @@ export async function createWorkAction(formData: FormData): Promise<void> {
       engagementType: String(formData.get("engagementType") ?? "") as (typeof WORK_ENGAGEMENT_TYPES)[number],
       role: String(formData.get("role") ?? ""),
       timeline: String(formData.get("timeline") ?? ""),
+      liveUrl: String(formData.get("liveUrl") ?? ""),
       confidentialityLevel: String(formData.get("confidentialityLevel") ?? "") as
         | (typeof WORK_CONFIDENTIALITY_LEVELS)[number]
         | "",
@@ -95,11 +96,14 @@ export async function updateWorkAction(id: string, formData: FormData): Promise<
   const isPreviewIntent = String(formData.get("intent") ?? "") === "preview";
   const publishRequested = !isPreviewIntent && formData.get("published") === "on";
   const basePath = `/admin/work/${id}`;
+  const current = await getAdminWorkById(id);
+  if (!current) redirect("/admin/work?status=missing");
+  const submittedSlug = String(formData.get("slug") ?? "").trim();
 
   const validated = validateWorkInput(
     toWorkInput({
       title: String(formData.get("title") ?? ""),
-      slug: String(formData.get("slug") ?? ""),
+      slug: submittedSlug || current.slug,
       summary: String(formData.get("summary") ?? ""),
       body: String(formData.get("body") ?? ""),
       tagsRaw: String(formData.get("tags") ?? ""),
@@ -110,6 +114,7 @@ export async function updateWorkAction(id: string, formData: FormData): Promise<
       engagementType: String(formData.get("engagementType") ?? "") as (typeof WORK_ENGAGEMENT_TYPES)[number],
       role: String(formData.get("role") ?? ""),
       timeline: String(formData.get("timeline") ?? ""),
+      liveUrl: String(formData.get("liveUrl") ?? ""),
       confidentialityLevel: String(formData.get("confidentialityLevel") ?? "") as
         | (typeof WORK_CONFIDENTIALITY_LEVELS)[number]
         | "",
@@ -134,9 +139,6 @@ export async function updateWorkAction(id: string, formData: FormData): Promise<
     domain: "work",
     basePath,
   });
-
-  const current = await getAdminWorkById(id);
-  if (!current) redirect("/admin/work?status=missing");
 
   try {
     const saved = await updateWork(id, validated.value);

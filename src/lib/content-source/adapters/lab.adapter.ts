@@ -23,6 +23,7 @@ export function adaptDbLab(record: PrismaLab): DbLabItem {
     body: record.body,
     tags,
     status: record.status as LabContent["status"],
+    liveUrl: record.liveUrl ?? undefined,
     featured: Boolean(record.featured),
     publishedAt: (record.publishedAt ?? record.createdAt).toISOString(),
     updatedAt: record.updatedAt.toISOString(),

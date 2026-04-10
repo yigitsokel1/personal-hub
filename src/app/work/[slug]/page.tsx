@@ -71,6 +71,7 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
         timeline={item.timeline}
         tags={item.tags}
         role={item.role}
+        liveUrl={item.liveUrl}
         client={item.client}
         engagementType={item.engagementType}
         confidentialityLevel={item.confidentialityLevel}

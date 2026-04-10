@@ -1,8 +1,18 @@
 import { MAX_LAB_TAGS } from "@/lib/domain/labs/mapper";
+import { isValidDateOnly } from "@/lib/datetime/published-at";
 import { LAB_STATUSES, type LabInput, type LabValidationErrors } from "@/lib/domain/labs/types";
 import { parseTags } from "@/lib/tags/normalize-tag";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 export function validateLabInput(input: LabInput): {
   success: boolean;
@@ -19,6 +29,7 @@ export function validateLabInput(input: LabInput): {
     featured: input.featured,
     published: input.published,
     publishedAt: input.publishedAt?.trim() || undefined,
+    liveUrl: input.liveUrl?.trim() || undefined,
   };
 
   const errors: LabValidationErrors = {};
@@ -38,10 +49,12 @@ export function validateLabInput(input: LabInput): {
   if (value.tags.length > MAX_LAB_TAGS) {
     errors.tags = `You can add up to ${MAX_LAB_TAGS} tags.`;
   }
-  if (value.published && !value.publishedAt) {
-    errors.publishedAt = "Set a publish date when Published is enabled.";
+  if (value.publishedAt && !isValidDateOnly(value.publishedAt)) {
+    errors.publishedAt = "Published date must use YYYY-MM-DD format.";
   }
-
+  if (value.liveUrl && !isValidHttpUrl(value.liveUrl)) {
+    errors.liveUrl = "Live URL must be a valid http(s) URL.";
+  }
   return {
     success: Object.keys(errors).length === 0,
     value,

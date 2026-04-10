@@ -27,10 +27,10 @@ npm run dev    # local dev
 npm run build  # production build
 npm run start  # run production server
 npm run lint   # ESLint
-npm run legacy:migrate:projects-db # archive migration tool (one-time use)
-npm run legacy:migrate:work-db # archive migration tool (one-time use)
-npm run legacy:migrate:labs-db # archive migration tool (one-time use)
+npm run audit:featured-overflow # release content policy audit
 ```
+
+Legacy migration tooling remains in `scripts/legacy-migrations/` as archive/reference only and is intentionally not part of active npm scripts.
 
 ## Environment
 

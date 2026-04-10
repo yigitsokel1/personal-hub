@@ -1,8 +1,8 @@
 -- DropIndex
-DROP INDEX "projects_published_published_at_idx";
+DROP INDEX IF EXISTS "projects_published_published_at_idx";
 
 -- DropIndex
-DROP INDEX "writing_published_published_at_idx";
+DROP INDEX IF EXISTS "writing_published_published_at_idx";
 
 -- AlterTable
 ALTER TABLE "writing" ALTER COLUMN "updated_at" DROP DEFAULT;

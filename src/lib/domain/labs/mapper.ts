@@ -28,5 +28,6 @@ export function toLabInput(form: LabFormInput): LabInput {
     featured: form.featured,
     published: form.published,
     publishedAt: form.publishedAt.trim() || undefined,
+    liveUrl: form.liveUrl.trim() || undefined,
   };
 }

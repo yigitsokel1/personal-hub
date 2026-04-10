@@ -9,6 +9,7 @@ import {
 } from "@/app/admin/_components/form-primitives";
 import type { AdminFormErrorState } from "@/lib/admin/form-errors";
 import type { DbWorkItem } from "@/lib/content-source/adapters/work.adapter";
+import { toDateOnlyInTurkey } from "@/lib/datetime/published-at";
 import {
   serializeCommaList,
   serializeLineList,
@@ -27,7 +28,10 @@ export function WorkForm(props: {
 }) {
   const { current, errors } = props;
   const featuredLimit = getFeaturedLimit("work");
-  const publishedAtValue = current?.publishedAt ? new Date(current.publishedAt).toISOString().slice(0, 16) : "";
+  const featuredLimitReached = props.featuredCount >= featuredLimit;
+  const canKeepFeatured = Boolean(current?.featured);
+  const willBlockFeaturing = featuredLimitReached && !canKeepFeatured;
+  const publishedAtValue = current?.publishedAt ? toDateOnlyInTurkey(new Date(current.publishedAt)) : "";
   return (
     <AdminForm action={props.action} status={props.status} globalError={errors.globalError}>
       <AdminSection title="Content">
@@ -41,15 +45,21 @@ export function WorkForm(props: {
         <AdminStatus published={Boolean(current?.published)} featured={Boolean(current?.featured)} publishedAt={current?.publishedAt ?? null} />
         <p className="text-xs text-black/55">
           Featured usage: {props.featuredCount}/{featuredLimit}.{" "}
-          {props.featuredCount >= featuredLimit
+          {featuredLimitReached
             ? "Featured limit reached until an item is unfeatured."
             : "You can feature this item."}
         </p>
-        <AdminField label="Published at" name="publishedAt" type="datetime-local" defaultValue={publishedAtValue} error={errors.fieldErrors.publishedAt} />
+        {willBlockFeaturing ? (
+          <p className="text-xs text-amber-700">
+            Featured capacity is full. Unfeature another work item before marking this as featured.
+          </p>
+        ) : null}
+        <AdminField label="Published date" name="publishedAt" type="date" defaultValue={publishedAtValue} error={errors.fieldErrors.publishedAt} />
         <div className="flex flex-wrap gap-6">
           <label className="inline-flex items-center gap-2 text-sm text-black/70"><input type="checkbox" name="featured" defaultChecked={Boolean(current?.featured)} />Featured</label>
           <label className="inline-flex items-center gap-2 text-sm text-black/70"><input type="checkbox" name="published" defaultChecked={Boolean(current?.published)} />Published</label>
         </div>
+        {errors.fieldErrors.featured ? <p className="text-xs text-red-700">{errors.fieldErrors.featured}</p> : null}
       </AdminSection>
       <AdminSection title="Domain-specific" bordered={false}>
         <div className="grid gap-5 sm:grid-cols-2">
@@ -72,6 +82,14 @@ export function WorkForm(props: {
           </label>
         </div>
         <AdminField label="Timeline" name="timeline" defaultValue={current?.timeline ?? ""} />
+        <AdminField
+          label="Live URL"
+          name="liveUrl"
+          defaultValue={current?.liveUrl ?? ""}
+          placeholder="https://example.com"
+          description="Optional. Link to the live client-facing result."
+          error={errors.fieldErrors.liveUrl}
+        />
         <AdminTextarea label="Scope (one line each)" name="scope" defaultValue={serializeLineList(current?.scope ?? [])} error={errors.fieldErrors.scope} />
         <AdminTextarea label="Responsibilities (one line each)" name="responsibilities" defaultValue={serializeLineList(current?.responsibilities ?? [])} error={errors.fieldErrors.responsibilities} />
         <AdminTextarea label="Constraints (one line each)" name="constraints" defaultValue={serializeLineList(current?.constraints ?? [])} />

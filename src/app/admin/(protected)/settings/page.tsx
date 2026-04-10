@@ -7,10 +7,12 @@ async function saveSettingsAction(formData: FormData): Promise<void> {
   "use server";
 
   const validated = validateSiteSettingsInput({
+    brandLabel: String(formData.get("brandLabel") ?? ""),
+    positioningLine: String(formData.get("positioningLine") ?? ""),
+    footerSignature: String(formData.get("footerSignature") ?? ""),
     heroTitle: String(formData.get("heroTitle") ?? ""),
     heroSubtitle: String(formData.get("heroSubtitle") ?? ""),
     productSignals: parseProductSignalsText(String(formData.get("productSignals") ?? "")),
-    aboutShort: String(formData.get("aboutShort") ?? ""),
     footerIntro: String(formData.get("footerIntro") ?? ""),
     contactEmail: String(formData.get("contactEmail") ?? ""),
     githubUrl: String(formData.get("githubUrl") ?? ""),
@@ -24,7 +26,6 @@ async function saveSettingsAction(formData: FormData): Promise<void> {
 
   await saveSiteSettings(validated.value);
   revalidatePath("/");
-  revalidatePath("/about");
   redirect("/admin/settings?status=saved");
 }
 
@@ -48,7 +49,7 @@ export default async function AdminSettingsPage({
     <main>
       <h1 className="text-2xl font-semibold tracking-tight">Site Settings</h1>
       <p className="mt-2 text-sm text-black/60">
-        Manage homepage, about, and footer settings from a shared contract.
+        Manage homepage and footer settings from a shared contract.
       </p>
       <p className="mt-1 text-xs text-black/45">
         Need runtime diagnostics? Open <a href="/admin/settings/content-health" className="underline">content health</a>.
@@ -65,6 +66,45 @@ export default async function AdminSettingsPage({
       ) : null}
 
       <form action={saveSettingsAction} className="mt-8 space-y-5">
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">
+            Brand label *
+          </span>
+          <input
+            name="brandLabel"
+            defaultValue={settings.brandLabel}
+            className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35"
+            required
+          />
+          {parsedErrors.brandLabel ? <p className="mt-1 text-xs text-red-700">{parsedErrors.brandLabel}</p> : null}
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">
+            Positioning line *
+          </span>
+          <input
+            name="positioningLine"
+            defaultValue={settings.positioningLine}
+            className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35"
+            required
+          />
+          {parsedErrors.positioningLine ? <p className="mt-1 text-xs text-red-700">{parsedErrors.positioningLine}</p> : null}
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">
+            Footer signature *
+          </span>
+          <input
+            name="footerSignature"
+            defaultValue={settings.footerSignature}
+            className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35"
+            required
+          />
+          {parsedErrors.footerSignature ? <p className="mt-1 text-xs text-red-700">{parsedErrors.footerSignature}</p> : null}
+        </label>
+
         <label className="block">
           <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">
             Hero title *
@@ -102,19 +142,6 @@ export default async function AdminSettingsPage({
             required
           />
           {parsedErrors.productSignals ? <p className="mt-1 text-xs text-red-700">{parsedErrors.productSignals}</p> : null}
-        </label>
-
-        <label className="block">
-          <span className="mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50">
-            About short *
-          </span>
-          <textarea
-            name="aboutShort"
-            defaultValue={settings.aboutShort}
-            className="h-24 w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-black/35"
-            required
-          />
-          {parsedErrors.aboutShort ? <p className="mt-1 text-xs text-red-700">{parsedErrors.aboutShort}</p> : null}
         </label>
 
         <label className="block">

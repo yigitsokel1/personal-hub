@@ -9,6 +9,7 @@ import {
 } from "@/app/admin/_components/form-primitives";
 import type { AdminFormErrorState } from "@/lib/admin/form-errors";
 import type { DbWritingItem } from "@/lib/content-source/adapters/writing.adapter";
+import { toDateOnlyInTurkey } from "@/lib/datetime/published-at";
 import { serializeTags } from "@/lib/domain/writing/mapper";
 import { getFeaturedLimit } from "@/lib/content-policies/featured";
 
@@ -23,7 +24,10 @@ type WritingFormProps = {
 
 export function WritingForm({ mode, action, status, errors, current, featuredCount }: WritingFormProps) {
   const featuredLimit = getFeaturedLimit("writing");
-  const publishedAtValue = current?.publishedAt ? new Date(current.publishedAt).toISOString().slice(0, 16) : "";
+  const featuredLimitReached = featuredCount >= featuredLimit;
+  const canKeepFeatured = Boolean(current?.featured);
+  const willBlockFeaturing = featuredLimitReached && !canKeepFeatured;
+  const publishedAtValue = current?.publishedAt ? toDateOnlyInTurkey(new Date(current.publishedAt)) : "";
 
   return (
     <AdminForm action={action} status={status} globalError={errors.globalError}>
@@ -47,8 +51,13 @@ export function WritingForm({ mode, action, status, errors, current, featuredCou
         <AdminStatus published={Boolean(current?.published)} featured={Boolean(current?.featured)} publishedAt={current?.publishedAt ?? null} />
         <p className="text-xs text-black/55">
           Featured usage: {featuredCount}/{featuredLimit}.{" "}
-          {featuredCount >= featuredLimit ? "Featured limit reached until an item is unfeatured." : "You can feature this item."}
+          {featuredLimitReached ? "Featured limit reached until an item is unfeatured." : "You can feature this item."}
         </p>
+        {willBlockFeaturing ? (
+          <p className="text-xs text-amber-700">
+            Featured capacity is full. Unfeature another writing item before marking this as featured.
+          </p>
+        ) : null}
         <div className="grid gap-5 sm:grid-cols-2">
           <AdminField
             label="Reading time (min)"
@@ -59,11 +68,11 @@ export function WritingForm({ mode, action, status, errors, current, featuredCou
             error={errors.fieldErrors.readingTime}
           />
           <AdminField
-            label="Published at"
+            label="Published date"
             name="publishedAt"
-            type="datetime-local"
+            type="date"
             defaultValue={publishedAtValue}
-            description="Controls ordering on the public site."
+            description="Used for ordering by day on the public site."
             error={errors.fieldErrors.publishedAt}
           />
         </div>

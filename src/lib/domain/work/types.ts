@@ -15,6 +15,7 @@ export type WorkInput = {
   engagementType: WorkEngagementType;
   role: string;
   timeline?: string;
+  liveUrl?: string;
   confidentialityLevel?: WorkConfidentialityLevel;
   scope: string[];
   responsibilities: string[];
@@ -48,6 +49,7 @@ export type WorkFormInput = {
   engagementType: "freelance" | "contract" | "full-time";
   role: string;
   timeline: string;
+  liveUrl: string;
   confidentialityLevel: "public" | "limited" | "";
   scopeRaw: string;
   responsibilitiesRaw: string;

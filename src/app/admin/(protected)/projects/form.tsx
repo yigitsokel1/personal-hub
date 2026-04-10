@@ -9,6 +9,7 @@ import {
 } from "@/app/admin/_components/form-primitives";
 import type { AdminFormErrorState } from "@/lib/admin/form-errors";
 import type { DbProjectItem } from "@/lib/content-source/adapters/project.adapter";
+import { toDateOnlyInTurkey } from "@/lib/datetime/published-at";
 import { serializeCommaList, serializeLineList } from "@/lib/domain/projects/mapper";
 import { getFeaturedLimit } from "@/lib/content-policies/featured";
 
@@ -22,7 +23,10 @@ export function ProjectsForm(props: {
 }) {
   const { current, errors } = props;
   const featuredLimit = getFeaturedLimit("projects");
-  const publishedAtValue = current?.publishedAt ? new Date(current.publishedAt).toISOString().slice(0, 16) : "";
+  const featuredLimitReached = props.featuredCount >= featuredLimit;
+  const canKeepFeatured = Boolean(current?.featured);
+  const willBlockFeaturing = featuredLimitReached && !canKeepFeatured;
+  const publishedAtValue = current?.publishedAt ? toDateOnlyInTurkey(new Date(current.publishedAt)) : "";
 
   return (
     <AdminForm action={props.action} status={props.status} globalError={errors.globalError}>
@@ -38,18 +42,24 @@ export function ProjectsForm(props: {
         <AdminStatus published={Boolean(current?.published)} featured={Boolean(current?.featured)} publishedAt={current?.publishedAt ?? null} />
         <p className="text-xs text-black/55">
           Featured usage: {props.featuredCount}/{featuredLimit}.{" "}
-          {props.featuredCount >= featuredLimit
+          {featuredLimitReached
             ? "Featured limit reached until an item is unfeatured."
             : "You can feature this item."}
         </p>
+        {willBlockFeaturing ? (
+          <p className="text-xs text-amber-700">
+            Featured capacity is full. Unfeature another project before marking this as featured.
+          </p>
+        ) : null}
         <div className="grid gap-5 sm:grid-cols-2">
-          <AdminField label="Published at" name="publishedAt" type="datetime-local" defaultValue={publishedAtValue} error={errors.fieldErrors.publishedAt} />
+          <AdminField label="Published date" name="publishedAt" type="date" defaultValue={publishedAtValue} error={errors.fieldErrors.publishedAt} />
           <AdminField label="Role" name="role" required defaultValue={current?.role} error={errors.fieldErrors.role} />
         </div>
         <div className="flex flex-wrap gap-6">
           <label className="inline-flex items-center gap-2 text-sm text-black/70"><input type="checkbox" name="featured" defaultChecked={Boolean(current?.featured)} />Featured</label>
           <label className="inline-flex items-center gap-2 text-sm text-black/70"><input type="checkbox" name="published" defaultChecked={Boolean(current?.published)} />Published</label>
         </div>
+        {errors.fieldErrors.featured ? <p className="text-xs text-red-700">{errors.fieldErrors.featured}</p> : null}
       </AdminSection>
 
       <AdminSection title="Domain-specific" bordered={false}>

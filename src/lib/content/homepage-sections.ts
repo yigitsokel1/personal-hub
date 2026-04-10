@@ -7,5 +7,5 @@ export const homepageSections = {
   featuredProjects: true,
   writing: true,
   labs: true,
-  about: true,
+  about: false,
 } as const;

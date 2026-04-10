@@ -12,6 +12,7 @@ type LabDetailIntroProps = {
   tags?: string[];
   cover?: BaseContent["cover"];
   status: "idea" | "exploring" | "building" | "paused" | "completed";
+  liveUrl?: string;
 };
 
 export function LabDetailIntro({
@@ -21,6 +22,7 @@ export function LabDetailIntro({
   tags,
   cover,
   status,
+  liveUrl,
 }: LabDetailIntroProps) {
   const metaParts = [formatContentDate(publishedAt), `STATUS ${status.toUpperCase()}`];
 
@@ -48,6 +50,13 @@ export function LabDetailIntro({
 
       <dl className="mt-11 space-y-4 sm:mt-12">
         <IntroDefinitionRow label="Status">{status.toUpperCase()}</IntroDefinitionRow>
+        {liveUrl ? (
+          <IntroDefinitionRow label="Live URL">
+            <a href={liveUrl} className="underline decoration-black/30 underline-offset-4 hover:decoration-black/55">
+              Open live lab
+            </a>
+          </IntroDefinitionRow>
+        ) : null}
       </dl>
     </header>
   );

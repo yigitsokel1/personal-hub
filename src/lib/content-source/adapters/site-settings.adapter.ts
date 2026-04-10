@@ -27,10 +27,12 @@ function toProductSignals(value: unknown): SiteSettingsProductSignal[] {
 
 export function adaptDbSiteSettings(record: PrismaSiteSettings): SiteSettings {
   return {
+    brandLabel: record.brandLabel,
+    positioningLine: record.positioningLine,
+    footerSignature: record.footerSignature,
     heroTitle: record.heroTitle,
     heroSubtitle: record.heroSubtitle,
     productSignals: toProductSignals(record.productSignals),
-    aboutShort: record.aboutShort,
     footerIntro: record.footerIntro,
     contactEmail: record.contactEmail,
     githubUrl: record.githubUrl,

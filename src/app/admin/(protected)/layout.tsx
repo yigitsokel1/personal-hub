@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { clearAdminSession, isAdminAuthenticated } from "@/lib/admin/auth";
+import { isAdminAuthenticated } from "@/lib/admin/auth";
 
 export const metadata: Metadata = {
   robots: {
@@ -9,12 +9,6 @@ export const metadata: Metadata = {
     follow: false,
   },
 };
-
-async function logoutAction() {
-  "use server";
-  await clearAdminSession();
-  redirect("/admin/login");
-}
 
 export default async function ProtectedAdminLayout({
   children,
@@ -30,6 +24,9 @@ export default async function ProtectedAdminLayout({
           <Link href="/admin/settings" className="hover:text-black">
             settings
           </Link>
+          <Link href="/admin/about" className="hover:text-black">
+            about
+          </Link>
           <Link href="/admin/projects" className="hover:text-black">
             projects
           </Link>
@@ -42,11 +39,8 @@ export default async function ProtectedAdminLayout({
           <Link href="/admin/labs" className="hover:text-black">
             labs
           </Link>
-          <Link href="/" className="hover:text-black">
-            public site
-          </Link>
         </nav>
-        <form action={logoutAction}>
+        <form action="/api/admin/logout" method="post">
           <button
             type="submit"
             className="rounded-md border border-black/15 px-3 py-1.5 font-mono text-xs text-black/70 hover:border-black/30 hover:text-black"

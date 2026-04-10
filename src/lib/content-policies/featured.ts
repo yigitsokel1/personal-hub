@@ -1,7 +1,7 @@
 import type { ContentDomain } from "@/lib/content-source/types";
 
 const FEATURED_LIMITS: Record<ContentDomain, number> = {
-  writing: 1,
+  writing: 2,
   projects: 2,
   work: 2,
   labs: 2,

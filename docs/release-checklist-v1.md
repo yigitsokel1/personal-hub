@@ -6,8 +6,9 @@ This checklist is the final go/no-go gate before production deploy.
 
 - Confirm `NEXT_PUBLIC_SITE_URL` is set to the production origin.
 - Confirm `DATABASE_URL` points to the production database.
-- Confirm `ADMIN_PASSWORD` is set and rotated for release.
+- Confirm `ADMIN_PASSWORD_HASH` is set and generated with bcrypt for release.
 - Confirm `ADMIN_SESSION_SECRET` is set and high-entropy.
+- Confirm `ENABLE_DEV_ENDPOINTS` is unset (or not `1`) in production.
 
 ## 2) Database & Migrations
 
@@ -15,6 +16,10 @@ This checklist is the final go/no-go gate before production deploy.
   - `npx prisma migrate status`
 - Ensure all pending migrations are applied:
   - `npx prisma migrate deploy`
+- Migration history policy:
+  - keep full `prisma/migrations` history for V1
+  - do not rewrite/squash/delete existing applied migrations
+  - use forward-only fix migrations for schema corrections
 - Confirm slug redirect table migration is present and applied:
   - `content_slug_redirects`
 
@@ -77,6 +82,7 @@ Release is blocked unless all three commands pass.
 - Migration rollback strategy:
   - avoid destructive rollback in production
   - apply forward-fix migration if schema hotfix is required
+  - never edit already-applied migration SQL as a rollback shortcut
 - Cache/route consistency:
   - revalidate impacted paths after rollback actions
 

@@ -83,11 +83,14 @@ export async function updateWritingAction(id: string, formData: FormData): Promi
   const isPreviewIntent = String(formData.get("intent") ?? "") === "preview";
   const publishRequested = !isPreviewIntent && formData.get("published") === "on";
   const basePath = `/admin/writing/${id}`;
+  const current = await getAdminWritingById(id);
+  if (!current) redirect("/admin/writing?status=missing");
+  const submittedSlug = String(formData.get("slug") ?? "").trim();
 
   const validated = validateWritingInput(
     toWritingInput({
       title: String(formData.get("title") ?? ""),
-      slug: String(formData.get("slug") ?? ""),
+      slug: submittedSlug || current.slug,
       summary: String(formData.get("summary") ?? ""),
       body: String(formData.get("body") ?? ""),
       tagsRaw: String(formData.get("tags") ?? ""),
@@ -114,9 +117,6 @@ export async function updateWritingAction(id: string, formData: FormData): Promi
     domain: "writing",
     basePath,
   });
-
-  const current = await getAdminWritingById(id);
-  if (!current) redirect("/admin/writing?status=missing");
 
   try {
     const saved = await updateWriting(id, validated.value);

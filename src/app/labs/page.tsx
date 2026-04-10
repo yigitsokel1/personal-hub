@@ -7,7 +7,6 @@ import { domainIndexCopy } from "@/lib/content/domain-index-copy";
 import { getPublishedLabs } from "@/lib/content-source/get-labs";
 import { formatContentDate } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
-import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
 function shortenLabSummary(summary: string): string {
   const firstSentence = summary.split(".")[0]?.trim() ?? summary.trim();
@@ -32,8 +31,7 @@ export default async function LabsPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-22 lg:py-24">
       <SectionReveal>
-        <p className={sectionLabelClassName}>{domainIndexCopy.labs.sectionLabel}</p>
-        <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+        <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
           {domainIndexCopy.labs.title}
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-black/58">

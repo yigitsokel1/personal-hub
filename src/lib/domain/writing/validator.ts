@@ -1,4 +1,5 @@
 import { MAX_WRITING_TAGS } from "@/lib/domain/writing/mapper";
+import { isValidDateOnly } from "@/lib/datetime/published-at";
 import type { WritingInput, WritingValidationErrors } from "@/lib/domain/writing/types";
 import { parseTags } from "@/lib/tags/normalize-tag";
 
@@ -40,10 +41,9 @@ export function validateWritingInput(input: WritingInput): {
   if (value.readingTime != null && (!Number.isInteger(value.readingTime) || value.readingTime <= 0)) {
     errors.readingTime = "Reading time must be a positive whole number.";
   }
-  if (value.published && !value.publishedAt) {
-    errors.publishedAt = "Set a publish date when Published is enabled.";
+  if (value.publishedAt && !isValidDateOnly(value.publishedAt)) {
+    errors.publishedAt = "Published date must use YYYY-MM-DD format.";
   }
-
   return {
     success: Object.keys(errors).length === 0,
     value,

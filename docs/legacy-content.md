@@ -74,3 +74,10 @@ Sprint 29 parity decision:
 - Keep only migration artifacts with clear one-time semantics.
 - Keep archive artifacts out of active script paths and runtime paths.
 - Any future migration utility must be explicitly marked operational or archive.
+- `scripts/legacy-migrations/*` are intentionally archive-only and are not exposed through active npm scripts in V1.
+
+## Migration History Policy (V1)
+
+- Preserve full `prisma/migrations` history for traceability and safe deploys.
+- Do not rewrite, squash, or delete applied migration files.
+- When schema issues are found, create a new forward-fix migration.

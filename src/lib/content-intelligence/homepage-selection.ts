@@ -8,21 +8,14 @@ import type {
 const RECENT_HIGHLIGHT_LIMIT = 4;
 const DOMAIN_HIGHLIGHT_LIMIT = 2;
 
-function selectFeaturedWithFallback<T extends HomepageSectionItem>(
+function selectFeaturedOnly<T extends HomepageSectionItem>(
   items: T[],
   limit: number,
   usedIds: Set<string>
 ): T[] {
   const featured = items.filter((item) => item.featured && !usedIds.has(item.id)).slice(0, limit);
   for (const entry of featured) usedIds.add(entry.id);
-  if (featured.length === limit) return featured;
-
-  const fallback = items
-    .filter((item) => !usedIds.has(item.id))
-    .slice(0, Math.max(limit - featured.length, 0));
-  for (const entry of fallback) usedIds.add(entry.id);
-
-  return [...featured, ...fallback];
+  return featured;
 }
 
 function selectRecentHighlights<
@@ -63,14 +56,14 @@ export function buildHomepageSelection<
 ): HomepageSelectionResult<TWriting, TProjects, TWork, TLabs> {
   const usedIds = new Set<string>();
 
-  const featuredWriting = selectFeaturedWithFallback(input.writing, getFeaturedLimit("writing"), usedIds);
-  const featuredProjects = selectFeaturedWithFallback(
+  const featuredWriting = selectFeaturedOnly(input.writing, getFeaturedLimit("writing"), usedIds);
+  const featuredProjects = selectFeaturedOnly(
     input.projects,
     getFeaturedLimit("projects"),
     usedIds
   );
-  const featuredWork = selectFeaturedWithFallback(input.work, getFeaturedLimit("work"), usedIds);
-  const featuredLabs = selectFeaturedWithFallback(input.labs, getFeaturedLimit("labs"), usedIds);
+  const featuredWork = selectFeaturedOnly(input.work, getFeaturedLimit("work"), usedIds);
+  const featuredLabs = selectFeaturedOnly(input.labs, getFeaturedLimit("labs"), usedIds);
 
   const recentHighlights = selectRecentHighlights(input, usedIds, RECENT_HIGHLIGHT_LIMIT);
 

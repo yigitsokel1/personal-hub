@@ -15,16 +15,20 @@ function entry(id: string, type: "project" | "work" | "writing" | "lab", feature
 describe("buildHomepageSelection", () => {
   it("enforces featured limits and avoids duplicates across sections", () => {
     const selection = buildHomepageSelection({
-      writing: [entry("w1", "writing", true), entry("w2", "writing")],
+      writing: [
+        entry("w1", "writing", true),
+        entry("w2", "writing", true),
+        entry("w3", "writing"),
+      ],
       projects: [entry("p1", "project", true), entry("p2", "project", true), entry("p3", "project")],
       work: [entry("k1", "work", true), entry("k2", "work", true), entry("k3", "work")],
       labs: [entry("l1", "lab"), entry("l2", "lab")],
     });
 
-    expect(selection.featuredWriting.map((item) => item.id)).toEqual(["w1"]);
+    expect(selection.featuredWriting.map((item) => item.id)).toEqual(["w1", "w2"]);
     expect(selection.featuredProjects.map((item) => item.id)).toEqual(["p1", "p2"]);
     expect(selection.featuredWork.map((item) => item.id)).toEqual(["k1", "k2"]);
-    expect(selection.featuredLabs.map((item) => item.id)).toEqual(["l1", "l2"]);
+    expect(selection.featuredLabs.map((item) => item.id)).toEqual([]);
 
     const selectedIds = new Set([
       ...selection.featuredWriting,
@@ -52,7 +56,7 @@ describe("buildHomepageSelection", () => {
     expect(selectedIds.size).toBe(totalItems);
   });
 
-  it("falls back to recent content when featured is missing", () => {
+  it("keeps featured sections empty when featured content is missing", () => {
     const selection = buildHomepageSelection({
       writing: [entry("w1", "writing"), entry("w2", "writing")],
       projects: [entry("p1", "project")],
@@ -60,7 +64,7 @@ describe("buildHomepageSelection", () => {
       labs: [],
     });
 
-    expect(selection.featuredWriting.map((item) => item.id)).toEqual(["w1"]);
-    expect(selection.featuredProjects.map((item) => item.id)).toEqual(["p1"]);
+    expect(selection.featuredWriting.map((item) => item.id)).toEqual([]);
+    expect(selection.featuredProjects.map((item) => item.id)).toEqual([]);
   });
 });

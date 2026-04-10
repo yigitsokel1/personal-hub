@@ -1,14 +1,8 @@
 import Link from "next/link";
+import { siteFooterNavConfig } from "@/components/layout/nav-config";
 import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import { linkFocusVisibleClassName } from "@/lib/ui/link-tokens";
 import { TREE_PREFIX, ARROW } from "@/lib/ui/terminal-tokens";
-
-const footerNav = [
-  { href: "/projects", label: "Projects" },
-  { href: "/writing", label: "Writing" },
-  { href: "/labs", label: "Labs" },
-  { href: "/about", label: "About" },
-] as const;
 
 const sectionHeadingClassName =
   "font-mono text-xs uppercase tracking-[0.15em] text-black/40";
@@ -39,7 +33,7 @@ export async function SiteFooter() {
               {TREE_PREFIX} NAVIGATE
             </h3>
             <ul className="mt-3 space-y-1.5">
-              {footerNav.map((item) => (
+              {siteFooterNavConfig.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -75,9 +69,9 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-black/10 bg-terminal-bg text-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-3">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3">
           <span className="font-mono text-xs text-white/50">
-            product_engineer.building_real_systems()
+            {settings.footerSignature}
           </span>
           <span className="font-mono text-xs text-white/50">
             &copy; {new Date().getFullYear()}

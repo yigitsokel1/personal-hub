@@ -12,6 +12,7 @@ export type LabInput = {
   featured: boolean;
   published: boolean;
   publishedAt?: string;
+  liveUrl?: string;
 };
 
 export type LabValidationErrors = Partial<
@@ -28,4 +29,5 @@ export type LabFormInput = {
   featured: boolean;
   published: boolean;
   publishedAt: string;
+  liveUrl: string;
 };

@@ -1,11 +1,17 @@
 import { ImageResponse } from "next/og";
-import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getSiteSettings } from "@/lib/content-source/get-site-settings";
+import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
 
-export const alt = homepageCopy.siteTitle;
+export const alt = "Personal Hub";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export default async function OpenGraphImage() {
+  const { value: settings } = await getSiteSettings();
+  const base = getSiteMetadataBase();
+  const siteLabel = settings.brandLabel;
+  const siteDescription = settings.heroSubtitle;
+  const siteOrigin = base?.origin.replace(/^https?:\/\//, "") ?? "";
   return new ImageResponse(
     (
       <div
@@ -30,7 +36,7 @@ export default function OpenGraphImage() {
             color: "rgba(23,23,23,0.45)",
           }}
         >
-          Personal hub
+          {siteOrigin || "Personal hub"}
         </p>
         <p
           style={{
@@ -42,7 +48,7 @@ export default function OpenGraphImage() {
             maxWidth: 900,
           }}
         >
-          {homepageCopy.siteName}
+          {siteLabel}
         </p>
         <p
           style={{
@@ -54,7 +60,7 @@ export default function OpenGraphImage() {
             maxWidth: 880,
           }}
         >
-          {homepageCopy.siteDescription}
+          {siteDescription}
         </p>
       </div>
     ),

@@ -6,6 +6,11 @@ import type { ProjectContent } from "@/lib/content/types";
 import { adaptDbProject, type DbProjectItem } from "@/lib/content-source/adapters/project.adapter";
 import type { ProjectInput } from "@/lib/domain/projects/types";
 import { rankRelatedContent } from "@/lib/content-intelligence/related-ranking";
+import {
+  normalizeDateOnlyInput,
+  parseDateOnlyToUtc,
+  todayDateOnlyInTurkey,
+} from "@/lib/datetime/published-at";
 
 type ProjectSource = "database";
 
@@ -17,12 +22,16 @@ function isMissingProjectsTableError(error: unknown): boolean {
   );
 }
 
-function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
-  if (!published) return publishedAt ? new Date(publishedAt) : null;
-  if (!publishedAt) {
-    throw new Error("publishedAt is required when published is true.");
-  }
-  return new Date(publishedAt);
+function toPublishedAtDate(
+  published: boolean,
+  publishedAt?: string,
+  existingPublishedAt?: Date | null
+): Date | null {
+  const normalized = normalizeDateOnlyInput(publishedAt);
+  if (!published) return normalized ? parseDateOnlyToUtc(normalized) : null;
+  if (normalized) return parseDateOnlyToUtc(normalized);
+  if (existingPublishedAt) return existingPublishedAt;
+  return parseDateOnlyToUtc(todayDateOnlyInTurkey());
 }
 
 export async function listAdminProjects(): Promise<DbProjectItem[]> {
@@ -80,6 +89,10 @@ export async function createProject(input: ProjectInput): Promise<DbProjectItem>
 }
 
 export async function updateProject(id: string, input: ProjectInput): Promise<DbProjectItem> {
+  const existing = await prisma.project.findUnique({
+    where: { id },
+    select: { publishedAt: true },
+  });
   const updated = await prisma.project.update({
     where: { id },
     data: {
@@ -90,7 +103,7 @@ export async function updateProject(id: string, input: ProjectInput): Promise<Db
       tags: input.tags,
       featured: input.featured,
       published: input.published,
-      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt, existing?.publishedAt),
       role: input.role,
       stack: input.stack,
       platform: input.platform,

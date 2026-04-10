@@ -67,6 +67,7 @@ export function toWorkInput(form: WorkFormInput): WorkInput {
     engagementType: form.engagementType,
     role: form.role.trim(),
     timeline: form.timeline.trim() || undefined,
+    liveUrl: form.liveUrl.trim() || undefined,
     confidentialityLevel: parseConfidentialityLevel(form.confidentialityLevel),
     scope: parseLineList(form.scopeRaw),
     responsibilities: parseLineList(form.responsibilitiesRaw),

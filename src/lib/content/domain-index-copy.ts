@@ -4,26 +4,23 @@
 export const domainIndexCopy = {
   projects: {
     sectionLabel: "PRODUCTION WORK",
-    title: "Real systems in production",
+    title: "Projects",
     cardStatusLabel: "Production",
     cardCtaLabel: "View case study",
-    lead:
-      "Productized systems with decision trails: how they were validated, what architecture held, and what shipped.",
+    lead: "End-to-end systems built from idea to production.",
   },
   work: {
     sectionLabel: "ENGAGEMENTS",
     title: "Work",
     cardCtaLabel: "View case study",
-    lead:
-      "Engagements framed as delivery systems: scope, constraints, ownership, and outcomes, anonymized when required.",
+    lead: "Real-world client work, focused on delivery, constraints, and measurable impact.",
   },
   writing: {
     sectionLabel: "TECHNICAL WRITING",
-    title: "Deep dives into system design and architecture",
+    title: "Writing",
     featuredLabel: "FEATURED",
     allArticlesLabel: "ALL ARTICLES",
-    lead:
-      "Long-form notes on architecture, delivery pipelines, and product-engineering decisions.",
+    lead: "Essays and technical notes on system design, product engineering decisions, and practical trade-offs.",
     tagsLinePrefix: "Browse by topic across the site —",
     tagsLinkLabel: "all tags",
   },
@@ -34,7 +31,6 @@ export const domainIndexCopy = {
     statusLabelIdea: "Idea",
     statusLabelPoc: "POC",
     findingsLabel: "Key Findings",
-    lead:
-      "Short iteration logs from active experiments: hypotheses, state changes, failures, and what is worth shipping.",
+    lead: "Fast experiments to validate ideas, capture failure signals, and decide what deserves production investment.",
   },
 } as const;

@@ -41,6 +41,7 @@ export type WorkContent = BaseContent & {
   client: string;
   engagementType: "freelance" | "contract" | "full-time";
   role: string;
+  liveUrl?: string;
   scope: string[];
   responsibilities: string[];
   constraints?: string[];
@@ -60,6 +61,7 @@ export type WritingContent = BaseContent & {
 export type LabContent = BaseContent & {
   type: "lab";
   status: "idea" | "exploring" | "building" | "paused" | "completed";
+  liveUrl?: string;
 };
 
 export type ContentEntry =

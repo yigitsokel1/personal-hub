@@ -1,16 +1,16 @@
 /**
- * Curated homepage and shell copy. Featured project/work/lab selections are
- * driven by DB/admin-managed content fields.
+ * Curated structural copy for homepage/public surfaces.
  *
- * Edit `siteName` / `siteTitle` to match your public name or byline (also used in JSON-LD).
+ * Source-of-truth policy:
+ * - Editable product identity copy (brandLabel, positioningLine, footerSignature, heroTitle, heroSubtitle)
+ *   lives in Site Settings (DB/admin).
+ * - This file stays code-based for structural labels and UI wording:
+ *   section titles, CTA text, fallback/default copy skeleton.
  */
 export const homepageCopy = {
   siteName: "Osman Yiğit Sökel",
   /** Default `<title>` and primary brand line for metadata (layout + homepage). */
   siteTitle: "OYS — Personal Hub",
-  /** Root layout / OG description; aligned with the hero subtitle. */
-  siteDescription:
-    "Systems-focused product engineering across projects, client work, writing, and labs.",
   hero: {
     kicker: "Product engineer",
 
@@ -22,8 +22,6 @@ export const homepageCopy = {
     subtitle:
       "I ship systems end to end and document the decisions behind projects, work, writing, and labs.",
   },
-  compactAbout:
-    "I frame, build, and operate real systems with an emphasis on product outcomes and technical clarity.",
   sections: {
     featuredWork: {
       title: "Work",
@@ -44,11 +42,6 @@ export const homepageCopy = {
       title: "Labs",
       viewAllLabel: "View all labs",
       viewAllHref: "/labs",
-    },
-    about: {
-      title: "About",
-      linkLabel: "Read about my approach",
-      href: "/about",
     },
   },
   cta: {
@@ -71,5 +64,3 @@ export const homepageCopy = {
     ],
   },
 } as const;
-
-export type HomepageCopy = typeof homepageCopy;

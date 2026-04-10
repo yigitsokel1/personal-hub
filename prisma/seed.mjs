@@ -27,8 +27,6 @@ const defaultSiteSettings = {
         "Consistency is enforced by validators with no implicit content parsing in runtime.",
     },
   ],
-  aboutShort:
-    "Product engineer building real systems with AI and backend engineering, documented as reusable case studies.",
   footerIntro:
     "Personal hub for building and documenting real systems across projects, work, writing, and labs.",
   contactEmail: "oyigitsokell@gmail.com",
@@ -52,7 +50,6 @@ async function main() {
       heroTitle: defaultSiteSettings.heroTitle,
       heroSubtitle: defaultSiteSettings.heroSubtitle,
       productSignals: defaultSiteSettings.productSignals,
-      aboutShort: defaultSiteSettings.aboutShort,
       footerIntro: defaultSiteSettings.footerIntro,
       contactEmail: defaultSiteSettings.contactEmail,
       githubUrl: defaultSiteSettings.githubUrl,

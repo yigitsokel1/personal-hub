@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { AdminFormDraft } from "@/app/admin/_components/admin-form-draft";
 import { SubmitButton } from "@/app/admin/_components/submit-button";
+import { toDateOnlyInTurkey } from "@/lib/datetime/published-at";
 
 const fieldLabelClass = "mb-2 block font-mono text-xs uppercase tracking-[0.15em] text-black/50";
 const fieldInputClass =
@@ -13,8 +15,10 @@ export function AdminForm(props: {
   status?: string;
   globalError?: string;
 }) {
+  const formId = "admin-content-form";
   return (
-    <form action={props.action} className="mt-8 space-y-8">
+    <form id={formId} action={props.action} className="mt-8 space-y-8">
+      <AdminFormDraft formId={formId} />
       {props.status === "error" ? (
         <AdminError>{props.globalError ?? "Error saving. Please review fields."}</AdminError>
       ) : null}
@@ -134,7 +138,7 @@ export function AdminStatus({
   return (
     <div className="rounded-md border border-black/10 bg-black/2 px-3 py-2 text-xs text-black/65">
       State: {published ? "Published" : "Draft"} | Featured: {featured ? "Yes" : "No"} | Last published:{" "}
-      {publishedAt ? new Date(publishedAt).toISOString().slice(0, 16).replace("T", " ") : "-"}
+      {publishedAt ? toDateOnlyInTurkey(new Date(publishedAt)) : "-"}
     </div>
   );
 }

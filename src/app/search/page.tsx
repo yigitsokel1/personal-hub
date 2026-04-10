@@ -123,6 +123,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-black/45">
             Try: architecture, case study, product thinking
           </p>
+          <p>
+            <Link href="/tags" className={contentInlineLinkClassName}>
+              Browse tags
+            </Link>
+          </p>
         </section>
       ) : queryInvalid ? (
         <section className="mt-10 max-w-3xl space-y-4 border-t border-black/8 pt-8">
@@ -171,6 +176,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 href={`${CONTENT_PATH_PREFIX[document.domain]}/${document.slug}`}
                 title={document.title}
                 summary={document.summary}
+                tags={document.tags}
                 meta={
                   <ContentMeta
                     items={[

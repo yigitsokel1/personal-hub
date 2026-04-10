@@ -1,12 +1,14 @@
-import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getAboutPageContent } from "@/lib/content-source/get-about-page";
+import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import type { WritingContent } from "@/lib/content/types";
 import { getSiteMetadataBase } from "./build-metadata";
 
-export function buildArticleJsonLd(
+export async function buildArticleJsonLd(
   item: WritingContent & { slug: string }
-): Record<string, unknown> | null {
+): Promise<Record<string, unknown> | null> {
   const base = getSiteMetadataBase();
   if (!base) return null;
+  const { value: settings } = await getSiteSettings();
 
   const url = new URL(`/writing/${item.slug}`, `${base.origin}/`).toString();
   const description = item.seo?.description ?? item.summary;
@@ -22,38 +24,41 @@ export function buildArticleJsonLd(
     url,
     author: {
       "@type": "Person",
-      name: homepageCopy.siteName,
+      name: settings.brandLabel,
     },
     publisher: {
       "@type": "Organization",
-      name: homepageCopy.siteName,
+      name: settings.brandLabel,
       url: `${base.origin}/`,
     },
   };
 }
 
-export function buildWebSiteJsonLd(): Record<string, unknown> | null {
+export async function buildWebSiteJsonLd(): Promise<Record<string, unknown> | null> {
   const base = getSiteMetadataBase();
   if (!base) return null;
+  const { value: settings } = await getSiteSettings();
 
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: homepageCopy.siteName,
+    name: settings.brandLabel,
     url: `${base.origin}/`,
-    description: homepageCopy.siteDescription,
+    description: settings.heroSubtitle,
   };
 }
 
-export function buildAboutPersonJsonLd(): Record<string, unknown> | null {
+export async function buildAboutPersonJsonLd(): Promise<Record<string, unknown> | null> {
   const base = getSiteMetadataBase();
   if (!base) return null;
+  const { value: settings } = await getSiteSettings();
+  const { value: about } = await getAboutPageContent();
 
   return {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: homepageCopy.siteName,
+    name: settings.brandLabel,
     url: `${base.origin}/`,
-    description: homepageCopy.aboutPage.intro,
+    description: about.intro,
   };
 }

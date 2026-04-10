@@ -9,10 +9,12 @@ datasource db {
 
 model SiteSettings {
   id             Int      @id @default(1)
+  brandLabel     String   @map("brand_label")
+  positioningLine String  @map("positioning_line")
+  footerSignature String  @map("footer_signature")
   heroTitle      String   @map("hero_title")
   heroSubtitle   String   @map("hero_subtitle")
   productSignals Json     @map("product_signals")
-  aboutShort     String   @map("about_short")
   footerIntro    String   @map("footer_intro")
   contactEmail   String   @map("contact_email")
   githubUrl      String   @map("github_url")
@@ -20,6 +22,16 @@ model SiteSettings {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@map("site_settings")
+}
+
+model AboutPageContent {
+  id        Int      @id @default(1)
+  title     String
+  intro     String
+  sections  Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("about_page_content")
 }
 
 model Writing {
@@ -84,6 +96,7 @@ model Work {
   engagementType       String    @map("engagement_type")
   role                 String
   timeline             String?
+  projectUrl           String?   @map("project_url")
   confidentialityLevel String?   @map("confidentiality_level")
   scope                String[]
   responsibilities     String[]
@@ -101,6 +114,7 @@ model Lab {
   body        String
   tags        String[]
   status      String
+  liveUrl     String?   @map("live_url")
   featured    Boolean   @default(false)
   published   Boolean   @default(false)
   publishedAt DateTime? @map("published_at")

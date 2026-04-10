@@ -36,6 +36,7 @@ export function adaptDbWork(record: PrismaWork): DbWorkItem {
     engagementType: record.engagementType as WorkContent["engagementType"],
     role: record.role.trim(),
     timeline: record.timeline ?? undefined,
+    liveUrl: record.projectUrl ?? undefined,
     confidentialityLevel:
       (record.confidentialityLevel as WorkContent["confidentialityLevel"]) ?? undefined,
     scope,

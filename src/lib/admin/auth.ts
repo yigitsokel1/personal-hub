@@ -1,10 +1,17 @@
+import bcrypt from "bcrypt";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { ADMIN_SESSION_COOKIE } from "@/lib/admin/session-constants";
 
-const ADMIN_SESSION_COOKIE = "admin_session";
-const SESSION_TTL_SECONDS = 60 * 60 * 8;
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
-function getRequiredEnv(name: "ADMIN_PASSWORD" | "ADMIN_SESSION_SECRET"): string {
+type AdminSessionPayload = {
+  isAdmin: true;
+  createdAt: number;
+  expiresAt: number;
+};
+
+function getRequiredEnv(name: "ADMIN_PASSWORD_HASH" | "ADMIN_SESSION_SECRET"): string {
   const value = process.env[name];
   if (!value) {
     throw new Error(`${name} is required for admin authentication.`);
@@ -18,31 +25,79 @@ function createSignature(value: string): string {
   return createHmac("sha256", secret).update(value).digest("hex");
 }
 
-function parseSessionValue(raw: string): { expiresAt: number; signature: string } | null {
-  const [expiresRaw, signature] = raw.split(".");
-  if (!expiresRaw || !signature) {
+function encodePayload(payload: AdminSessionPayload): string {
+  return Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+}
+
+function decodePayload(value: string): AdminSessionPayload | null {
+  try {
+    const parsed = JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as Partial<AdminSessionPayload>;
+    if (parsed.isAdmin !== true) {
+      return null;
+    }
+    if (!Number.isFinite(parsed.createdAt) || !Number.isFinite(parsed.expiresAt)) {
+      return null;
+    }
+    return {
+      isAdmin: true,
+      createdAt: Number(parsed.createdAt),
+      expiresAt: Number(parsed.expiresAt),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function parseSessionValue(raw: string): { payloadEncoded: string; payload: AdminSessionPayload; signature: string } | null {
+  const [payloadEncoded, signature] = raw.split(".");
+  if (!payloadEncoded || !signature) {
     return null;
   }
 
-  const expiresAt = Number(expiresRaw);
-  if (!Number.isFinite(expiresAt)) {
+  const payload = decodePayload(payloadEncoded);
+  if (!payload) {
     return null;
   }
 
-  return { expiresAt, signature };
+  return { payloadEncoded, payload, signature };
+}
+
+export function getSessionPayloadFromCookieValue(raw: string): AdminSessionPayload | null {
+  const parsed = parseSessionValue(raw);
+  if (!parsed) {
+    return null;
+  }
+  const expectedSignature = createSignature(parsed.payloadEncoded);
+  try {
+    const isValid = timingSafeEqual(
+      Buffer.from(parsed.signature, "utf8"),
+      Buffer.from(expectedSignature, "utf8"),
+    );
+    return isValid ? parsed.payload : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  // V1 scope: lightweight single-owner admin auth for a private operational panel.
-  // This is intentionally not a multi-user, production-grade SaaS auth model.
-  const expected = getRequiredEnv("ADMIN_PASSWORD");
-  return password === expected;
+  const expectedHash = getRequiredEnv("ADMIN_PASSWORD_HASH");
+  try {
+    return await bcrypt.compare(password, expectedHash);
+  } catch {
+    return false;
+  }
 }
 
 export async function createAdminSession(): Promise<void> {
-  const expiresAt = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
-  const signature = createSignature(String(expiresAt));
-  const value = `${expiresAt}.${signature}`;
+  const createdAt = Math.floor(Date.now() / 1000);
+  const payload: AdminSessionPayload = {
+    isAdmin: true,
+    createdAt,
+    expiresAt: createdAt + SESSION_TTL_SECONDS,
+  };
+  const payloadEncoded = encodePayload(payload);
+  const signature = createSignature(payloadEncoded);
+  const value = `${payloadEncoded}.${signature}`;
   const store = await cookies();
 
   store.set(ADMIN_SESSION_COOKIE, value, {
@@ -70,17 +125,9 @@ export async function isAdminAuthenticated(): Promise<boolean> {
     return false;
   }
 
-  if (parsed.expiresAt <= Math.floor(Date.now() / 1000)) {
+  if (parsed.payload.expiresAt <= Math.floor(Date.now() / 1000)) {
     return false;
   }
 
-  const expectedSignature = createSignature(String(parsed.expiresAt));
-  try {
-    return timingSafeEqual(
-      Buffer.from(parsed.signature, "utf8"),
-      Buffer.from(expectedSignature, "utf8"),
-    );
-  } catch {
-    return false;
-  }
+  return getSessionPayloadFromCookieValue(raw) !== null;
 }

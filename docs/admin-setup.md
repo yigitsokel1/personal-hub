@@ -7,8 +7,15 @@ This guide boots the admin panel on a fresh local database.
 1. Copy `.env.example` to `.env`.
 2. Fill required values:
    - `DATABASE_URL`
-   - `ADMIN_PASSWORD`
+   - `ADMIN_PASSWORD_HASH`
    - `ADMIN_SESSION_SECRET`
+   - `ENABLE_DEV_ENDPOINTS=1` (local only)
+
+Generate an admin password hash:
+
+```bash
+node -e "const bcrypt=require('bcrypt'); bcrypt.hash('your-password',10).then(console.log)"
+```
 
 ## 2) Install dependencies
 
@@ -39,7 +46,7 @@ npm run dev
 ## 6) Admin login flow
 
 1. Open `http://localhost:3000/admin/login`.
-2. Sign in with `ADMIN_PASSWORD`.
+2. Sign in with the plaintext password used to produce `ADMIN_PASSWORD_HASH`.
 3. You will be redirected to `/admin/settings`.
 4. Writing CMS operations live under `/admin/writing` (create/edit/delete).
 5. Projects CMS operations live under `/admin/projects` (create/edit/delete).

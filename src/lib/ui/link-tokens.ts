@@ -66,7 +66,8 @@ export const tagLinkClassName = [
 
 /** Home featured cards: subtle border-only interaction. */
 export const homeCardClassName = [
-  "group rounded-lg border border-black/10",
+  "group block w-full rounded-lg border border-black/10",
+  "min-h-56",
   "transition-[border-color,box-shadow,transform] duration-200 ease-out",
   "hover:border-black/18 hover:shadow-[0_1px_0_0_rgba(0,0,0,0.04)]",
   "active:translate-y-[1px]",
@@ -75,12 +76,19 @@ export const homeCardClassName = [
 
 /** Home writing rows: lightweight editorial interaction. */
 export const homeWritingRowClassName = [
-  "flex items-center justify-between border-l-2 border-black/10 py-3 pl-4",
+  "flex items-center justify-between border-l-2 border-black/10 py-3 pl-4 pr-2",
   "transition-[border-color,color,opacity,transform] duration-200 ease-out",
   "hover:border-black/35 hover:text-black/90",
   "active:translate-x-[1px]",
   linkFocusVisibleClassName,
 ].join(" ");
+
+export function homeWritingRowVariantClassName(isFeatured: boolean): string {
+  if (isFeatured) {
+    return `${homeWritingRowClassName} border-black/25 py-4 pl-5 text-black/92`;
+  }
+  return `${homeWritingRowClassName} text-black/75`;
+}
 
 const navBase = [
   "font-mono text-sm tracking-tight",

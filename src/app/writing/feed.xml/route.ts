@@ -1,5 +1,5 @@
 import { getPublishedWriting } from "@/lib/content-source/get-writing";
-import { homepageCopy } from "@/lib/content/homepage-copy";
+import { getSiteSettings } from "@/lib/content-source/get-site-settings";
 import { getSiteMetadataBase } from "@/lib/seo/build-metadata";
 
 function escapeXml(text: string): string {
@@ -20,6 +20,7 @@ let rssRelativeLinkWarned = false;
 export async function GET() {
   const base = getSiteMetadataBase();
   const origin = base?.origin.replace(/\/$/, "") ?? "";
+  const { value: settings } = await getSiteSettings();
   const { value: writing } = await getPublishedWriting();
 
   if (
@@ -55,9 +56,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>${escapeXml(homepageCopy.siteTitle)}</title>
+    <title>${escapeXml(settings.brandLabel)}</title>
     <link>${escapeXml(channelLink)}</link>
-    <description>${escapeXml(homepageCopy.siteDescription)}</description>
+    <description>${escapeXml(settings.heroSubtitle)}</description>
 ${itemsXml}
   </channel>
 </rss>

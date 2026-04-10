@@ -3,6 +3,9 @@ import type { SiteSettings, SiteSettingsInput } from "@/lib/domain/site-settings
 
 export function getDefaultSiteSettings(): SiteSettings {
   return {
+    brandLabel: homepageCopy.siteTitle,
+    positioningLine: homepageCopy.hero.kicker,
+    footerSignature: "product_engineering.for_real_systems()",
     heroTitle: homepageCopy.hero.titleLines.join(" "),
     heroSubtitle: homepageCopy.hero.subtitle,
     productSignals: [
@@ -23,7 +26,6 @@ export function getDefaultSiteSettings(): SiteSettings {
         detail: "Projects and work capture trade-offs, constraints, and outcomes as operational signals.",
       },
     ],
-    aboutShort: homepageCopy.compactAbout,
     footerIntro:
       "Personal hub for building and operating real systems across projects, work, writing, and labs.",
     contactEmail: "oyigitsokell@gmail.com",
@@ -34,10 +36,12 @@ export function getDefaultSiteSettings(): SiteSettings {
 
 export function toSiteSettingsInput(settings: SiteSettings): SiteSettingsInput {
   return {
+    brandLabel: settings.brandLabel,
+    positioningLine: settings.positioningLine,
+    footerSignature: settings.footerSignature,
     heroTitle: settings.heroTitle,
     heroSubtitle: settings.heroSubtitle,
     productSignals: settings.productSignals,
-    aboutShort: settings.aboutShort,
     footerIntro: settings.footerIntro,
     contactEmail: settings.contactEmail,
     githubUrl: settings.githubUrl,

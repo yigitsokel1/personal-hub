@@ -13,6 +13,7 @@ type WorkDetailIntroProps = {
   timeline?: string;
   tags?: string[];
   role: string;
+  liveUrl?: string;
   client: string;
   engagementType: WorkContent["engagementType"];
   confidentialityLevel?: WorkContent["confidentialityLevel"];
@@ -28,6 +29,7 @@ export function WorkDetailIntro({
   timeline,
   tags,
   role,
+  liveUrl,
   client,
   engagementType,
   confidentialityLevel,
@@ -73,6 +75,13 @@ export function WorkDetailIntro({
           {formatEngagementType(engagementType)}
         </IntroDefinitionRow>
         <IntroDefinitionRow label="Role">{role}</IntroDefinitionRow>
+        {liveUrl ? (
+          <IntroDefinitionRow label="Live URL">
+            <a href={liveUrl} className="underline decoration-black/30 underline-offset-4 hover:decoration-black/55">
+              Open live result
+            </a>
+          </IntroDefinitionRow>
+        ) : null}
         {scope?.length ? (
           <IntroDefinitionRow label="Scope">
             <span className="leading-relaxed">{scope.join(" · ")}</span>

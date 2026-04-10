@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ContentBody } from "@/components/content/content-body";
@@ -31,16 +32,26 @@ function isPreviewDomain(value: string): value is PreviewDomain {
   return value === "writing" || value === "projects" || value === "work" || value === "labs";
 }
 
-function PreviewBanner({ state }: { state: "Draft" | "Published" }) {
+function PreviewBanner({
+  state,
+  domain,
+}: {
+  state: "Draft" | "Published";
+  domain: PreviewDomain;
+}) {
   return (
     <div className="mb-6 rounded-md border border-amber-800/20 bg-amber-50 px-3 py-2 text-xs text-amber-900/85">
-      Preview mode - not publicly visible. State: {state}
+      <div>Preview mode - not publicly visible. State: {state}</div>
+      <Link href={`/admin/${domain}`} className="mt-1 inline-block underline underline-offset-2">
+        Back to editor
+      </Link>
     </div>
   );
 }
 
 export default async function PreviewDetailPage({ params }: PreviewPageProps) {
   const { domain, slug } = await params;
+  const routeSlug = slug.trim();
 
   if (!(await isAdminAuthenticated())) {
     const nextPath = `/preview/${domain}/${slug}`;
@@ -51,24 +62,25 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
     notFound();
   }
 
-  const item = await getPreviewBySlug(domain, slug);
+  const item = await getPreviewBySlug(domain, routeSlug);
   if (!item) {
     notFound();
   }
+  const previewSlug = routeSlug || item.slug;
 
   const state: "Draft" | "Published" = item.status === "published" ? "Published" : "Draft";
 
   if (item.type === "writing") {
-    const related = await getRelatedWriting(slug, item.tags);
+    const related = await getRelatedWriting(previewSlug, item.tags);
     const relatedLinks = related.map((r) => ({
       href: `${CONTENT_PATH_PREFIX.writing}/${r.slug}`,
       title: r.title,
     }));
-    const neighbors = await getWritingNeighbors(slug);
+    const neighbors = await getWritingNeighbors(previewSlug);
 
     return (
       <ContentDetailMain>
-        <PreviewBanner state={state} />
+        <PreviewBanner state={state} domain={domain} />
         <ContentPageIntro
           title={item.title}
           summary={item.summary}
@@ -92,7 +104,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
   }
 
   if (item.type === "project") {
-    const related = await getRelatedProjects(slug, item.tags);
+    const related = await getRelatedProjects(previewSlug, item.tags);
     const relatedLinks = related.map((r) => ({
       href: `${CONTENT_PATH_PREFIX.project}/${r.slug}`,
       title: r.title,
@@ -103,7 +115,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
 
     return (
       <ContentDetailMain>
-        <PreviewBanner state={state} />
+        <PreviewBanner state={state} domain={domain} />
         <ProjectDetailIntro
           title={item.title}
           summary={item.summary}
@@ -140,7 +152,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
   }
 
   if (item.type === "work") {
-    const related = await getRelatedWork(slug, item.tags);
+    const related = await getRelatedWork(previewSlug, item.tags);
     const relatedLinks = related.map((r) => ({
       href: `${CONTENT_PATH_PREFIX.work}/${r.slug}`,
       title: r.title,
@@ -148,7 +160,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
 
     return (
       <ContentDetailMain>
-        <PreviewBanner state={state} />
+        <PreviewBanner state={state} domain={domain} />
         <WorkDetailIntro
           title={item.title}
           summary={item.summary}
@@ -156,6 +168,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
           timeline={item.timeline}
           tags={item.tags}
           role={item.role}
+          liveUrl={item.liveUrl}
           client={item.client}
           engagementType={item.engagementType}
           confidentialityLevel={item.confidentialityLevel}
@@ -175,7 +188,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
     );
   }
 
-  const related = await getRelatedLabs(slug, item.tags);
+  const related = await getRelatedLabs(previewSlug, item.tags);
   const relatedLinks = related.map((r) => ({
     href: `${CONTENT_PATH_PREFIX.lab}/${r.slug}`,
     title: r.title,
@@ -183,7 +196,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
 
   return (
     <ContentDetailMain>
-      <PreviewBanner state={state} />
+      <PreviewBanner state={state} domain={domain} />
       <LabDetailIntro
         title={item.title}
         summary={item.summary}
@@ -191,6 +204,7 @@ export default async function PreviewDetailPage({ params }: PreviewPageProps) {
         tags={item.tags}
         cover={item.cover}
         status={item.status}
+        liveUrl={item.liveUrl}
       />
       <p className="mt-8 max-w-3xl text-sm leading-relaxed text-black/55 sm:mt-10">
         Exploration note: this page captures an active experiment, so outcomes may

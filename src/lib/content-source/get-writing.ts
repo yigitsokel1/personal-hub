@@ -6,6 +6,11 @@ import type { WritingContent } from "@/lib/content/types";
 import { adaptDbWriting, type DbWritingItem } from "@/lib/content-source/adapters/writing.adapter";
 import type { WritingInput } from "@/lib/domain/writing/types";
 import { rankRelatedContent } from "@/lib/content-intelligence/related-ranking";
+import {
+  normalizeDateOnlyInput,
+  parseDateOnlyToUtc,
+  todayDateOnlyInTurkey,
+} from "@/lib/datetime/published-at";
 
 type WritingSource = "database";
 
@@ -17,12 +22,16 @@ function isMissingWritingTableError(error: unknown): boolean {
   );
 }
 
-function toPublishedAtDate(published: boolean, publishedAt?: string): Date | null {
-  if (!published) return publishedAt ? new Date(publishedAt) : null;
-  if (!publishedAt) {
-    throw new Error("publishedAt is required when published is true.");
-  }
-  return new Date(publishedAt);
+function toPublishedAtDate(
+  published: boolean,
+  publishedAt?: string,
+  existingPublishedAt?: Date | null
+): Date | null {
+  const normalized = normalizeDateOnlyInput(publishedAt);
+  if (!published) return normalized ? parseDateOnlyToUtc(normalized) : null;
+  if (normalized) return parseDateOnlyToUtc(normalized);
+  if (existingPublishedAt) return existingPublishedAt;
+  return parseDateOnlyToUtc(todayDateOnlyInTurkey());
 }
 
 export async function listAdminWriting(): Promise<DbWritingItem[]> {
@@ -72,6 +81,10 @@ export async function createWriting(input: WritingInput): Promise<DbWritingItem>
 }
 
 export async function updateWriting(id: string, input: WritingInput): Promise<DbWritingItem> {
+  const existing = await prisma.writing.findUnique({
+    where: { id },
+    select: { publishedAt: true },
+  });
   const updated = await prisma.writing.update({
     where: { id },
     data: {
@@ -85,7 +98,7 @@ export async function updateWriting(id: string, input: WritingInput): Promise<Db
       featured: input.featured,
       published: input.published,
       readingTime: input.readingTime,
-      publishedAt: toPublishedAtDate(input.published, input.publishedAt),
+      publishedAt: toPublishedAtDate(input.published, input.publishedAt, existing?.publishedAt),
     },
   });
 

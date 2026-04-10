@@ -50,10 +50,12 @@ export function validateSiteSettingsInput(input: SiteSettingsInput): {
   errors: SiteSettingsValidationErrors;
 } {
   const value: SiteSettingsInput = {
+    brandLabel: input.brandLabel.trim(),
+    positioningLine: input.positioningLine.trim(),
+    footerSignature: input.footerSignature.trim(),
     heroTitle: input.heroTitle.trim(),
     heroSubtitle: input.heroSubtitle.trim(),
     productSignals: input.productSignals.map(cleanSignal),
-    aboutShort: input.aboutShort.trim(),
     footerIntro: input.footerIntro.trim(),
     contactEmail: input.contactEmail.trim(),
     githubUrl: input.githubUrl.trim(),
@@ -62,9 +64,11 @@ export function validateSiteSettingsInput(input: SiteSettingsInput): {
 
   const errors: SiteSettingsValidationErrors = {};
 
+  if (!value.brandLabel) errors.brandLabel = "Brand label is required.";
+  if (!value.positioningLine) errors.positioningLine = "Positioning line is required.";
+  if (!value.footerSignature) errors.footerSignature = "Footer signature is required.";
   if (!value.heroTitle) errors.heroTitle = "Hero title is required.";
   if (!value.heroSubtitle) errors.heroSubtitle = "Hero subtitle is required.";
-  if (!value.aboutShort) errors.aboutShort = "About short is required.";
   if (!value.footerIntro) errors.footerIntro = "Footer intro is required.";
 
   if (!value.contactEmail) {

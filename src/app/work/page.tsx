@@ -7,7 +7,6 @@ import { getPublishedWork } from "@/lib/content-source/get-work";
 import { formatEngagementType } from "@/lib/format-engagement-type";
 import { formatContentYear } from "@/lib/format-content-date";
 import { buildSimplePageMetadata } from "@/lib/seo/build-metadata";
-import { sectionLabelClassName } from "@/lib/ui/terminal-tokens";
 
 function WorkMeta({
   engagementType,
@@ -49,8 +48,7 @@ export default async function WorkPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16 sm:py-22 lg:py-24">
       <SectionReveal>
-        <p className={sectionLabelClassName}>{domainIndexCopy.work.sectionLabel}</p>
-        <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+        <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
           {domainIndexCopy.work.title}
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-black/60">

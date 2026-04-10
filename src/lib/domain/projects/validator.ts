@@ -1,6 +1,7 @@
 import {
   MAX_PROJECT_TAGS,
 } from "@/lib/domain/projects/mapper";
+import { isValidDateOnly } from "@/lib/datetime/published-at";
 import type { ProjectInput, ProjectValidationErrors } from "@/lib/domain/projects/types";
 import { parseTags } from "@/lib/tags/normalize-tag";
 
@@ -64,8 +65,8 @@ export function validateProjectInput(input: ProjectInput): {
   if (value.tags.length > MAX_PROJECT_TAGS) {
     errors.tags = `You can add up to ${MAX_PROJECT_TAGS} tags.`;
   }
-  if (value.published && !value.publishedAt) {
-    errors.publishedAt = "Set a publish date when Published is enabled.";
+  if (value.publishedAt && !isValidDateOnly(value.publishedAt)) {
+    errors.publishedAt = "Published date must use YYYY-MM-DD format.";
   }
   if (value.repoUrl && !isValidHttpUrl(value.repoUrl)) {
     errors.repoUrl = "Repo URL must be a valid http(s) URL.";

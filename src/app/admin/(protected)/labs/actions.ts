@@ -37,6 +37,7 @@ export async function createLabAction(formData: FormData): Promise<void> {
       body: String(formData.get("body") ?? ""),
       tagsRaw: String(formData.get("tags") ?? ""),
       status: String(formData.get("status") ?? "idea") as (typeof LAB_STATUSES)[number],
+      liveUrl: String(formData.get("liveUrl") ?? ""),
       featured: formData.get("featured") === "on",
       published: publishRequested,
       publishedAt: String(formData.get("publishedAt") ?? ""),
@@ -79,14 +80,18 @@ export async function updateLabAction(id: string, formData: FormData): Promise<v
   const isPreviewIntent = String(formData.get("intent") ?? "") === "preview";
   const publishRequested = !isPreviewIntent && formData.get("published") === "on";
   const basePath = `/admin/labs/${id}`;
+  const current = await getAdminLabById(id);
+  if (!current) redirect("/admin/labs?status=missing");
+  const submittedSlug = String(formData.get("slug") ?? "").trim();
   const validated = validateLabInput(
     toLabInput({
       title: String(formData.get("title") ?? ""),
-      slug: String(formData.get("slug") ?? ""),
+      slug: submittedSlug || current.slug,
       summary: String(formData.get("summary") ?? ""),
       body: String(formData.get("body") ?? ""),
       tagsRaw: String(formData.get("tags") ?? ""),
       status: String(formData.get("status") ?? "idea") as (typeof LAB_STATUSES)[number],
+      liveUrl: String(formData.get("liveUrl") ?? ""),
       featured: formData.get("featured") === "on",
       published: publishRequested,
       publishedAt: String(formData.get("publishedAt") ?? ""),
@@ -106,8 +111,6 @@ export async function updateLabAction(id: string, formData: FormData): Promise<v
     domain: "labs",
     basePath,
   });
-  const current = await getAdminLabById(id);
-  if (!current) redirect("/admin/labs?status=missing");
   try {
     const saved = await updateLab(id, validated.value);
     await recordSlugRedirect("labs", current.slug, saved.slug);

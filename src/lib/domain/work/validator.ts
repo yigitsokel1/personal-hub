@@ -1,8 +1,18 @@
 import { MAX_WORK_TAGS, WORK_CONFIDENTIALITY_LEVELS, WORK_ENGAGEMENT_TYPES } from "@/lib/domain/work/mapper";
+import { isValidDateOnly } from "@/lib/datetime/published-at";
 import type { WorkInput, WorkValidationErrors } from "@/lib/domain/work/types";
 import { parseTags } from "@/lib/tags/normalize-tag";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function isValidHttpUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 export function validateWorkInput(input: WorkInput): {
   success: boolean;
@@ -22,6 +32,7 @@ export function validateWorkInput(input: WorkInput): {
     engagementType: input.engagementType,
     role: input.role.trim(),
     timeline: input.timeline?.trim() || undefined,
+    liveUrl: input.liveUrl?.trim() || undefined,
     confidentialityLevel: input.confidentialityLevel?.trim()
       ? input.confidentialityLevel
       : undefined,
@@ -57,10 +68,12 @@ export function validateWorkInput(input: WorkInput): {
   if (value.tags.length > MAX_WORK_TAGS) {
     errors.tags = `You can add up to ${MAX_WORK_TAGS} tags.`;
   }
-  if (value.published && !value.publishedAt) {
-    errors.publishedAt = "Set a publish date when Published is enabled.";
+  if (value.liveUrl && !isValidHttpUrl(value.liveUrl)) {
+    errors.liveUrl = "Live URL must be a valid http(s) URL.";
   }
-
+  if (value.publishedAt && !isValidDateOnly(value.publishedAt)) {
+    errors.publishedAt = "Published date must use YYYY-MM-DD format.";
+  }
   if (value.scope.length === 0) {
     errors.scope = "Add at least one scope item.";
   }
