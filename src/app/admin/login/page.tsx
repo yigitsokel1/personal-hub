@@ -26,7 +26,7 @@ export default async function AdminLoginPage({
     <main className="mx-auto max-w-xl px-6 py-16 sm:py-24">
       <h1 className="text-3xl font-semibold tracking-tight">Admin Login</h1>
       <p className="mt-3 text-sm text-black/60">
-        Enter the admin password configured in environment variables.
+        Enter your admin password to continue.
       </p>
       <LoginForm nextPath={nextPath} initialError={error} />
     </main>
