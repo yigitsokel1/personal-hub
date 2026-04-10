@@ -1,6 +1,7 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { serialize } from "next-mdx-remote/serialize";
 import { mdxContentBlocks } from "@/lib/mdx/mdx-content-blocks";
+import { useMDXComponents } from "@/lib/mdx/mdx-components";
 
 type ContentBodyProps = {
   body: string;
@@ -17,6 +18,8 @@ type ContentBodyProps = {
  * border-t pt-10` to match.
  */
 export async function ContentBody({ body, context }: ContentBodyProps) {
+  const mdxComponents = useMDXComponents(mdxContentBlocks);
+
   try {
     await serialize(body);
   } catch (error) {
@@ -38,7 +41,7 @@ export async function ContentBody({ body, context }: ContentBodyProps) {
 
   return (
     <div className="mt-16 max-w-176 [&>*:first-child]:mt-0 sm:mt-18">
-      <MDXRemote source={body} components={mdxContentBlocks} />
+      <MDXRemote source={body} components={mdxComponents} />
     </div>
   );
 }
